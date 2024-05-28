@@ -25,16 +25,31 @@
     <Filter Include="Quelldateien\App\VertexDef">
       <UniqueIdentifier>{a6488514-0597-490b-90a9-b3925a0da91a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\lib">
+      <UniqueIdentifier>{bf05f716-f84e-4640-8e7b-83de48db738b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\lib">
+      <UniqueIdentifier>{5bce9cc0-c7d4-481c-94f2-4e13b5fde94e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ressourcendateien\Texture">
+      <UniqueIdentifier>{1762de94-a446-41df-8468-5b3adc9b853d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Main">
+      <UniqueIdentifier>{57ed041b-abcc-4ed2-b60e-dd655af9384d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="InitClass.cpp">
-      <Filter>Quelldateien\App</Filter>
+    <ClCompile Include="Libraries\stb\stb_image.cpp">
+      <Filter>Quelldateien\lib</Filter>
     </ClCompile>
-    <ClCompile Include="Buffers.cpp">
+    <ClCompile Include="Buffers\Buffers.cpp">
       <Filter>Quelldateien\App\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Main\InitClass.cpp">
+      <Filter>Quelldateien\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -57,14 +72,17 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="InitClass.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Buffers.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="VertexDef.h">
       <Filter>Quelldateien\App\VertexDef</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\stb\stb_image.h">
+      <Filter>Headerdateien\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffers\Buffers.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Main\InitClass.h">
+      <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

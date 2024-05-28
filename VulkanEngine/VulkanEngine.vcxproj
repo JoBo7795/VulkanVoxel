@@ -116,7 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\include;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\stb;C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\include;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -134,7 +134,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\include;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\stb;C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\include;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -147,8 +147,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Buffers.cpp" />
-    <ClCompile Include="InitClass.cpp" />
+    <ClCompile Include="Buffers\Buffers.cpp" />
+    <ClCompile Include="Main\InitClass.cpp" />
+    <ClCompile Include="Libraries\stb\stb_image.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -173,8 +174,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Buffers.h" />
-    <ClInclude Include="InitClass.h" />
+    <ClInclude Include="Buffers\Buffers.h" />
+    <ClInclude Include="Main\InitClass.h" />
+    <ClInclude Include="Libraries\stb\stb_image.h" />
     <ClInclude Include="VertexDef.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
