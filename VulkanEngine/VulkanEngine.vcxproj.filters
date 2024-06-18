@@ -19,12 +19,6 @@
     <Filter Include="Quelldateien\App">
       <UniqueIdentifier>{d4cbca2e-7558-42bd-9d58-689f97561b98}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Quelldateien\App\Buffer">
-      <UniqueIdentifier>{63df2502-e286-4753-8907-155b9dc6e2ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\App\VertexDef">
-      <UniqueIdentifier>{a6488514-0597-490b-90a9-b3925a0da91a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\lib">
       <UniqueIdentifier>{bf05f716-f84e-4640-8e7b-83de48db738b}</UniqueIdentifier>
     </Filter>
@@ -37,6 +31,45 @@
     <Filter Include="Quelldateien\Main">
       <UniqueIdentifier>{57ed041b-abcc-4ed2-b60e-dd655af9384d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\App\Memory">
+      <UniqueIdentifier>{63df2502-e286-4753-8907-155b9dc6e2ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\VulkanDevices">
+      <UniqueIdentifier>{996f27c6-eedd-43a7-a3ff-dc7fc775256d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\Definitions">
+      <UniqueIdentifier>{a6488514-0597-490b-90a9-b3925a0da91a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\SwapChain">
+      <UniqueIdentifier>{c9a73d6a-e2d0-469c-858f-e38f0c6e071d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\Shader">
+      <UniqueIdentifier>{13909864-7b2f-4828-bee4-207bb1880841}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\SyncObjects">
+      <UniqueIdentifier>{05c2409f-48fe-4560-9568-b712ddeebc6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\Descriptors">
+      <UniqueIdentifier>{0d05d08f-741b-4267-bf4e-c256206ce96e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\Models">
+      <UniqueIdentifier>{6edbddb9-ccb8-4d52-8500-55cd5290d6d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\Files">
+      <UniqueIdentifier>{079ca31c-356c-455f-bfac-1a6f6b9627ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\Window">
+      <UniqueIdentifier>{62706757-f935-4a1e-b2fd-173b2c56a97f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\VulkanInstance">
+      <UniqueIdentifier>{f9c1d304-7493-4bff-b350-cc3e249e64ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\GraphicsPipeline">
+      <UniqueIdentifier>{7e085e9a-eb09-44ec-9dc6-3e07b1d9dc8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\Images">
+      <UniqueIdentifier>{d7007ee5-5b72-4cf8-b8a2-df1c5aff7c19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -46,10 +79,61 @@
       <Filter>Quelldateien\lib</Filter>
     </ClCompile>
     <ClCompile Include="Buffers\Buffers.cpp">
-      <Filter>Quelldateien\App\Buffer</Filter>
+      <Filter>Quelldateien\App\Memory</Filter>
     </ClCompile>
     <ClCompile Include="Main\InitClass.cpp">
       <Filter>Quelldateien\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory.cpp">
+      <Filter>Quelldateien\App\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandPool.cpp">
+      <Filter>Quelldateien\App\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanDevices.cpp">
+      <Filter>Quelldateien\App\VulkanDevices</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanQueues.cpp">
+      <Filter>Quelldateien\App\VulkanDevices</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChain.cpp">
+      <Filter>Quelldateien\App\SwapChain</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Quelldateien\App\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Quelldateien\App\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanInstance.cpp">
+      <Filter>Quelldateien\App\VulkanInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadModel.cpp">
+      <Filter>Quelldateien\App\Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ValidationLayers.cpp">
+      <Filter>Quelldateien\App\VulkanInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="Descriptors.cpp">
+      <Filter>Quelldateien\App\Descriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Quelldateien\App\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsPipeline.cpp">
+      <Filter>Quelldateien\App\GraphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderRessources.cpp">
+      <Filter>Quelldateien\App\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Quelldateien\App\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthRessources.cpp">
+      <Filter>Quelldateien\App\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="SyncObjects.cpp">
+      <Filter>Quelldateien\App\SyncObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,9 +156,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="VertexDef.h">
-      <Filter>Quelldateien\App\VertexDef</Filter>
-    </ClInclude>
     <ClInclude Include="Libraries\stb\stb_image.h">
       <Filter>Headerdateien\lib</Filter>
     </ClInclude>
@@ -82,6 +163,63 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Main\InitClass.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandPool.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanDevices.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanQueues.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Defs.h">
+      <Filter>Quelldateien\App\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChain.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadModel.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanInstance.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="ValidationLayers.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Descriptors.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsPipeline.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderRessources.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthRessources.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="SyncObjects.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,11 +1,11 @@
-#include "Main/InitClass.h"
+#include "VulkanInstance.h"
 
 int main() {
 
-    InitClass app;
+    VulkanInstance app;
 
     try {
-        app.run();
+        app.Run();
     }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
