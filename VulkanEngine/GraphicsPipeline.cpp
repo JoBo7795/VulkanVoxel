@@ -4,26 +4,53 @@
 #include "Buffers/Buffers.h"
 #include "LoadModel.h"
 #include "ShaderRessources.h"
-//#include "DepthRessources.h"
-//#include "SyncObjects.h"
-//#include "Descriptors.h"
-//#include "Window.h"
 
-GraphicsPipeline::GraphicsPipeline(){}
-
-GraphicsPipeline::GraphicsPipeline(Texture& texture){
-
-    descriptors.CreateDescriptorPool();
-    descriptors.CreateDescriptorSetLayout();
-    descriptors.CreateDescriptorSets(texture);
-    this->syncObjects.CreateSyncObjects();
-    BufferManager::GetInstance()->CreateCommandBuffers();
+GraphicsPipeline::GraphicsPipeline() {
 
 }
 
 GraphicsPipeline::~GraphicsPipeline() {
 
 }
+
+void GraphicsPipeline::SetupGraphicsPipeline(){
+
+    descriptors.CreateDescriptorPool();
+    descriptors.CreateDescriptorSetLayout();
+    descriptors.CreateDescriptorSets();
+    this->syncObjects.CreateSyncObjects();
+    BufferManager::GetInstance()->CreateCommandBuffers();
+
+    auto swapChainManagerRef = SwapChainManager::GetInstance();
+    auto extent = swapChainManagerRef->GetSwapChainExtent();
+    CreateRenderPass();
+    CreateGraphicsPipeline();
+    depthRessources.CreateDepthResources(extent.width, extent.height);
+    swapChainManagerRef->SetDepthRessources(depthRessources);
+    swapChainManagerRef->CreateFrameBufferRessources(renderPass);
+}
+
+void GraphicsPipeline::CreateFrameBufferRessources() {
+
+    auto swapChainManagerRef = SwapChainManager::GetInstance();
+    auto swapChainFramebuffers = swapChainManagerRef->GetSwapChainFramebuffers();
+    auto swapChainImageViews = swapChainManagerRef->GetSwapChainImageViews();
+    auto swapChainExtent = swapChainManagerRef->GetSwapChainExtent();
+
+    swapChainFramebuffers.resize(swapChainImageViews.size());
+
+    for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+        std::array<VkImageView, 2> attachments = {
+        swapChainImageViews[i],
+        depthRessources.GetImageView()
+        };
+
+        BufferManager::GetInstance()->CreateFramebuffers(renderPass, attachments, swapChainExtent.width, swapChainExtent.height, swapChainFramebuffers[i]);
+    }
+
+}
+
+
 
 void GraphicsPipeline::CleanUp() {
 

@@ -100,7 +100,12 @@ void BufferManager::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t w
     EndSingleTimeCommands(commandBuffer, VulkanQueueManager::GetInstance()->GetGraphicsQueue());
 }
 
-//void BufferManager::CreateFramebuffers(VkRenderPass& renderPass, std::vector<VkImageView>& swapChainImageViews, VkImageView& depthImageView, VkExtent2D& swapChainExtent) {
+//void BufferManager::CreateFramebuffers(VkRenderPass& renderPass, std::vector<VkImageView>& swapChainImageViews, VkImageView& 
+// 
+// 
+// 
+// 
+// ImageView, VkExtent2D& swapChainExtent) {
 //void BufferManager::CreateFramebuffers(VkRenderPass& renderPass, SwapChainManager swapChain, VkImageView& depthImageView) {
 void BufferManager::CreateFramebuffers(VkRenderPass& renderPass, std::array<VkImageView, 2>& attachments, float extentWidth, float extentHeight,VkFramebuffer& frameBuffer) {
 

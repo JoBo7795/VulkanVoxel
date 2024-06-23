@@ -151,6 +151,8 @@
     <ClCompile Include="CommandPool.cpp" />
     <ClCompile Include="DepthRessources.cpp" />
     <ClCompile Include="Descriptors.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="GraphicsPipeline.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="LoadModel.cpp" />
@@ -163,6 +165,7 @@
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="SyncObjects.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="ValidationLayers.cpp" />
     <ClCompile Include="VulkanDevices.cpp" />
     <ClCompile Include="VulkanInstance.cpp" />
@@ -196,6 +199,8 @@
     <ClInclude Include="Defs.h" />
     <ClInclude Include="DepthRessources.h" />
     <ClInclude Include="Descriptors.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectManager.h" />
     <ClInclude Include="GraphicsPipeline.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Includes.h" />
@@ -208,6 +213,7 @@
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="SyncObjects.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="ValidationLayers.h" />
     <ClInclude Include="VulkanDevices.h" />
     <ClInclude Include="VulkanInstance.h" />

@@ -7,7 +7,8 @@
 #include "Image.h"
 #include "GraphicsPipeline.h"
 #include "Descriptors.h"
-#include "Model.h"
+#include "TextureManager.h"
+#include "GameObjectManager.h"
 
 
 

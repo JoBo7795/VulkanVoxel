@@ -47,7 +47,7 @@ void Descriptors::CreateDescriptorSetLayout() {
 }
 
 
-void Descriptors::CreateDescriptorSets(Texture& texture) {
+void Descriptors::CreateDescriptorSets() {
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -69,9 +69,17 @@ void Descriptors::CreateDescriptorSets(Texture& texture) {
         bufferInfo.range = sizeof(UniformBufferObject);
 
         VkDescriptorImageInfo imageInfo{};
-        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        imageInfo.imageView = texture.textureImageView;
-        imageInfo.sampler = texture.textureSampler;
+        auto managerRef = TextureManager::GetInstance();
+        uint16_t size = TextureManager::GetInstance()->GetTextureQueueSize();
+
+        Texture texture;
+
+        for (uint16_t i = 0; i < size; i++) {
+            texture = managerRef->GetTextureFromQueue(i);
+            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageInfo.imageView = texture.textureImageView;
+            imageInfo.sampler = texture.textureSampler;
+        }
 
         std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 

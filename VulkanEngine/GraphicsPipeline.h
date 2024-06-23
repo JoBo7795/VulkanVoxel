@@ -14,14 +14,16 @@ public:
 
 	void CreateRenderPass();
 	void CreateGraphicsPipeline();
+	void SetupGraphicsPipeline();
+	void CreateFrameBufferRessources();
 
 	void DrawFrame(Window& windowRef, Model& model);
 
 	VkRenderPass& GetRenderPass();
 
 	void CleanUp();
+
 	GraphicsPipeline();
-	GraphicsPipeline(Texture& texture);
 	~GraphicsPipeline();
 private:
 
@@ -33,6 +35,6 @@ private:
 
 	VkPipeline graphicsPipeline;
 	VkPipelineLayout pipelineLayout;
-	VkRenderPass renderPass;
+	VkRenderPass renderPass;	
 };
 

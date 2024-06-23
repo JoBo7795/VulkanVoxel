@@ -70,6 +70,9 @@
     <Filter Include="Quelldateien\App\Images">
       <UniqueIdentifier>{d7007ee5-5b72-4cf8-b8a2-df1c5aff7c19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\App\GameObjects">
+      <UniqueIdentifier>{e444ed98-6097-4614-b09d-bdaefeb2f613}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -134,6 +137,15 @@
     </ClCompile>
     <ClCompile Include="SyncObjects.cpp">
       <Filter>Quelldateien\App\SyncObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectManager.cpp">
+      <Filter>Quelldateien\App\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Quelldateien\App\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Quelldateien\App\Images</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +232,15 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="SyncObjects.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectManager.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

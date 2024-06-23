@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "GraphicsPipeline.h"
 
+
 class SwapChainManager
 {
 
@@ -21,8 +22,8 @@ public:
 	void RecreateSwapChain(Window& window, VkRenderPass& renderPass);
 	void CreateImageViews();
 	void CreateDepthRessources();
-	void CreateFrameBufferRessources();
-	void CreateGraphicsPipeline(Texture texture);
+	void CreateFrameBufferRessources(VkRenderPass& renderPass);
+	void CreateGraphicsPipeline();
 
 	VkSwapchainKHR GetSwapChain();
 	void SetSwapChain(VkSwapchainKHR swapChain);
@@ -35,7 +36,7 @@ public:
 	const std::vector<VkImageView>& GetSwapChainImageViews();
 	void SetSwapChainImageViews(const std::vector<VkImageView>& views);
 	void SetDepthRessources(DepthRessources& in_depthRessources);
-	GraphicsPipeline GetGraphicsPipeLine();
+
 
 	std::vector<VkFramebuffer>& GetSwapChainFramebuffers();
 	void SetSwapChainFramebuffers(std::vector<VkFramebuffer>& framebuffers);
@@ -56,7 +57,7 @@ private:
 	std::vector<VkImageView> swapChainImageViews;
 	DepthRessources depthRessources;
 	std::vector<VkFramebuffer> swapChainFramebuffers;
-	GraphicsPipeline graphicsPipeline;
+
 
 };
 

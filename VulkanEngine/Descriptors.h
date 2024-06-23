@@ -1,9 +1,8 @@
 #pragma once
 
 #include "Defs.h"
-//#include "VulkanDevices.h"
 #include "Buffers/Buffers.h"
-#include "Texture.h"
+#include "TextureManager.h"
 
 struct Texture;
 
@@ -13,7 +12,7 @@ public:
 
 	void CreateDescriptorSetLayout();
 	void CreateDescriptorPool();
-	void CreateDescriptorSets(Texture& texture);
+	void CreateDescriptorSets();
 
 	void SetDescriptorPool(VkDescriptorPool& in_descriptorPool);
 	VkDescriptorPool& GetDescriptorPool();

@@ -18,20 +18,24 @@ VulkanInstance::VulkanInstance() {
     CommandPoolManager::GetInstance()->CreateCommandPool(window.GetSurface());
     texture.CreateTextureRessources();
     BufferManager::GetInstance()->CreateUniformBuffers();
-    swapChain->CreateGraphicsPipeline(texture);
-    //graphicsPipeline = GraphicsPipeline(texture);
-    //graphicsPipeline.CreateRenderPass();
-    //graphicsPipeline.CreateGraphicsPipeline();
-    
-    //depthRessources.CreateDepthResources(swapChain);
-    //swapChain.SetDepthRessources(depthRessources);
-    //BufferManager::GetInstance()->CreateFramebuffers(graphicsPipeline.GetRenderPass(), swapChain, depthRessources.GetImageView());
+
+    Texture texture;
+    texture.CreateTextureRessources();   
+
+    GameObject gameObject;
+
+    gameObject.textureId = TextureManager::GetInstance()->AppendTextureToQueue(texture);
+
+    GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
+
+    //swapChain->CreateGraphicsPipeline();
+
+    graphicsPipeline.SetupGraphicsPipeline();
+
     model.LoadModelFromObjFile();
     BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
     BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
 
-    //CommandPoolManager::GetInstance()->CreateCommandPool(window.GetSurface());
-    //BufferManager::GetInstance()->CreateCommandBuffers();
     
 }
 
@@ -89,7 +93,8 @@ void VulkanInstance::MainLoop() {
     while (!glfwWindowShouldClose(window.GetWindowRef())) {
         glfwPollEvents();
 
-        swapChain->GetGraphicsPipeLine().DrawFrame(window, model);
+        //swapChain->GetGraphicsPipeLine().DrawFrame(window, model);
+        graphicsPipeline.DrawFrame(window, model);
     }
 
     vkDeviceWaitIdle(VulkanDevices::GetInstance()->GetDevice());

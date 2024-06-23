@@ -156,17 +156,8 @@ void SwapChainManager::CreateDepthRessources() {
     depthRessources.CreateDepthResources(swapChainExtent.width,swapChainExtent.height);
 }
 
-void SwapChainManager::CreateGraphicsPipeline(Texture texture) {
 
-    GraphicsPipeline _graphicsPipeline(texture);
-    this->graphicsPipeline = _graphicsPipeline;
-    graphicsPipeline.CreateRenderPass();
-    graphicsPipeline.CreateGraphicsPipeline();
-    depthRessources.CreateDepthResources(swapChainExtent.width,swapChainExtent.height);
-    CreateFrameBufferRessources();
-}
-
-void SwapChainManager::CreateFrameBufferRessources() {
+void SwapChainManager::CreateFrameBufferRessources(VkRenderPass& renderPass) {
 
     swapChainFramebuffers.resize(swapChainImageViews.size());
 
@@ -176,7 +167,7 @@ void SwapChainManager::CreateFrameBufferRessources() {
             depthRessources.GetImageView()
         };
 
-        BufferManager::GetInstance()->CreateFramebuffers(graphicsPipeline.GetRenderPass(),attachments,swapChainExtent.width,swapChainExtent.height,swapChainFramebuffers[i]);
+        BufferManager::GetInstance()->CreateFramebuffers(renderPass,attachments,swapChainExtent.width,swapChainExtent.height,swapChainFramebuffers[i]);
     }
     
 }
@@ -217,7 +208,7 @@ void SwapChainManager::RecreateSwapChain(Window& window,VkRenderPass& renderPass
     CreateImageViews();
     depthRessources.CreateDepthResources(swapChainExtent.width,swapChainExtent.height);
     CreateDepthRessources();
-    //BufferManager::GetInstance()->CreateFramebuffers(renderPass, swapChainExtent.width, swapChainExtent.height, depthRessources.GetImageView());
+    
 }
 
 // Getter für swapChain_
@@ -282,9 +273,4 @@ std::vector<VkFramebuffer>& SwapChainManager::GetSwapChainFramebuffers() {
 
 void SwapChainManager::SetSwapChainFramebuffers(std::vector<VkFramebuffer>& framebuffers) {
     swapChainFramebuffers = framebuffers;
-}
-
-GraphicsPipeline SwapChainManager::GetGraphicsPipeLine() {
-
-    return graphicsPipeline;
 }
