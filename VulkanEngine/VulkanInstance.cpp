@@ -16,7 +16,6 @@ VulkanInstance::VulkanInstance() {
     swapChain->CreateSwapChain(window.GetSurface());
     swapChain->CreateImageViews();
     CommandPoolManager::GetInstance()->CreateCommandPool(window.GetSurface());
-    texture.CreateTextureRessources();
     BufferManager::GetInstance()->CreateUniformBuffers();
 
     Texture texture;
@@ -28,14 +27,11 @@ VulkanInstance::VulkanInstance() {
 
     GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
 
-    //swapChain->CreateGraphicsPipeline();
-
-    graphicsPipeline.SetupGraphicsPipeline();
-
     model.LoadModelFromObjFile();
     BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
     BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
 
+    graphicsPipeline.SetupGraphicsPipeline();
     
 }
 

@@ -207,7 +207,8 @@ void SwapChainManager::RecreateSwapChain(Window& window,VkRenderPass& renderPass
     CreateSwapChain(window.GetSurface());
     CreateImageViews();
     depthRessources.CreateDepthResources(swapChainExtent.width,swapChainExtent.height);
-    CreateDepthRessources();
+    CreateFrameBufferRessources(renderPass);
+
     
 }
 

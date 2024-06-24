@@ -30,25 +30,7 @@ void GraphicsPipeline::SetupGraphicsPipeline(){
     swapChainManagerRef->CreateFrameBufferRessources(renderPass);
 }
 
-void GraphicsPipeline::CreateFrameBufferRessources() {
 
-    auto swapChainManagerRef = SwapChainManager::GetInstance();
-    auto swapChainFramebuffers = swapChainManagerRef->GetSwapChainFramebuffers();
-    auto swapChainImageViews = swapChainManagerRef->GetSwapChainImageViews();
-    auto swapChainExtent = swapChainManagerRef->GetSwapChainExtent();
-
-    swapChainFramebuffers.resize(swapChainImageViews.size());
-
-    for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-        std::array<VkImageView, 2> attachments = {
-        swapChainImageViews[i],
-        depthRessources.GetImageView()
-        };
-
-        BufferManager::GetInstance()->CreateFramebuffers(renderPass, attachments, swapChainExtent.width, swapChainExtent.height, swapChainFramebuffers[i]);
-    }
-
-}
 
 
 
@@ -228,8 +210,6 @@ void GraphicsPipeline::CreateRenderPass() {
     VkAttachmentReference colorAttachmentRef{};
     colorAttachmentRef.attachment = 0;
     colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-
 
     VkAttachmentDescription depthAttachment{};
     depthAttachment.format = depthRessources.FindDepthFormat();

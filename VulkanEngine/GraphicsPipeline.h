@@ -15,7 +15,7 @@ public:
 	void CreateRenderPass();
 	void CreateGraphicsPipeline();
 	void SetupGraphicsPipeline();
-	void CreateFrameBufferRessources();
+
 
 	void DrawFrame(Window& windowRef, Model& model);
 
