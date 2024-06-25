@@ -52,7 +52,7 @@ void GraphicsPipeline::CleanUp() {
 
 }
 
-void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex, Model& model) {
+void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -75,8 +75,6 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();
 
-
-
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
@@ -97,15 +95,30 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     scissor.extent = swapChainExtent;
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    VkBuffer vertexBuffers[] = { BufferManager::GetInstance()->vertexBuffer };
-    VkDeviceSize offsets[] = { 0 };
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+    auto bufferManagerRef = BufferManager::GetInstance();
 
-    vkCmdBindIndexBuffer(commandBuffer, BufferManager::GetInstance()->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+    int i = 0;
+    auto managerRef = ModelManager::GetInstance();
+    Model models;
+    for (const auto& vertexBuffer : bufferManagerRef->vertexBuffers) {
 
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[currentFrame], 0, nullptr);
+        models = managerRef->GetModelFromQueue(i);
 
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(model.indices.size()), 1, 0, 0, 0);
+        VkBuffer vertexBuffers[] = { vertexBuffer };   
+
+        VkDeviceSize offsets[] = { 0 };
+
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->vertexBuffers[i], offsets);
+
+        vkCmdBindIndexBuffer(commandBuffer, BufferManager::GetInstance()->indexBuffers[i], 0, VK_INDEX_TYPE_UINT32);
+
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[currentFrame], 0, nullptr);
+
+        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(models.indices.size()), 1, 0, 0, 0);
+
+        i++;
+    }
+
 
     vkCmdEndRenderPass(commandBuffer);
 
@@ -141,7 +154,7 @@ void GraphicsPipeline::DrawFrame(Window& windowRef, Model& model) {
     auto commandBuffers = bufferManagerRef->GetCommandBuffers();
 
     vkResetCommandBuffer(commandBuffers[currentFrame], 0);
-    RecordCommandBuffer(commandBuffers[currentFrame], imageIndex, model);
+    RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
     auto extent = swapChainRef->GetSwapChainExtent();
     bufferManagerRef->UpdateUniformBuffer(currentFrame, extent.width, extent.height);
 

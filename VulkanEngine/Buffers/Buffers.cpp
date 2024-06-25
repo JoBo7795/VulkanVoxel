@@ -13,10 +13,16 @@ BufferManager::~BufferManager() {
 
     VkDevice device = VulkanDevices::GetInstance()->GetDevice();
 
-    vkDestroyBuffer(device, indexBuffer, nullptr);
-    vkFreeMemory(device, indexBufferMemory, nullptr);
+    for(const auto& indexBuffer : indexBuffers)
+        vkDestroyBuffer(device, indexBuffer, nullptr);
 
-    vkDestroyBuffer(device, vertexBuffer, nullptr);
+    for (const auto& indexBufferMemory : indexBufferMemoryVector)
+        vkFreeMemory(device, indexBufferMemory, nullptr);
+
+    for (const auto& vertexBuffer : vertexBuffers)
+        vkDestroyBuffer(device, vertexBuffer, nullptr);
+
+    for (const auto& vertexBufferMemory : vertexBufferMemoryVector)
     vkFreeMemory(device, vertexBufferMemory, nullptr);
 }
 
@@ -189,10 +195,12 @@ void BufferManager::CreateVertexBuffer(std::vector<Vertex>& vertices) {
     memcpy(data, vertices.data(), (size_t)bufferSize);
     vkUnmapMemory(device, stagingBufferMemory);
 
+    vertexBuffers.push_back(VkBuffer());
+    vertexBufferMemoryVector.push_back(VkDeviceMemory());
 
-    CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory, physicalDevice);
+    CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffers.back(), vertexBufferMemoryVector.back(), physicalDevice);
 
-    CopyBuffer(stagingBuffer, vertexBuffer, bufferSize, VulkanQueueManager::GetInstance()->GetGraphicsQueue());
+    CopyBuffer(stagingBuffer, vertexBuffers.back(), bufferSize, VulkanQueueManager::GetInstance()->GetGraphicsQueue());
 
     vkDestroyBuffer(device, stagingBuffer, nullptr);
     vkFreeMemory(device, stagingBufferMemory, nullptr);
@@ -207,6 +215,10 @@ void BufferManager::CreateIndexBuffer(std::vector<uint32_t>& indices) {
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
+
+    indexBuffers.push_back(VkBuffer());
+    indexBufferMemoryVector.push_back(VkDeviceMemory());
+
     CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory, physicalDevice);
 
     void* data;
@@ -214,9 +226,9 @@ void BufferManager::CreateIndexBuffer(std::vector<uint32_t>& indices) {
     memcpy(data, indices.data(), (size_t)bufferSize);
     vkUnmapMemory(device, stagingBufferMemory);
 
-    CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory, physicalDevice);
+    CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffers.back(), indexBufferMemoryVector.back(), physicalDevice);
 
-    CopyBuffer(stagingBuffer, indexBuffer, bufferSize, VulkanQueueManager::GetInstance()->GetGraphicsQueue());
+    CopyBuffer(stagingBuffer, indexBuffers.back(), bufferSize, VulkanQueueManager::GetInstance()->GetGraphicsQueue());
 
     vkDestroyBuffer(device, stagingBuffer, nullptr);
     vkFreeMemory(device, stagingBufferMemory, nullptr);

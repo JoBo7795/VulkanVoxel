@@ -9,6 +9,7 @@
 #include "Descriptors.h"
 #include "TextureManager.h"
 #include "GameObjectManager.h"
+#include "ModelManager.h"
 
 
 

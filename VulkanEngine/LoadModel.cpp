@@ -3,7 +3,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-ObjModelData LoadModel::LoadObjModel() {
+ObjModelData LoadModel::LoadObjModel(const std::string& filename) {
 
     ObjModelData data;
     tinyobj::attrib_t attrib;
@@ -11,7 +11,7 @@ ObjModelData LoadModel::LoadObjModel() {
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) {
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filename.c_str())) {
         throw std::runtime_error(warn + err);
     }
 

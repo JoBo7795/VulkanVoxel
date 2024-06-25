@@ -147,6 +147,9 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>Quelldateien\App\Images</Filter>
     </ClCompile>
+    <ClCompile Include="ModelManager.cpp">
+      <Filter>Quelldateien\App\Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\compile_shaders.ps1">
@@ -241,6 +244,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelManager.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

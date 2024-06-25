@@ -4,6 +4,6 @@
 
 struct GameObject
 {
-	uint8_t gameObjectId, textureId;
+	uint8_t gameObjectId, textureId, modelId;
 };
 

@@ -27,9 +27,21 @@ VulkanInstance::VulkanInstance() {
 
     GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
 
-    model.LoadModelFromObjFile();
+
+
+    model.LoadModelFromObjFile(VIKING_MODEL_PATH);
     BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
     BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
+
+    gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model);
+
+    Model model2;
+    
+    model2.LoadModelFromObjFile(MODEL_PATH);
+    BufferManager::GetInstance()->CreateVertexBuffer(model2.vertices);
+    BufferManager::GetInstance()->CreateIndexBuffer(model2.indices);
+
+    gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model2);
 
     graphicsPipeline.SetupGraphicsPipeline();
     

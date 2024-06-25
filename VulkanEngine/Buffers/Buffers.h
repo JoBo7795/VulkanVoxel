@@ -31,19 +31,16 @@ public:
 	std::vector<void*>& GetUniformBuffersMapped();
 	std::vector<VkCommandBuffer>& GetCommandBuffers();
 
-	// const std::vector<VkFramebuffer>& GetSwapChainFramebuffers();
-	// void SetSwapChainFramebuffers(const std::vector<VkFramebuffer>& framebuffers);
-
 	static BufferManager* GetInstance();
 
 	BufferManager();
 	~BufferManager();
 
-	VkBuffer vertexBuffer;
-	VkDeviceMemory vertexBufferMemory;
+	std::vector<VkBuffer> vertexBuffers;
+	std::vector<VkDeviceMemory> vertexBufferMemoryVector;
 
-	VkBuffer indexBuffer;
-	VkDeviceMemory indexBufferMemory;
+	std::vector<VkBuffer> indexBuffers;
+	std::vector<VkDeviceMemory> indexBufferMemoryVector;
 private:
 	static BufferManager* instance;
 

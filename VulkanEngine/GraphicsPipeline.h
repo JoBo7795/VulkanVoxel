@@ -5,12 +5,12 @@
 #include "SyncObjects.h"
 #include "Descriptors.h"
 #include "Window.h"
-#include "Model.h"
+#include "ModelManager.h"
 
 class GraphicsPipeline
 {
 public:
-	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex,  Model& model);
+	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 	void CreateRenderPass();
 	void CreateGraphicsPipeline();
