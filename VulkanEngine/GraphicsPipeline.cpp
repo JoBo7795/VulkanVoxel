@@ -31,9 +31,6 @@ void GraphicsPipeline::SetupGraphicsPipeline(){
 }
 
 
-
-
-
 void GraphicsPipeline::CleanUp() {
 
     std::cout << "Destroy graphicsPipeline" << std::endl;
@@ -100,6 +97,7 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     int i = 0;
     auto managerRef = ModelManager::GetInstance();
     Model models;
+    auto numUBOs = (bufferManagerRef->GetUniformBuffers().size() / MAX_FRAMES_IN_FLIGHT);
     for (const auto& vertexBuffer : bufferManagerRef->vertexBuffers) {
 
         models = managerRef->GetModelFromQueue(i);
@@ -112,7 +110,7 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
 
         vkCmdBindIndexBuffer(commandBuffer, BufferManager::GetInstance()->indexBuffers[i], 0, VK_INDEX_TYPE_UINT32);
 
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[currentFrame], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[i * numUBOs + currentFrame], 0, nullptr);
 
         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(models.indices.size()), 1, 0, 0, 0);
 
@@ -157,6 +155,7 @@ void GraphicsPipeline::DrawFrame(Window& windowRef, Model& model) {
     RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
     auto extent = swapChainRef->GetSwapChainExtent();
     bufferManagerRef->UpdateUniformBuffer(currentFrame, extent.width, extent.height);
+
 
     VkSubmitInfo submitInfo{};
 

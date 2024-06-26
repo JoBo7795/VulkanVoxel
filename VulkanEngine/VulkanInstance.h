@@ -26,8 +26,6 @@ public:
 	VulkanInstance();
 	~VulkanInstance();
 
-
-
 private:
 
 	void InitVulkan();
@@ -35,9 +33,7 @@ private:
 	void Cleanup();
 	void CreateInstance();
 
-
 	std::vector<const char*> GetRequiredExtensions();
-
 
 	VkInstance instance;
 	static VulkanInstance* objInstance;

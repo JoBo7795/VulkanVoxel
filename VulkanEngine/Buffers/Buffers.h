@@ -2,8 +2,6 @@
 
 #include "../Includes.h"
 #include "../Memory.h"
-//#include "../CommandPool.h"
-//#include "../VulkanDevices.h"
 #include "../VulkanQueues.h"
 
 class BufferManager
@@ -41,7 +39,9 @@ public:
 
 	std::vector<VkBuffer> indexBuffers;
 	std::vector<VkDeviceMemory> indexBufferMemoryVector;
+
 private:
+	
 	static BufferManager* instance;
 
 	std::vector<VkBuffer> uniformBuffers;

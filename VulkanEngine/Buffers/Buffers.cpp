@@ -6,7 +6,6 @@ BufferManager* BufferManager::instance = nullptr;
 
 BufferManager::BufferManager() {
 
-
 }
 
 BufferManager::~BufferManager() {
@@ -106,42 +105,24 @@ void BufferManager::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t w
     EndSingleTimeCommands(commandBuffer, VulkanQueueManager::GetInstance()->GetGraphicsQueue());
 }
 
-//void BufferManager::CreateFramebuffers(VkRenderPass& renderPass, std::vector<VkImageView>& swapChainImageViews, VkImageView& 
-// 
-// 
-// 
-// 
-// ImageView, VkExtent2D& swapChainExtent) {
-//void BufferManager::CreateFramebuffers(VkRenderPass& renderPass, SwapChainManager swapChain, VkImageView& depthImageView) {
 void BufferManager::CreateFramebuffers(VkRenderPass& renderPass, std::array<VkImageView, 2>& attachments, float extentWidth, float extentHeight,VkFramebuffer& frameBuffer) {
 
-    //std::vector<VkImageView> swapChainImageViews = swapChain.GetSwapChainImageViews();
-    //VkExtent2D swapChainExtent = swapChain.GetSwapChainExtent();
 
-    //swapChainFramebuffers.resize(swapChainImageViews.size());
-
-    // for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-        // std::array<VkImageView, 2> attachments = {
-        //     swapChainImageViews[i],
-        //     depthImageView
-        // };
-
-        VkFramebufferCreateInfo framebufferInfo{};
-        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = renderPass;
-        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-        framebufferInfo.pAttachments = attachments.data();
-        framebufferInfo.width = extentWidth;
-        framebufferInfo.height = extentHeight;
-        framebufferInfo.layers = 1;
-
-        if (vkCreateFramebuffer(VulkanDevices::GetInstance()->GetDevice(),
-            &framebufferInfo,
-            nullptr,
-            &frameBuffer) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create framebuffer!");
-        }
-    //}
+     VkFramebufferCreateInfo framebufferInfo{};
+     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+     framebufferInfo.renderPass = renderPass;
+     framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+     framebufferInfo.pAttachments = attachments.data();
+     framebufferInfo.width = extentWidth;
+     framebufferInfo.height = extentHeight;
+     framebufferInfo.layers = 1;
+     
+     if (vkCreateFramebuffer(VulkanDevices::GetInstance()->GetDevice(),
+         &framebufferInfo,
+         nullptr,
+         &frameBuffer) != VK_SUCCESS) {
+         throw std::runtime_error("failed to create framebuffer!");
+     }
 }
 
 VkCommandBuffer BufferManager::BeginSingleTimeCommands() {
@@ -235,13 +216,16 @@ void BufferManager::CreateIndexBuffer(std::vector<uint32_t>& indices) {
 }
 
 void BufferManager::CreateUniformBuffers() {
+
     VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
-    uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-    uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
-    uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+    int size = uniformBuffers.size();
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    uniformBuffers.resize(uniformBuffers.size() + MAX_FRAMES_IN_FLIGHT);
+    uniformBuffersMemory.resize(uniformBuffersMemory.size() + MAX_FRAMES_IN_FLIGHT);
+    uniformBuffersMapped.resize(uniformBuffersMapped.size() + MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < size + MAX_FRAMES_IN_FLIGHT; i++) {
         CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i], VulkanDevices::GetInstance()->GetPhysicalDevice());
 
         vkMapMemory(VulkanDevices::GetInstance()->GetDevice(), uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);

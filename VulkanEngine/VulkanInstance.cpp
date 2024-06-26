@@ -16,7 +16,7 @@ VulkanInstance::VulkanInstance() {
     swapChain->CreateSwapChain(window.GetSurface());
     swapChain->CreateImageViews();
     CommandPoolManager::GetInstance()->CreateCommandPool(window.GetSurface());
-    BufferManager::GetInstance()->CreateUniformBuffers();
+
 
     Texture texture;
     texture.CreateTextureRessources();   
@@ -26,8 +26,6 @@ VulkanInstance::VulkanInstance() {
     gameObject.textureId = TextureManager::GetInstance()->AppendTextureToQueue(texture);
 
     GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
-
-
 
     model.LoadModelFromObjFile(VIKING_MODEL_PATH);
     BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
@@ -42,6 +40,14 @@ VulkanInstance::VulkanInstance() {
     BufferManager::GetInstance()->CreateIndexBuffer(model2.indices);
 
     gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model2);
+
+    for (int i = 0; i < 2; i++) {
+        BufferManager::GetInstance()->CreateUniformBuffers();
+    }
+
+    BufferManager::GetInstance()->UpdateUniformBuffer(2, 800, 600);
+    BufferManager::GetInstance()->UpdateUniformBuffer(3, 800, 600);
+
 
     graphicsPipeline.SetupGraphicsPipeline();
     
@@ -62,7 +68,6 @@ VulkanInstance* VulkanInstance::GetInstance() {
 
 void VulkanInstance::Run() {
     
-
     InitVulkan();
     MainLoop();
     Cleanup();
