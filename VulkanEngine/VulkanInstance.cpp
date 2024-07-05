@@ -24,7 +24,7 @@ VulkanInstance::VulkanInstance() {
     GameObject gameObject;
 
     gameObject.textureId = TextureManager::GetInstance()->AppendTextureToQueue(texture);
-
+    gameObject.position = glm::vec3(-0.5,1.5,0.0);
     GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
 
     model.LoadModelFromObjFile(VIKING_MODEL_PATH);
@@ -40,13 +40,34 @@ VulkanInstance::VulkanInstance() {
     BufferManager::GetInstance()->CreateIndexBuffer(model2.indices);
 
     gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model2);
+    gameObject.position = glm::vec3(1.0,-1.0,0.0);
 
-    for (int i = 0; i < 2; i++) {
+    GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
+
+    Model model3;
+    model3.LoadModelFromObjFile(MODEL_PATH);
+    BufferManager::GetInstance()->CreateVertexBuffer(model3.vertices);
+    BufferManager::GetInstance()->CreateIndexBuffer(model3.indices);
+
+    gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model3);
+    gameObject.position = glm::vec3(-1.0, -1.0, 0.0);
+
+    GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
+
+    Model model4;
+    model4.LoadModelFromObjFile(VIKING_MODEL_PATH);
+    BufferManager::GetInstance()->CreateVertexBuffer(model4.vertices);
+    BufferManager::GetInstance()->CreateIndexBuffer(model4.indices);
+
+    gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model4);
+    gameObject.position = glm::vec3(0.0, 0.0, 0.0);
+
+    GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
+
+    for (int i = 0; i < 4; i++) {
         BufferManager::GetInstance()->CreateUniformBuffers();
     }
-
-    BufferManager::GetInstance()->UpdateUniformBuffer(2, 800, 600);
-    BufferManager::GetInstance()->UpdateUniformBuffer(3, 800, 600);
+    auto pos = glm::vec3(1.0, 0.0, 0.0);
 
 
     graphicsPipeline.SetupGraphicsPipeline();
@@ -115,8 +136,6 @@ void VulkanInstance::MainLoop() {
 
 void VulkanInstance::Cleanup() {
 
-    //CleanupSwapChain();
-
     auto device = VulkanDevices::GetInstance()->GetDevice();
 
     vkDestroySampler(device, texture.textureSampler, nullptr);
@@ -132,39 +151,7 @@ void VulkanInstance::Cleanup() {
         vkFreeMemory(device, bufferManager->GetUniformBuffersMemory()[i], nullptr);
     }
     vkDestroyDescriptorPool(device, descriptors.GetDescriptorPool(), nullptr);
-    vkDestroyDescriptorSetLayout(device, descriptors.GetDescriptorSetLayout(), nullptr);
-
-    // vkDestroyBuffer(device, bufferManager->indexBuffer, nullptr);
-    // vkFreeMemory(device, bufferManager->indexBufferMemory, nullptr);
-    // 
-    // vkDestroyBuffer(device, bufferManager->vertexBuffer, nullptr);
-    // vkFreeMemory(device, bufferManager->vertexBufferMemory, nullptr);
-
-    // for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-    //     vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
-    //     vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
-    //     vkDestroyFence(device, inFlightFences[i], nullptr);
-    // }
-
-    //vkDestroyCommandPool(device, commandPool, nullptr);
-
-    //vkDestroyPipeline(device, graphicsPipeline., nullptr);
-    //vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-    //vkDestroyRenderPass(device, renderPass, nullptr);
-
-
-    //vkDestroyDevice(device, nullptr);
-
-    //if (enableValidationLayers) {
-    //    DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
-    //}
-
-    //vkDestroySurfaceKHR(instance, window.GetSurface(), nullptr);
-    //vkDestroyInstance(instance, nullptr);
-
-    //glfwDestroyWindow(window.GetWindowRef());
-    //
-    //glfwTerminate();
+    vkDestroyDescriptorSetLayout(device, descriptors.GetDescriptorSetLayout(), nullptr);   
 }
 
 void VulkanInstance::CreateInstance() {

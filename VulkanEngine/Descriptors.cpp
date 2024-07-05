@@ -66,7 +66,8 @@ void Descriptors::CreateDescriptorSets() {
     }
 
         //for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT * bufferManagerRef->uboCount; i++) {
-        for (size_t i = 0; i < bufferManagerRef->GetUniformBuffers().size(); i++) {
+    for (size_t i = 0; i < bufferManagerRef->GetUniformBuffers().size(); i++) {
+        for (size_t j = 0; j < MAX_FRAMES_IN_FLIGHT; j++) {
             VkDescriptorBufferInfo bufferInfo{};
             bufferInfo.buffer = bufferManagerRef->GetUniformBuffers()[i];
             bufferInfo.offset = 0;
@@ -105,6 +106,7 @@ void Descriptors::CreateDescriptorSets() {
 
             vkUpdateDescriptorSets(VulkanDevices::GetInstance()->GetDevice(), 2, descriptorWrites.data(), 0, nullptr);
         }
+    }
 }
 
 void Descriptors::SetDescriptorPool(VkDescriptorPool& in_descriptorPool) {

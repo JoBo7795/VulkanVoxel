@@ -5,5 +5,8 @@
 struct GameObject
 {
 	uint8_t gameObjectId, textureId, modelId;
+
+	glm::vec3 position, rotation;
+
 };
 

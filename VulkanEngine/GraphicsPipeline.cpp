@@ -49,7 +49,7 @@ void GraphicsPipeline::CleanUp() {
 
 }
 
-void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
+void GraphicsPipeline::RecordCommandBuffer(uint16_t modelIndex, VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -98,23 +98,26 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     auto managerRef = ModelManager::GetInstance();
     Model models;
     auto numUBOs = (bufferManagerRef->GetUniformBuffers().size() / MAX_FRAMES_IN_FLIGHT);
+
     for (const auto& vertexBuffer : bufferManagerRef->vertexBuffers) {
+        modelIndex = i;
+        models = managerRef->GetModelFromQueue(modelIndex);
 
-        models = managerRef->GetModelFromQueue(i);
-
-        VkBuffer vertexBuffers[] = { vertexBuffer };   
+        VkBuffer vertexBuffers[] = { bufferManagerRef->vertexBuffers[modelIndex] };
 
         VkDeviceSize offsets[] = { 0 };
 
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->vertexBuffers[i], offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->vertexBuffers[modelIndex], offsets);
 
-        vkCmdBindIndexBuffer(commandBuffer, BufferManager::GetInstance()->indexBuffers[i], 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer, BufferManager::GetInstance()->indexBuffers[modelIndex], 0, VK_INDEX_TYPE_UINT32);
 
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[i * numUBOs + currentFrame], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[modelIndex + currentFrame ], 0, nullptr);
+        //vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[modelIndex], 0, nullptr);
 
         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(models.indices.size()), 1, 0, 0, 0);
 
         i++;
+
     }
 
 
@@ -151,11 +154,20 @@ void GraphicsPipeline::DrawFrame(Window& windowRef, Model& model) {
 
     auto commandBuffers = bufferManagerRef->GetCommandBuffers();
 
-    vkResetCommandBuffer(commandBuffers[currentFrame], 0);
-    RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
+    auto goManagerRef = GameObjectManager::GetInstance();
+    auto numGOs = goManagerRef->GetGameObjectQueueSize();
     auto extent = swapChainRef->GetSwapChainExtent();
-    bufferManagerRef->UpdateUniformBuffer(currentFrame, extent.width, extent.height);
+    vkResetCommandBuffer(commandBuffers[currentFrame], 0);
+    for (uint16_t i = 0; i < numGOs; i++) {
+        
+        auto model = goManagerRef->GetGameObjectFromQueue(i);
 
+        
+        RecordCommandBuffer(i, commandBuffers[currentFrame], imageIndex);
+
+        bufferManagerRef->UpdateUniformBuffer(model.position, i + currentFrame, extent.width, extent.height);
+
+    }
 
     VkSubmitInfo submitInfo{};
 

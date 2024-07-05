@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GameObject.h"
-
 #include <vector>
 #include <algorithm>
 
@@ -14,7 +13,7 @@ public:
 
 	GameObject& GetGameObjectFromQueue(int index);
 	int GetGameObjectQueueSize();
-	uint8_t AppendGameObjectToQueue(GameObject& gameObject);
+	uint16_t AppendGameObjectToQueue(GameObject& gameObject);
 	static GameObjectManager* GetInstance();
 
 	~GameObjectManager();

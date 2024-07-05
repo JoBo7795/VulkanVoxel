@@ -26,7 +26,7 @@ int GameObjectManager::GetGameObjectQueueSize() {
 
 }
 
-uint8_t GameObjectManager::AppendGameObjectToQueue(GameObject& gameObject) {
+uint16_t GameObjectManager::AppendGameObjectToQueue(GameObject& gameObject) {
 
 	gameObjectQueue.push_back(gameObject);
 	return gameObjectQueue.size()-1;
