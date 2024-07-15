@@ -17,6 +17,7 @@ VulkanInstance::VulkanInstance() {
     swapChain->CreateImageViews();
     CommandPoolManager::GetInstance()->CreateCommandPool(window.GetSurface());
 
+
     Texture texture;
     texture.CreateTextureRessources();
     TextureManager::GetInstance()->AppendTextureToQueue(texture);
@@ -99,35 +100,11 @@ void VulkanInstance::Run() {
     
     InitVulkan();
     MainLoop();
-    Cleanup();
+    //Cleanup();
 }
 
 void VulkanInstance::InitVulkan() {
 
-    //CreateInstance();
-    //SetupDebugMessenger();
-    //CreateSurface();
-    //PickPhysicalDevice();
-    //CreateLogicalDevice();
-    //CreateSwapChain();
-    //CreateImageViews();
-    //CreateRenderPass();
-    //CreateDescriptorSetLayout();
-    //CreateGraphicsPipeline();
-    //CreateCommandPool();
-    //CreateDepthResources();
-    //CreateFramebuffers();
-    //CreateTextureImage();
-    //CreateTextureImageView();
-    //CreateTextureSampler();
-    //LoadModel();
-    //CreateVertexBuffer();
-    //CreateIndexBuffer();
-    //CreateUniformBuffers();
-    //CreateDescriptorPool();
-    //CreateDescriptorSets();
-    //CreateCommandBuffers();
-    //CreateSyncObjects();
 }
 
 
@@ -144,22 +121,8 @@ void VulkanInstance::MainLoop() {
 
 void VulkanInstance::Cleanup() {
 
-    auto device = VulkanDevices::GetInstance()->GetDevice();
+    debugMessenger.DestroyDebugUtilsMessengerEXT(instance,nullptr);
 
-    //vkDestroySampler(device, texture.textureSampler, nullptr);
-    //vkDestroyImageView(device, texture.textureImageView, nullptr);
-
-    //vkDestroyImage(device, texture.textureImage, nullptr);
-    //vkFreeMemory(device, texture.textureImageMemory, nullptr);
-
-    auto bufferManager = BufferManager::GetInstance();
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroyBuffer(device, bufferManager->GetUniformBuffers()[i], nullptr);
-        vkFreeMemory(device, bufferManager->GetUniformBuffersMemory()[i], nullptr);
-    }
-    vkDestroyDescriptorPool(device, descriptors.GetDescriptorPool(), nullptr);
-    vkDestroyDescriptorSetLayout(device, descriptors.GetDescriptorSetLayout(), nullptr);   
 }
 
 void VulkanInstance::CreateInstance() {

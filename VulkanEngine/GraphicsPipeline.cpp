@@ -10,7 +10,7 @@ GraphicsPipeline::GraphicsPipeline() {
 }
 
 GraphicsPipeline::~GraphicsPipeline() {
-
+    descriptors.CleanUp();
 }
 
 void GraphicsPipeline::SetupGraphicsPipeline(){
@@ -18,12 +18,8 @@ void GraphicsPipeline::SetupGraphicsPipeline(){
     descriptors.CreateDescriptorPool();
     descriptors.CreateDescriptorSetLayout();
 
-    //auto goManagerRef = GameObjectManager::GetInstance();
-    //int size = goManagerRef->GetGameObjectQueueSize();
-    //
-    //for (int i = 0; i < size; i++) {
-        descriptors.CreateDescriptorSets();
-    //}
+    descriptors.CreateDescriptorSets();
+
 
     this->syncObjects.CreateSyncObjects();
     BufferManager::GetInstance()->CreateCommandBuffers();

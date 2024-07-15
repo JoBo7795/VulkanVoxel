@@ -22,7 +22,12 @@ BufferManager::~BufferManager() {
         vkDestroyBuffer(device, vertexBuffer, nullptr);
 
     for (const auto& vertexBufferMemory : vertexBufferMemoryVector)
-    vkFreeMemory(device, vertexBufferMemory, nullptr);
+        vkFreeMemory(device, vertexBufferMemory, nullptr);
+
+    for (size_t i = 0; i < uniformBuffers.size(); i++) {
+        vkDestroyBuffer(device, uniformBuffers[i], nullptr);
+        vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+    }
 }
 
 

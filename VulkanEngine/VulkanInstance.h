@@ -42,10 +42,6 @@ private:
 	ValidationLayers debugMessenger;
 	SwapChainManager* swapChain;
 	GraphicsPipeline graphicsPipeline;
-	Descriptors descriptors;
-	DepthRessources depthRessources;
-	//Texture texture;
-	//Model model;
 
 };
 

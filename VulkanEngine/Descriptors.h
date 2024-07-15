@@ -23,6 +23,8 @@ public:
 	void SetDescriptorSetLayout(VkDescriptorSetLayout& in_descriptorSetLayout);
 	VkDescriptorSetLayout& GetDescriptorSetLayout();
 
+	void CleanUp();
+
 private:
 
 	VkDescriptorPool descriptorPool;

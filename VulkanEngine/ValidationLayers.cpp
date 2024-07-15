@@ -9,7 +9,7 @@ ValidationLayers::ValidationLayers(VkInstance& instance) {
 ValidationLayers::ValidationLayers(){}
 
 ValidationLayers::~ValidationLayers(){
-    DestroyDebugUtilsMessengerEXT(instanceRef, nullptr);
+
 }
 
 bool ValidationLayers::CheckValidationLayerSupport() {

@@ -2,6 +2,7 @@
 
 #include "Texture.h"
 
+
 class TextureManager
 {
 
@@ -13,6 +14,7 @@ public:
 
 	static TextureManager* GetInstance();
 
+	TextureManager();
 	~TextureManager();
 
 private:

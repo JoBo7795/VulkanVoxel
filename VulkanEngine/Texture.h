@@ -23,9 +23,5 @@ public:
 	VkImageView textureImageView;
 	VkSampler textureSampler;
 
-	~Texture() {
-		std::cout <<  "destroy" << std::endl;
-	}
-
 };
 

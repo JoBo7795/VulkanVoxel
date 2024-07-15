@@ -65,8 +65,6 @@ void Descriptors::CreateDescriptorSets() {
         throw std::runtime_error("failed to allocate descriptor sets!");
     }
 
-
-    //for (size_t i = 0; i < bufferManagerRef->GetUniformBuffers().size(); i++) {
     auto goManagerRef = GameObjectManager::GetInstance();
     int size = goManagerRef->GetGameObjectQueueSize();
     GameObject gameObject;
@@ -112,10 +110,16 @@ void Descriptors::CreateDescriptorSets() {
             descriptorWrites[1].pImageInfo = &imageInfo;
 
             vkUpdateDescriptorSets(VulkanDevices::GetInstance()->GetDevice(), 2, descriptorWrites.data(), 0, nullptr);
-
-            std::cout << "descriptor: " << index << std::endl;
         }
     }
+}
+
+void Descriptors::CleanUp() {
+
+    auto device = VulkanDevices::GetInstance()->GetDevice();
+
+    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);   
 }
 
 void Descriptors::SetDescriptorPool(VkDescriptorPool& in_descriptorPool) {
