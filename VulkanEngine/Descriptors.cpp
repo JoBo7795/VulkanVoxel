@@ -65,31 +65,38 @@ void Descriptors::CreateDescriptorSets() {
         throw std::runtime_error("failed to allocate descriptor sets!");
     }
 
-        //for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT * bufferManagerRef->uboCount; i++) {
-    for (size_t i = 0; i < bufferManagerRef->GetUniformBuffers().size(); i++) {
-        for (size_t j = 0; j < MAX_FRAMES_IN_FLIGHT; j++) {
+
+    //for (size_t i = 0; i < bufferManagerRef->GetUniformBuffers().size(); i++) {
+    auto goManagerRef = GameObjectManager::GetInstance();
+    int size = goManagerRef->GetGameObjectQueueSize();
+    GameObject gameObject;
+    Texture texture;
+    auto managerRef = TextureManager::GetInstance();
+    
+        
+    for (size_t j = 0; j < size; j++) {
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+
+            gameObject = goManagerRef->GetGameObjectFromQueue(j);
+            texture = managerRef->GetTextureFromQueue(gameObject.textureId);
+
+            int index = j * MAX_FRAMES_IN_FLIGHT + i ;
+
             VkDescriptorBufferInfo bufferInfo{};
-            bufferInfo.buffer = bufferManagerRef->GetUniformBuffers()[i];
+            bufferInfo.buffer = bufferManagerRef->GetUniformBuffers()[index];
             bufferInfo.offset = 0;
             bufferInfo.range = sizeof(UniformBufferObject);
-
+            std::cout << index << std::endl;
             VkDescriptorImageInfo imageInfo{};
-            auto managerRef = TextureManager::GetInstance();
-            uint16_t size = TextureManager::GetInstance()->GetTextureQueueSize();
-
-            Texture texture;
-
-            for (uint16_t i = 0; i < size; i++) {
-                texture = managerRef->GetTextureFromQueue(i);
-                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = texture.textureImageView;
-                imageInfo.sampler = texture.textureSampler;
-            }
+            
+            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageInfo.imageView = texture.textureImageView;
+            imageInfo.sampler = texture.textureSampler;
 
             std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
             descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[0].dstSet = descriptorSets[i];
+            descriptorWrites[0].dstSet = descriptorSets[index];
             descriptorWrites[0].dstBinding = 0;
             descriptorWrites[0].dstArrayElement = 0;
             descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -97,7 +104,7 @@ void Descriptors::CreateDescriptorSets() {
             descriptorWrites[0].pBufferInfo = &bufferInfo;
 
             descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[1].dstSet = descriptorSets[i];
+            descriptorWrites[1].dstSet = descriptorSets[index];
             descriptorWrites[1].dstBinding = 1;
             descriptorWrites[1].dstArrayElement = 0;
             descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -105,6 +112,8 @@ void Descriptors::CreateDescriptorSets() {
             descriptorWrites[1].pImageInfo = &imageInfo;
 
             vkUpdateDescriptorSets(VulkanDevices::GetInstance()->GetDevice(), 2, descriptorWrites.data(), 0, nullptr);
+
+            std::cout << "descriptor: " << index << std::endl;
         }
     }
 }

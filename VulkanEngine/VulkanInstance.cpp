@@ -17,21 +17,27 @@ VulkanInstance::VulkanInstance() {
     swapChain->CreateImageViews();
     CommandPoolManager::GetInstance()->CreateCommandPool(window.GetSurface());
 
-
     Texture texture;
-    texture.CreateTextureRessources();   
+    texture.CreateTextureRessources();
+    TextureManager::GetInstance()->AppendTextureToQueue(texture);
+
+    Texture texture2;
+    texture2.texturePath = TEXTURE_PATH2;
+    texture2.CreateTextureRessources();   
+    TextureManager::GetInstance()->AppendTextureToQueue(texture2);
 
     GameObject gameObject;
 
-    gameObject.textureId = TextureManager::GetInstance()->AppendTextureToQueue(texture);
+    gameObject.textureId = 0;
     gameObject.position = glm::vec3(-0.5,1.5,0.0);
-    GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
 
+    Model model;
     model.LoadModelFromObjFile(VIKING_MODEL_PATH);
     BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
     BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
 
     gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model);
+    GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
 
     Model model2;
     
@@ -40,6 +46,7 @@ VulkanInstance::VulkanInstance() {
     BufferManager::GetInstance()->CreateIndexBuffer(model2.indices);
 
     gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model2);
+    gameObject.textureId = 1;
     gameObject.position = glm::vec3(1.0,-1.0,0.0);
 
     GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
@@ -50,6 +57,7 @@ VulkanInstance::VulkanInstance() {
     BufferManager::GetInstance()->CreateIndexBuffer(model3.indices);
 
     gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model3);
+    gameObject.textureId = 0;
     gameObject.position = glm::vec3(-1.0, -1.0, 0.0);
 
     GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
@@ -64,7 +72,7 @@ VulkanInstance::VulkanInstance() {
 
     GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < GameObjectManager::GetInstance()->GetGameObjectQueueSize(); i++) {
         BufferManager::GetInstance()->CreateUniformBuffers();
     }
     auto pos = glm::vec3(1.0, 0.0, 0.0);
@@ -128,7 +136,7 @@ void VulkanInstance::MainLoop() {
         glfwPollEvents();
 
         //swapChain->GetGraphicsPipeLine().DrawFrame(window, model);
-        graphicsPipeline.DrawFrame(window, model);
+        graphicsPipeline.DrawFrame(window);
     }
 
     vkDeviceWaitIdle(VulkanDevices::GetInstance()->GetDevice());
@@ -138,11 +146,11 @@ void VulkanInstance::Cleanup() {
 
     auto device = VulkanDevices::GetInstance()->GetDevice();
 
-    vkDestroySampler(device, texture.textureSampler, nullptr);
-    vkDestroyImageView(device, texture.textureImageView, nullptr);
+    //vkDestroySampler(device, texture.textureSampler, nullptr);
+    //vkDestroyImageView(device, texture.textureImageView, nullptr);
 
-    vkDestroyImage(device, texture.textureImage, nullptr);
-    vkFreeMemory(device, texture.textureImageMemory, nullptr);
+    //vkDestroyImage(device, texture.textureImage, nullptr);
+    //vkFreeMemory(device, texture.textureImageMemory, nullptr);
 
     auto bufferManager = BufferManager::GetInstance();
 

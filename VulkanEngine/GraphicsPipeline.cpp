@@ -17,7 +17,14 @@ void GraphicsPipeline::SetupGraphicsPipeline(){
 
     descriptors.CreateDescriptorPool();
     descriptors.CreateDescriptorSetLayout();
-    descriptors.CreateDescriptorSets();
+
+    //auto goManagerRef = GameObjectManager::GetInstance();
+    //int size = goManagerRef->GetGameObjectQueueSize();
+    //
+    //for (int i = 0; i < size; i++) {
+        descriptors.CreateDescriptorSets();
+    //}
+
     this->syncObjects.CreateSyncObjects();
     BufferManager::GetInstance()->CreateCommandBuffers();
 
@@ -49,7 +56,7 @@ void GraphicsPipeline::CleanUp() {
 
 }
 
-void GraphicsPipeline::RecordCommandBuffer(uint16_t modelIndex, VkCommandBuffer commandBuffer, uint32_t imageIndex) {
+void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -94,30 +101,27 @@ void GraphicsPipeline::RecordCommandBuffer(uint16_t modelIndex, VkCommandBuffer 
 
     auto bufferManagerRef = BufferManager::GetInstance();
 
-    int i = 0;
+
     auto managerRef = ModelManager::GetInstance();
     Model models;
     auto numUBOs = (bufferManagerRef->GetUniformBuffers().size() / MAX_FRAMES_IN_FLIGHT);
+    int size = GameObjectManager::GetInstance()->GetGameObjectQueueSize();
 
-    for (const auto& vertexBuffer : bufferManagerRef->vertexBuffers) {
-        modelIndex = i;
-        models = managerRef->GetModelFromQueue(modelIndex);
-
-        VkBuffer vertexBuffers[] = { bufferManagerRef->vertexBuffers[modelIndex] };
+    for (int i = 0; i < size; i++) {
+        int index = (i * MAX_FRAMES_IN_FLIGHT + currentFrame);// );
+        models = managerRef->GetModelFromQueue(i);
 
         VkDeviceSize offsets[] = { 0 };
 
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->vertexBuffers[modelIndex], offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->vertexBuffers[i], offsets);
 
-        vkCmdBindIndexBuffer(commandBuffer, BufferManager::GetInstance()->indexBuffers[modelIndex], 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer, BufferManager::GetInstance()->indexBuffers[i], 0, VK_INDEX_TYPE_UINT32);
 
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[modelIndex + currentFrame ], 0, nullptr);
-        //vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[modelIndex], 0, nullptr);
-
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[index], 0, nullptr);
+       
         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(models.indices.size()), 1, 0, 0, 0);
 
-        i++;
-
+        //std::cout << "graphics: " << index << std::endl;
     }
 
 
@@ -128,7 +132,7 @@ void GraphicsPipeline::RecordCommandBuffer(uint16_t modelIndex, VkCommandBuffer 
     }
 }
 
-void GraphicsPipeline::DrawFrame(Window& windowRef, Model& model) {
+void GraphicsPipeline::DrawFrame(Window& windowRef) {
 
     auto swapChainRef = SwapChainManager::GetInstance();
     auto bufferManagerRef = BufferManager::GetInstance();
@@ -158,15 +162,10 @@ void GraphicsPipeline::DrawFrame(Window& windowRef, Model& model) {
     auto numGOs = goManagerRef->GetGameObjectQueueSize();
     auto extent = swapChainRef->GetSwapChainExtent();
     vkResetCommandBuffer(commandBuffers[currentFrame], 0);
+    RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
+
     for (uint16_t i = 0; i < numGOs; i++) {
-        
-        auto model = goManagerRef->GetGameObjectFromQueue(i);
-
-        
-        RecordCommandBuffer(i, commandBuffers[currentFrame], imageIndex);
-
-        bufferManagerRef->UpdateUniformBuffer(model.position, i + currentFrame, extent.width, extent.height);
-
+        bufferManagerRef->UpdateUniformBuffer(goManagerRef->GetGameObjectFromQueue(i).position, i * MAX_FRAMES_IN_FLIGHT + currentFrame , extent.width, extent.height);
     }
 
     VkSubmitInfo submitInfo{};

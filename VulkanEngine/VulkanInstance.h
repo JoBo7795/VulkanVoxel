@@ -44,8 +44,8 @@ private:
 	GraphicsPipeline graphicsPipeline;
 	Descriptors descriptors;
 	DepthRessources depthRessources;
-	Texture texture;
-	Model model;
+	//Texture texture;
+	//Model model;
 
 };
 

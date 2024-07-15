@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Image.h"
-//#include "Buffers/Buffers.h"
 #include "VulkanQueues.h"
 
 struct Texture
@@ -16,12 +15,17 @@ public:
 
 	void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
+	std::string texturePath = TEXTURE_PATH;
 
 	uint32_t mipLevels;
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
 	VkImageView textureImageView;
 	VkSampler textureSampler;
+
+	~Texture() {
+		std::cout <<  "destroy" << std::endl;
+	}
 
 };
 

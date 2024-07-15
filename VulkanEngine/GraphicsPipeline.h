@@ -11,14 +11,14 @@
 class GraphicsPipeline
 {
 public:
-	void RecordCommandBuffer(uint16_t modelIndex, VkCommandBuffer commandBuffer, uint32_t imageIndex);
+	void RecordCommandBuffer( VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 	void CreateRenderPass();
 	void CreateGraphicsPipeline();
 	void SetupGraphicsPipeline();
 
 
-	void DrawFrame(Window& windowRef, Model& model);
+	void DrawFrame(Window& windowRef);
 
 	VkRenderPass& GetRenderPass();
 

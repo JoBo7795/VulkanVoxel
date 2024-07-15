@@ -217,17 +217,12 @@ void BufferManager::CreateIndexBuffer(std::vector<uint32_t>& indices) {
 
 void BufferManager::CreateUniformBuffers() {
 
-    VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
-    
+    VkDeviceSize bufferSize = sizeof(UniformBufferObject);    
 
     uniformBuffers.resize(uniformBuffers.size() + MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMemory.resize(uniformBuffersMemory.size() + MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMapped.resize(uniformBuffersMapped.size() + MAX_FRAMES_IN_FLIGHT);
 
-    uniformBuffers.resize(uniformBuffers.size() );
-    uniformBuffersMemory.resize(uniformBuffersMemory.size());
-    uniformBuffersMapped.resize(uniformBuffersMapped.size());
     int size = uniformBuffers.size();
     //for (size_t i = 0; i < size + MAX_FRAMES_IN_FLIGHT; i++) {
     for (size_t i = 0; i < size; i++) {
