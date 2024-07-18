@@ -3,17 +3,19 @@
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	// if (NO_CAM_MOVEMENT)
 	// 	return;
-	// 
-	// glm::vec3 direction = Renderer::GetInstance()->GetCamera()->GetDirection();
-	// 
-	// Renderer::GetInstance()->GetCamera()->rawXposMouse = xpos;
-	// Renderer::GetInstance()->GetCamera()->rawYposMouse = ypos;
-	// 
-	// direction.x = cos(glm::radians(xpos)) * cos(glm::radians(-ypos));
-	// direction.y = sin(glm::radians(ypos));
-	// direction.z = sin(glm::radians(xpos)) * cos(glm::radians(ypos));
-	// 
-	// Renderer::GetInstance()->GetCamera()->SetDirection(glm::normalize(direction));
+	
+	Renderer* renderRef = Renderer::GetInstance();
+	
+	glm::vec3 direction = renderRef->GetCamera().GetDirection();
+	
+	//renderRef->GetCamera().rawXposMouse = xpos;
+	//renderRef->GetCamera().rawYposMouse = ypos;
+	
+	direction.x = cos(glm::radians(xpos)) * cos(glm::radians(-ypos));
+	direction.y = sin(glm::radians(ypos));
+	direction.z = sin(glm::radians(xpos)) * cos(glm::radians(ypos));
+	
+	renderRef->GetCamera().SetDirection(glm::normalize(direction));
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
@@ -108,29 +110,29 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 
 	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+	if (key == GLFW_KEY_S && action != GLFW_RELEASE) {
 
 		playerPos.z += .05f;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+	if (key == GLFW_KEY_A && action != GLFW_RELEASE) {
 
 		playerPos.x -= .05f;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 
 	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+	if (key == GLFW_KEY_D && action != GLFW_RELEASE) {
 
 		playerPos.x += .05f;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+	if (key == GLFW_KEY_SPACE && action != GLFW_RELEASE) {
 
 		playerPos.y += .05f;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+	if (key == GLFW_KEY_LEFT_ALT && action != GLFW_RELEASE) {
 
 		playerPos.y -= .05f;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);

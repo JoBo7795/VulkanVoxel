@@ -11,6 +11,8 @@ VulkanInstance::VulkanInstance() {
     debugMessenger = ValidationLayers(instance);     
     window.CreateSurface(instance);
     window.SetCallback(KEY_INPUT);
+    window.SetCallback(MOUSE_INPUT);
+    window.SetCallback(SCROLL_INPUT);
     
     VulkanDevices::GetInstance()->PickPhysicalDevice(instance,window.GetSurface());
     VulkanDevices::GetInstance()->CreateLogicalDevice(window.GetSurface());
