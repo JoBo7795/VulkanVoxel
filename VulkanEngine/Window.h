@@ -2,6 +2,8 @@
 
 #include "Defs.h"
 
+#include "WindowCallback.h"
+
 
 class Window
 {
@@ -9,6 +11,7 @@ public:
 
 	void InitWindow();
 	void CreateSurface(VkInstance& instance);
+	void SetCallback(GLuint callbackID);
 	static void FramebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 	bool GetFramebufferResized();

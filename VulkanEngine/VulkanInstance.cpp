@@ -6,9 +6,11 @@ VulkanInstance* VulkanInstance::objInstance = nullptr;
 
 VulkanInstance::VulkanInstance() {
 
+    window.InitWindow();    
     CreateInstance();
-    debugMessenger = ValidationLayers(instance);    
+    debugMessenger = ValidationLayers(instance);     
     window.CreateSurface(instance);
+    window.SetCallback(KEY_INPUT);
     
     VulkanDevices::GetInstance()->PickPhysicalDevice(instance,window.GetSurface());
     VulkanDevices::GetInstance()->CreateLogicalDevice(window.GetSurface());
@@ -76,15 +78,16 @@ VulkanInstance::VulkanInstance() {
     for (int i = 0; i < GameObjectManager::GetInstance()->GetGameObjectQueueSize(); i++) {
         BufferManager::GetInstance()->CreateUniformBuffers();
     }
-    auto pos = glm::vec3(1.0, 0.0, 0.0);
 
 
-    graphicsPipeline.SetupGraphicsPipeline();
+    InitVulkan();    
     
 }
 
 VulkanInstance::~VulkanInstance() {
+
     Cleanup();
+
 }
 
 
@@ -96,24 +99,30 @@ VulkanInstance* VulkanInstance::GetInstance() {
     return objInstance;
 }
 
-void VulkanInstance::Run() {
-    
-    InitVulkan();
+void VulkanInstance::Run() { 
+
     MainLoop();
-    //Cleanup();
+
 }
 
 void VulkanInstance::InitVulkan() {
 
+    Renderer* rendererInstance = Renderer::GetInstance();
+
+    Camera camera = Camera(glm::vec3(1.0f, 0.0f, 0.0f));
+
+    rendererInstance->SetCamera(camera);
+    rendererInstance->InitRenderer(window);
 }
 
 
 void VulkanInstance::MainLoop() {
+
     while (!glfwWindowShouldClose(window.GetWindowRef())) {
         glfwPollEvents();
 
-        //swapChain->GetGraphicsPipeLine().DrawFrame(window, model);
-        graphicsPipeline.DrawFrame(window);
+        Renderer::GetInstance()->Render();
+        
     }
 
     vkDeviceWaitIdle(VulkanDevices::GetInstance()->GetDevice());

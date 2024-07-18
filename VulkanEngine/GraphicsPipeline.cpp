@@ -4,6 +4,7 @@
 #include "Buffers/Buffers.h"
 #include "LoadModel.h"
 #include "ShaderRessources.h"
+#include "Renderer.h"
 
 GraphicsPipeline::GraphicsPipeline() {
 
@@ -161,7 +162,7 @@ void GraphicsPipeline::DrawFrame(Window& windowRef) {
     RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
 
     for (uint16_t i = 0; i < numGOs; i++) {
-        bufferManagerRef->UpdateUniformBuffer(goManagerRef->GetGameObjectFromQueue(i).position, i * MAX_FRAMES_IN_FLIGHT + currentFrame , extent.width, extent.height);
+        bufferManagerRef->UpdateUniformBuffer(goManagerRef->GetGameObjectFromQueue(i).position, Renderer::GetInstance()->GetCamera(), i * MAX_FRAMES_IN_FLIGHT + currentFrame , extent.width, extent.height);
     }
 
     VkSubmitInfo submitInfo{};

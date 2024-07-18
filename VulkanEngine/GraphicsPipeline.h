@@ -11,7 +11,7 @@
 class GraphicsPipeline
 {
 public:
-	void RecordCommandBuffer( VkCommandBuffer commandBuffer, uint32_t imageIndex);
+	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 	void CreateRenderPass();
 	void CreateGraphicsPipeline();

@@ -5,7 +5,7 @@ bool Window::framebufferResized = false;
 VkInstance Window::vulkanInstanceRef;
 
 Window::Window() {
-    InitWindow();
+
 }
 
 Window::~Window() {
@@ -47,6 +47,28 @@ void Window::InitWindow() {
 void Window::FramebufferResizeCallback(GLFWwindow* window, int width, int height) {
     auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
     app->framebufferResized = true;
+}
+
+void Window::SetCallback(GLuint callbackID) {
+
+    switch (callbackID)
+    {
+    case MOUSE_INPUT:
+        glfwSetCursorPosCallback(windowRef, mouse_callback);
+
+    case SCROLL_INPUT:
+        glfwSetScrollCallback(windowRef, scroll_callback);
+
+    case MOUSE_CLICK:
+        glfwSetMouseButtonCallback(windowRef, mouse_button_callback);
+
+    case KEY_INPUT:
+        glfwSetKeyCallback(windowRef, key_callback);
+
+    default:
+        break;
+    }
+
 }
 
 bool Window::GetFramebufferResized() {

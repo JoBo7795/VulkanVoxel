@@ -10,6 +10,7 @@
 #include "TextureManager.h"
 #include "GameObjectManager.h"
 #include "ModelManager.h"
+#include "Renderer.h"
 
 
 
@@ -41,7 +42,6 @@ private:
 	Window window;
 	ValidationLayers debugMessenger;
 	SwapChainManager* swapChain;
-	GraphicsPipeline graphicsPipeline;
 
 };
 

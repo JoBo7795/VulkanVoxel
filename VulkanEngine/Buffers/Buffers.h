@@ -4,6 +4,7 @@
 #include "../Memory.h"
 #include "../VulkanQueues.h"
 #include "../GameObject.h"
+#include "../Camera.h"
 
 class BufferManager
 {
@@ -18,7 +19,7 @@ public:
 	VkCommandBuffer BeginSingleTimeCommands();
 	void EndSingleTimeCommands(VkCommandBuffer commandBuffer, VkQueue& queue);
 
-	void UpdateUniformBuffer(glm::vec3& position, uint32_t currentImage, float swapChainExtentWidth, float swapChainExtentHeight);
+	void UpdateUniformBuffer(glm::vec3& position, Camera& camera, uint32_t currentImage, float swapChainExtentWidth, float swapChainExtentHeight);
 
 	void CreateVertexBuffer(std::vector<Vertex>& vertices);
 	void CreateIndexBuffer(std::vector<uint32_t>& indices);

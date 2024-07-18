@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Buffers\Buffers.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CommandPool.cpp" />
     <ClCompile Include="DepthRessources.cpp" />
     <ClCompile Include="Descriptors.cpp" />
@@ -155,6 +156,7 @@
     <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="GraphicsPipeline.cpp" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="InputControl.cpp" />
     <ClCompile Include="LoadModel.cpp" />
     <ClCompile Include="Main\InitClass.cpp" />
     <ClCompile Include="Libraries\stb\stb_image.cpp" />
@@ -162,6 +164,7 @@
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelManager.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ShaderRessources.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="SyncObjects.cpp" />
@@ -172,6 +175,7 @@
     <ClCompile Include="VulkanInstance.cpp" />
     <ClCompile Include="VulkanQueues.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="WindowCallback.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\compile_shaders.ps1" />
@@ -196,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffers\Buffers.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="CommandPool.h" />
     <ClInclude Include="Defs.h" />
     <ClInclude Include="DepthRessources.h" />
@@ -205,12 +210,14 @@
     <ClInclude Include="GraphicsPipeline.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Includes.h" />
+    <ClInclude Include="InputControl.h" />
     <ClInclude Include="LoadModel.h" />
     <ClInclude Include="Main\InitClass.h" />
     <ClInclude Include="Libraries\stb\stb_image.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelManager.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="ShaderRessources.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="SyncObjects.h" />
@@ -221,6 +228,7 @@
     <ClInclude Include="VulkanInstance.h" />
     <ClInclude Include="VulkanQueues.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="WindowCallback.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

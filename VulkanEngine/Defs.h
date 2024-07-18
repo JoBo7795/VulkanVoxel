@@ -8,6 +8,12 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
+#define BUFFER_SIZE 1
+#define SCROLL_INPUT 2
+#define MOUSE_INPUT 3
+#define MOUSE_CLICK 4
+#define KEY_INPUT 5
+
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
@@ -17,6 +23,8 @@ const std::string TEXTURE_PATH = "Resources/Textures/viking_room.png";
 const std::string TEXTURE_PATH2 = "Resources/Textures/ErdeOberfläche.png";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
+
+
 
 const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
