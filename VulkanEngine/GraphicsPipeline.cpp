@@ -118,7 +118,6 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
        
         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(models.indices.size()), 1, 0, 0, 0);
 
-        //std::cout << "graphics: " << index << std::endl;
     }
 
 

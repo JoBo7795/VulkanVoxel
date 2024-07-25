@@ -104,35 +104,35 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, true);
 	if (key == GLFW_KEY_W && action != GLFW_RELEASE) {
 
-		playerPos.z -= .05f;
+		playerPos += camRef.GetDirection()* cameraSpeed;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 
 	}
 	if (key == GLFW_KEY_S && action != GLFW_RELEASE) {
 
-		playerPos.z += .05f;
+		playerPos -= camRef.GetDirection() * cameraSpeed;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 	}
 
 	if (key == GLFW_KEY_A && action != GLFW_RELEASE) {
 
-		playerPos.x -= .05f;
+		playerPos -= glm::cross(camRef.GetDirection(),camRef.GetUp()) * cameraSpeed;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 
 	}
 	if (key == GLFW_KEY_D && action != GLFW_RELEASE) {
 
-		playerPos.x += .05f;
+		playerPos += glm::cross(camRef.GetDirection(), camRef.GetUp()) * cameraSpeed;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 	}
 	if (key == GLFW_KEY_SPACE && action != GLFW_RELEASE) {
 
-		playerPos.y += .05f;
+		playerPos += camRef.GetUp() * cameraSpeed;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 	}
 	if (key == GLFW_KEY_LEFT_ALT && action != GLFW_RELEASE) {
 
-		playerPos.y -= .05f;
+		playerPos -= camRef.GetUp() * cameraSpeed;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 	}
 }
