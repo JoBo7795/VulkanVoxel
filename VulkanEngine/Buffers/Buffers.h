@@ -21,8 +21,8 @@ public:
 
 	void UpdateUniformBuffer(glm::vec3& position, Camera& camera, uint32_t currentImage, float swapChainExtentWidth, float swapChainExtentHeight);
 
-	void CreateVertexBuffer(std::vector<Vertex>& vertices);
-	void CreateIndexBuffer(std::vector<uint32_t>& indices);
+	uint16_t CreateVertexBuffer(std::vector<Vertex>& vertices);
+	uint16_t CreateIndexBuffer(std::vector<uint32_t>& indices);
 	void CreateUniformBuffers();
 
 

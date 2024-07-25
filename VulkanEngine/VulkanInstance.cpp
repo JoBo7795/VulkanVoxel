@@ -21,61 +21,8 @@ VulkanInstance::VulkanInstance() {
     swapChain->CreateImageViews();
     CommandPoolManager::GetInstance()->CreateCommandPool(window.GetSurface());
 
-
-    Texture texture;
-    texture.CreateTextureRessources();
-    TextureManager::GetInstance()->AppendTextureToQueue(texture);
-
-    Texture texture2;
-    texture2.texturePath = TEXTURE_PATH2;
-    texture2.CreateTextureRessources();   
-    TextureManager::GetInstance()->AppendTextureToQueue(texture2);
-
-    GameObject gameObject;
-
-    gameObject.textureId = 0;
-    gameObject.position = glm::vec3(-0.5,1.5,0.0);
-
-    Model model;
-    model.LoadModelFromObjFile(VIKING_MODEL_PATH);
-    BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
-    BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
-
-    gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model);
-    GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
-
-    Model model2;
-    
-    model2.LoadModelFromObjFile(MODEL_PATH);
-    BufferManager::GetInstance()->CreateVertexBuffer(model2.vertices);
-    BufferManager::GetInstance()->CreateIndexBuffer(model2.indices);
-
-    gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model2);
-    gameObject.textureId = 1;
-    gameObject.position = glm::vec3(1.0,-1.0,0.0);
-
-    GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
-
-    Model model3;
-    model3.LoadModelFromObjFile(MODEL_PATH);
-    BufferManager::GetInstance()->CreateVertexBuffer(model3.vertices);
-    BufferManager::GetInstance()->CreateIndexBuffer(model3.indices);
-
-    gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model3);
-    gameObject.textureId = 0;
-    gameObject.position = glm::vec3(-1.0, -1.0, 0.0);
-
-    GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
-
-    Model model4;
-    model4.LoadModelFromObjFile(VIKING_MODEL_PATH);
-    BufferManager::GetInstance()->CreateVertexBuffer(model4.vertices);
-    BufferManager::GetInstance()->CreateIndexBuffer(model4.indices);
-
-    gameObject.modelId = ModelManager::GetInstance()->AppendModelToQueue(model4);
-    gameObject.position = glm::vec3(0.0, 0.0, 0.0);
-
-    GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
+    Scene::LoadRessources();
+    Scene::SceneDescription();
 
     for (int i = 0; i < GameObjectManager::GetInstance()->GetGameObjectQueueSize(); i++) {
         BufferManager::GetInstance()->CreateUniformBuffers();

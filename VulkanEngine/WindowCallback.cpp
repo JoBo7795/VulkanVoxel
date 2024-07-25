@@ -7,9 +7,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	Renderer* renderRef = Renderer::GetInstance();
 	
 	glm::vec3 direction = renderRef->GetCamera().GetDirection();
-	
-	//renderRef->GetCamera().rawXposMouse = xpos;
-	//renderRef->GetCamera().rawYposMouse = ypos;
+
 	
 	direction.x = cos(glm::radians(xpos)) * cos(glm::radians(-ypos));
 	direction.y = sin(glm::radians(ypos));

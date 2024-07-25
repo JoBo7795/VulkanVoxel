@@ -165,6 +165,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="SceneDescription.cpp" />
     <ClCompile Include="ShaderRessources.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="SyncObjects.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="SceneDescription.h" />
     <ClInclude Include="ShaderRessources.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="SyncObjects.h" />

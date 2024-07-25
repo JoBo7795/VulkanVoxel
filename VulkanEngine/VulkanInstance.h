@@ -11,6 +11,7 @@
 #include "GameObjectManager.h"
 #include "ModelManager.h"
 #include "Renderer.h"
+#include "SceneDescription.h"
 
 
 

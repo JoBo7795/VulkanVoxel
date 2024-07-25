@@ -165,7 +165,7 @@ void BufferManager::EndSingleTimeCommands(VkCommandBuffer commandBuffer, VkQueue
     vkFreeCommandBuffers(VulkanDevices::GetInstance()->GetDevice(), CommandPoolManager::GetInstance()->GetCommandPool(), 1, &commandBuffer);
 }
 
-void BufferManager::CreateVertexBuffer(std::vector<Vertex>& vertices) {
+uint16_t BufferManager::CreateVertexBuffer(std::vector<Vertex>& vertices) {
 
     VkDevice device = VulkanDevices::GetInstance()->GetDevice();
     VkPhysicalDevice physicalDevice = VulkanDevices::GetInstance()->GetPhysicalDevice();
@@ -190,9 +190,11 @@ void BufferManager::CreateVertexBuffer(std::vector<Vertex>& vertices) {
 
     vkDestroyBuffer(device, stagingBuffer, nullptr);
     vkFreeMemory(device, stagingBufferMemory, nullptr);
+
+    return vertexBuffers.size() - 1;
 }
 
-void BufferManager::CreateIndexBuffer(std::vector<uint32_t>& indices) {
+uint16_t BufferManager::CreateIndexBuffer(std::vector<uint32_t>& indices) {
 
     VkDevice device = VulkanDevices::GetInstance()->GetDevice();
     VkPhysicalDevice physicalDevice = VulkanDevices::GetInstance()->GetPhysicalDevice();
@@ -218,6 +220,8 @@ void BufferManager::CreateIndexBuffer(std::vector<uint32_t>& indices) {
 
     vkDestroyBuffer(device, stagingBuffer, nullptr);
     vkFreeMemory(device, stagingBufferMemory, nullptr);
+
+    return indexBuffers.size() - 1;
 }
 
 void BufferManager::CreateUniformBuffers() {

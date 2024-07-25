@@ -2,14 +2,12 @@
 
 ModelManager* ModelManager::instance = nullptr;
 
-uint16_t ModelManager::AppendModelToQueue(Model model){
-	modelQueue.push_back(model);
-	return modelQueue.size() - 1;
+void ModelManager::AppendModelToMap(Model model, uint16_t key) {
+	modelMap[key] = model;
 }
 
-Model ModelManager::GetModelFromQueue(uint16_t index) {
-
-	return modelQueue[index];
+Model ModelManager::GetModelFromQueue(uint16_t key) {
+	return modelMap[key];
 }
 
 ModelManager* ModelManager::GetInstance() {
@@ -20,6 +18,5 @@ ModelManager* ModelManager::GetInstance() {
 }
 
 ModelManager::~ModelManager() {
-
 	delete instance;
 }

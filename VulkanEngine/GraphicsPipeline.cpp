@@ -97,22 +97,22 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
     auto bufferManagerRef = BufferManager::GetInstance();
-
-
+    auto gOManagerRef = GameObjectManager::GetInstance();
     auto managerRef = ModelManager::GetInstance();
+
     Model models;
     auto numUBOs = (bufferManagerRef->GetUniformBuffers().size() / MAX_FRAMES_IN_FLIGHT);
     int size = GameObjectManager::GetInstance()->GetGameObjectQueueSize();
 
     for (int i = 0; i < size; i++) {
-        int index = (i * MAX_FRAMES_IN_FLIGHT + currentFrame);// );
-        models = managerRef->GetModelFromQueue(i);
+        int index = (i * MAX_FRAMES_IN_FLIGHT + currentFrame);
+        models = managerRef->GetModelFromQueue(gOManagerRef->GetGameObjectFromQueue(i).modelId);
 
         VkDeviceSize offsets[] = { 0 };
 
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->vertexBuffers[i], offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->vertexBuffers[models.verticeBufferId], offsets);
 
-        vkCmdBindIndexBuffer(commandBuffer, BufferManager::GetInstance()->indexBuffers[i], 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer, bufferManagerRef->indexBuffers[models.indexBufferId], 0, VK_INDEX_TYPE_UINT32);
 
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[index], 0, nullptr);
        

@@ -162,6 +162,9 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="SceneDescription.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\compile_shaders.ps1">
@@ -271,6 +274,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneDescription.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
