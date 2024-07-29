@@ -14,10 +14,10 @@ const bool enableValidationLayers = true;
 #define MOUSE_CLICK 4
 #define KEY_INPUT 5
 
-#define MODEL_1 0
-#define MODEL_2 1
-#define MODEL_3 2
-#define MODEL_4 3
+#define MODEL_AFFE 0
+#define MODEL_VIKING 1
+#define VOXEL_ENV 2
+
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;

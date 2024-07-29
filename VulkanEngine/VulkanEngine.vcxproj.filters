@@ -165,6 +165,9 @@
     <ClCompile Include="SceneDescription.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="VoxelMesh.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\compile_shaders.ps1">
@@ -277,6 +280,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="SceneDescription.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelMesh.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

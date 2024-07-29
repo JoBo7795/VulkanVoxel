@@ -64,7 +64,7 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderPass;
-    renderPassInfo.framebuffer = SwapChainManager::GetInstance()->GetSwapChainFramebuffers()[imageIndex];// swapChainFramebuffers[imageIndex];
+    renderPassInfo.framebuffer = SwapChainManager::GetInstance()->GetSwapChainFramebuffers()[imageIndex];
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = SwapChainManager::GetInstance()->GetSwapChainExtent();
 

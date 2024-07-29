@@ -1,12 +1,7 @@
 #include "DepthRessources.h"
-//#include "VulkanDevices.h"
+
 DepthRessources::~DepthRessources() {
 
-    // auto device = VulkanDevices::GetInstance()->GetDevice();
-    // 
-    // vkDestroyImageView(device, depthImageView, nullptr);
-    // vkDestroyImage(device, depthImage, nullptr);
-    // vkFreeMemory(device, depthImageMemory, nullptr);
 }
 
 void DepthRessources::CreateDepthResources(float extentWidth, float extentHeight) {

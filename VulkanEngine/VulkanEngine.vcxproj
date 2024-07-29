@@ -172,6 +172,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="ValidationLayers.cpp" />
+    <ClCompile Include="VoxelMesh.cpp" />
     <ClCompile Include="VulkanDevices.cpp" />
     <ClCompile Include="VulkanInstance.cpp" />
     <ClCompile Include="VulkanQueues.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="ValidationLayers.h" />
+    <ClInclude Include="VoxelMesh.h" />
     <ClInclude Include="VulkanDevices.h" />
     <ClInclude Include="VulkanInstance.h" />
     <ClInclude Include="VulkanQueues.h" />
