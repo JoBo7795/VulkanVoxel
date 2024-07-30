@@ -58,10 +58,10 @@ struct Cube {
 
 
 
-    std::vector<glm::vec3> getSide(CubeSides side) {
+    std::vector<glm::vec3> getSide(CubeSides side, glm::vec3 position) {
         std::vector<glm::vec3> sideCoordinates;
         for (const auto& vertices : cubeSides[side]) {
-            sideCoordinates.push_back(vertices);
+            sideCoordinates.push_back(vertices + position);
         }
         return sideCoordinates;
     }
@@ -74,11 +74,11 @@ struct Cube {
         return texCoords;
     }
 
-    std::vector<Vertex> getSideAsVertexArray(CubeSides side) {
+    std::vector<Vertex> getSideAsVertexArray(CubeSides side, glm::vec3 position) {
         std::vector<Vertex> cubeArr;
 
-        auto size = getSide(side).size();
-        auto sideVertArr = getSide(side);
+        auto sideVertArr = getSide(side, position);
+        auto size = sideVertArr.size();
         auto sideTexArr = getTexCoords(side);
 
         for (int i = 0; i < size; i++ ) {
@@ -111,7 +111,7 @@ struct Cube {
 class VoxelMesh
 {
 private:
-    uint32_t gridLength = 3, gridHeight = 3, gridDepth = 3;
+    uint32_t gridLength, gridHeight, gridDepth;
     std::vector<uint32_t> voxelGrid;
 
     
