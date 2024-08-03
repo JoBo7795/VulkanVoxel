@@ -213,6 +213,7 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="Includes.h" />
     <ClInclude Include="InputControl.h" />
+    <ClInclude Include="Libraries\PerlinNoise\PerlinNoise.h" />
     <ClInclude Include="LoadModel.h" />
     <ClInclude Include="Main\InitClass.h" />
     <ClInclude Include="Libraries\stb\stb_image.h" />

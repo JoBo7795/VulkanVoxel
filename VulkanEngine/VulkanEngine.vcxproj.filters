@@ -285,5 +285,8 @@
     <ClInclude Include="VoxelMesh.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Libraries\PerlinNoise\PerlinNoise.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

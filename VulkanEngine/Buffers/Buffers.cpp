@@ -250,7 +250,7 @@ void BufferManager::UpdateUniformBuffer(glm::vec3& position,Camera& camera, uint
     UniformBufferObject ubo{};
     ubo.model = glm::translate(glm::mat4(1.0f), position);
     ubo.view = camera.LookAt();
-    ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtentWidth / swapChainExtentHeight, 0.1f, 10.0f);
+    ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtentWidth / swapChainExtentHeight, 0.1f, 1000.0f);
     ubo.proj[1][1] *= -1;
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }

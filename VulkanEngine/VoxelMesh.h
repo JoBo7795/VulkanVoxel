@@ -3,9 +3,11 @@
 #include "Includes.h"
 #include <array>
 #include <map>
+#include <algorithm>
 #include "Buffers/Buffers.h"
 #include "ModelManager.h"
 #include "GameObjectManager.h"
+#include "../PerlinNoise/PerlinNoise.h"
 
 struct Cube {
 
@@ -112,7 +114,18 @@ class VoxelMesh
 {
 private:
     uint32_t gridLength, gridHeight, gridDepth;
-    std::vector<uint32_t> voxelGrid;
+    std::vector<uint8_t> voxelGrid;
+    Cube cube;
+    std::vector<Vertex> voxelDrawSides;
+    std::vector<uint32_t> indiceDrawSides;
+    void DrawCubeSideLeft(glm::vec3 gridPos, uint32_t& offset);
+    void DrawCubeSideRight(glm::vec3 gridPos, uint32_t& offset);
+    void DrawCubeSideFront(glm::vec3 gridPos, uint32_t& offset);
+    void DrawCubeSideBack(glm::vec3 gridPos, uint32_t& offset);
+    void DrawCubeSideBottom(glm::vec3 gridPos, uint32_t& offset);
+    void DrawCubeSideTop(glm::vec3 gridPos, uint32_t& offset);
+    int32_t PositionToArrayIndex(glm::vec3 position);
+    glm::vec3 ArrayIndexToPosition(int32_t arrayIndex);
 
     
 public:
