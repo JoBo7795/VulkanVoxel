@@ -59,7 +59,7 @@ void VulkanInstance::InitVulkan() {
     Renderer* rendererInstance = Renderer::GetInstance();
 
     Camera camera = Camera(glm::vec3(1.0f, 0.0f, 0.0f));
-
+    
     rendererInstance->SetCamera(camera);
     rendererInstance->InitRenderer(window);
 }

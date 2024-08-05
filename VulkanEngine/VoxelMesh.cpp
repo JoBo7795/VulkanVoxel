@@ -1,25 +1,11 @@
 #include "VoxelMesh.h"
 
-std::vector<double> normalizeVector(const std::vector<double>& values) {
-	double min = *std::min_element(values.begin(), values.end());
-	double max = *std::max_element(values.begin(), values.end());
-	std::vector<double> normalized_values(values.size());
-
-	std::transform(values.begin(), values.end(), normalized_values.begin(),
-		[min, max](double value){
-			return (value - min) / (max - min);
-		});
-
-	return normalized_values;
-}
-
-
 
 VoxelMesh::VoxelMesh() {
 
-	gridLength =	100;
-	gridHeight =	100;
-	gridDepth =		100;
+	gridLength =	200;
+	gridHeight =	20;
+	gridDepth =		200;
 
 	int center = (gridDepth) * (gridHeight) * (gridLength / 2 + 1);
 
@@ -44,30 +30,25 @@ VoxelMesh::VoxelMesh() {
 
 		{
 			num++;
-			auto val = perlin.octave2D_01(x * 1., z * .1, 4);
-			int arrIndex = PositionToArrayIndex(glm::vec3(x, val , z));
-			heightMap.push_back(val);
-			//voxelGrid[arrIndex] = 1;
+			auto val = perlin.octave2D_01(x * .1, z * .1, 4,.2);
+			int perlinY = round(val * (gridHeight - 1));
+			int arrIndex = PositionToArrayIndex(glm::vec3(x, perlinY, z));
+			
+			heightMap.push_back(round(val * (gridLength - 1)));
+			voxelGrid[arrIndex] = 1;
 
-			//std::cout << "x: " << x << " y: " << round(val * 5) << " z: " << z << " arrIndex: " << heightMap.back() << " val: " << val << '\t';
-			//std::cout << "array Index: " << PositionToArrayIndex(glm::vec3(x, val * 5, z)) << '\t';
+			for (int i = 0; i < perlinY;i++) {
+				voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z)) ] = 1;
+			}
 		}
 
 		std::cout << '\n';
 	}
 	std::cout << num << std::endl;
-	heightMap = normalizeVector(heightMap);
-	int i = 0;
-	for (int x = 0; x < gridLength; x++)
-	{
-		for (int z = 0; z < gridDepth; z++) {
-			voxelGrid[PositionToArrayIndex(glm::vec3(x, z, heightMap[i]*5))] = 1;
-			//std::cout << " arrIndex: " << PositionToArrayIndex(glm::vec3(x, heightMap[i] * 5, z)) << '\t';
-			//std::cout << "x: " << x << " y: " << heightMap[i] * 5<< " z: " << z << std::endl;
-			i++;
-		}
-	
-	}
+
+	auto cam = Renderer::GetInstance()->GetCamera();
+	cam.SetPosition(glm::vec3(gridLength / 2, gridHeight/2, gridDepth / 2));
+	Renderer::GetInstance()->SetCamera(cam);
 
 }
 
@@ -90,7 +71,7 @@ void VoxelMesh::LoadVoxelMesh() {
 		if (voxelGrid[i] == 1) {
 			num++;
 			glm::vec3 gridPos = ArrayIndexToPosition(i);
-
+			//std::cout << "array Index: " << i << '\t';
 			//std::cout << "gridPos: " << "x: " << gridPos.x << " y: " << gridPos.y << " z: " << gridPos.z << std::endl;
 
 			if (i - 1 < gridLength * gridHeight * gridDepth) {
@@ -140,6 +121,7 @@ void VoxelMesh::LoadVoxelMesh() {
 				if (voxelGrid[i - gridLength * gridHeight] == 0) {
 					
 					DrawCubeSideLeft(gridPos, offset);
+
 				}
 			}
 			if (i + gridLength * gridHeight< gridLength * gridHeight * gridDepth) {
@@ -225,6 +207,9 @@ void VoxelMesh::DrawCubeSideTop(glm::vec3 gridPos, uint32_t& offset)
 }
 
 int32_t VoxelMesh::PositionToArrayIndex(glm::vec3 position) {
+
+	return (position.x * gridLength * gridHeight) + (position.y * gridLength) + position.z;
+
 	int32_t val = 0;
 	int32_t x = position.x * (gridLength * gridHeight);
 	val += x;
@@ -239,12 +224,11 @@ int32_t VoxelMesh::PositionToArrayIndex(glm::vec3 position) {
 
 glm::vec3 VoxelMesh::ArrayIndexToPosition(int32_t arrayIndex) {
 
-	int32_t val = arrayIndex;
-	int32_t x = val / (gridLength * gridHeight);
-	val -= (x * (gridLength * gridHeight));
-	int32_t y = val / gridLength;
-	val -= (y * (gridHeight));
-	int32_t z = val;
+	int32_t x = arrayIndex / (gridLength * gridHeight);
+	arrayIndex -= (x * gridLength * gridHeight);
+	int32_t y = arrayIndex / gridLength;
+	arrayIndex -= (y * gridLength);
+	int32_t z = arrayIndex;
 
-	return glm::vec3(x,y,z);
+	return glm::vec3(x, y, z);
 }

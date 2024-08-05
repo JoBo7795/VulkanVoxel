@@ -8,6 +8,7 @@
 #include "ModelManager.h"
 #include "GameObjectManager.h"
 #include "../PerlinNoise/PerlinNoise.h"
+#include "Renderer.h"
 
 struct Cube {
 
