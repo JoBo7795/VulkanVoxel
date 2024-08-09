@@ -34,11 +34,18 @@ void Descriptors::CreateDescriptorSetLayout() {
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
     samplerLayoutBinding.binding = 1;
     samplerLayoutBinding.descriptorCount = 1;
-    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER; ;
     samplerLayoutBinding.pImmutableSamplers = nullptr;
     samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+    VkDescriptorSetLayoutBinding textureArrayLayoutBinding = {};
+    textureArrayLayoutBinding.binding = 2;
+    textureArrayLayoutBinding.descriptorCount = 2;
+    textureArrayLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    textureArrayLayoutBinding.pImmutableSamplers = nullptr;
+    textureArrayLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding, 3> bindings = { uboLayoutBinding, samplerLayoutBinding, textureArrayLayoutBinding };
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -75,41 +82,68 @@ void Descriptors::CreateDescriptorSets() {
     for (size_t j = 0; j < size; j++) {
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 
-            gameObject = goManagerRef->GetGameObjectFromQueue(j);
-            texture = managerRef->GetTextureFromQueue(gameObject.textureId);
 
-            int index = j * MAX_FRAMES_IN_FLIGHT + i ;
+                gameObject = goManagerRef->GetGameObjectFromQueue(j);
+                texture = managerRef->GetTextureFromQueue(gameObject.textureId);
 
-            VkDescriptorBufferInfo bufferInfo{};
-            bufferInfo.buffer = bufferManagerRef->GetUniformBuffers()[index];
-            bufferInfo.offset = 0;
-            bufferInfo.range = sizeof(UniformBufferObject);
-            std::cout << index << std::endl;
-            VkDescriptorImageInfo imageInfo{};
-            
-            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = texture.textureImageView;
-            imageInfo.sampler = texture.textureSampler;
 
-            std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
-            descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[0].dstSet = descriptorSets[index];
-            descriptorWrites[0].dstBinding = 0;
-            descriptorWrites[0].dstArrayElement = 0;
-            descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            descriptorWrites[0].descriptorCount = 1;
-            descriptorWrites[0].pBufferInfo = &bufferInfo;
+                int index = j * MAX_FRAMES_IN_FLIGHT + i;
 
-            descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[1].dstSet = descriptorSets[index];
-            descriptorWrites[1].dstBinding = 1;
-            descriptorWrites[1].dstArrayElement = 0;
-            descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            descriptorWrites[1].descriptorCount = 1;
-            descriptorWrites[1].pImageInfo = &imageInfo;
+                VkDescriptorBufferInfo bufferInfo{};
+                bufferInfo.buffer = bufferManagerRef->GetUniformBuffers()[index];
+                bufferInfo.offset = 0;
+                bufferInfo.range = sizeof(UniformBufferObject);
+                std::cout << index << std::endl;
 
-            vkUpdateDescriptorSets(VulkanDevices::GetInstance()->GetDevice(), 2, descriptorWrites.data(), 0, nullptr);
+                const uint16_t drawTextureSize = managerRef->GetTextureQueueSize();
+
+                std::vector<VkDescriptorImageInfo> descriptorImageInfos;
+                
+                descriptorImageInfos.reserve(drawTextureSize);
+
+                for (uint32_t k = 0; k < drawTextureSize; k++)
+                {
+
+                    VkDescriptorImageInfo imageInfo{};
+                    descriptorImageInfos.push_back(imageInfo);
+                    descriptorImageInfos[k].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    //descriptorImageInfos[k].imageView = managerRef->imageArray[k]; // View 0
+                    descriptorImageInfos[k].imageView = managerRef->GetTextureFromQueue(k).textureImageView; // View 0
+
+                }
+
+                VkDescriptorImageInfo samplerInfo{};
+                samplerInfo.sampler = texture.textureSampler;
+
+                std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
+
+                descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[0].dstSet = descriptorSets[index];
+                descriptorWrites[0].dstBinding = 0;
+                descriptorWrites[0].dstArrayElement = 0;
+                descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                descriptorWrites[0].descriptorCount = 1;
+                descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+                descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[1].dstSet = descriptorSets[index];
+                descriptorWrites[1].dstBinding = 1;
+                descriptorWrites[1].dstArrayElement = 0;
+                descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+                descriptorWrites[1].descriptorCount = 1;
+                descriptorWrites[1].pImageInfo = &samplerInfo;
+
+                descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[2].dstSet = descriptorSets[index];
+                descriptorWrites[2].dstBinding = 2;
+                descriptorWrites[2].dstArrayElement = 0;
+                descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+                descriptorWrites[2].descriptorCount = 2;
+                descriptorWrites[2].pImageInfo = &descriptorImageInfos[0];
+
+                vkUpdateDescriptorSets(VulkanDevices::GetInstance()->GetDevice(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
+
         }
     }
 }

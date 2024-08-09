@@ -23,5 +23,7 @@ public:
 	VkImageView textureImageView;
 	VkSampler textureSampler;
 
+	int32_t width, height;
+
 };
 

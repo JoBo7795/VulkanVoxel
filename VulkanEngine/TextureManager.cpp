@@ -38,13 +38,26 @@ Texture& TextureManager::GetTextureFromQueue(int index) {
 
 }
 
-uint32_t TextureManager::AppendTextureToQueue(Texture texture) {
+uint16_t TextureManager::AppendTextureToQueue(Texture texture) {
 	
 	textureQueue.push_back(texture);
 	return textureQueue.size() - 1;
 }
 
-uint8_t TextureManager::GetTextureQueueSize() {
+uint16_t TextureManager::GetTextureQueueSize() {
 
 	return textureQueue.size();
+}
+
+
+
+void TextureManager::CreateTextureArray(std::vector<Texture>& textureArr) {
+
+	
+	for (int i = 0; i < textureArr.size();i++) {
+
+		textureArr[i].CreateTextureRessources();
+		imageArray.push_back(textureArr[i].textureImageView);
+
+	}
 }

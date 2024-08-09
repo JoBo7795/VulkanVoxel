@@ -36,6 +36,7 @@ VulkanInstance::VulkanInstance() {
 VulkanInstance::~VulkanInstance() {
 
     Cleanup();
+    delete objInstance;
 
 }
 

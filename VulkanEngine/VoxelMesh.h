@@ -77,7 +77,7 @@ struct Cube {
         return texCoords;
     }
 
-    std::vector<Vertex> getSideAsVertexArray(CubeSides side, glm::vec3 position) {
+    std::vector<Vertex> getSideAsVertexArray(CubeSides side, glm::vec3 position, uint8_t type) {
         std::vector<Vertex> cubeArr;
 
         auto sideVertArr = getSide(side, position);
@@ -91,6 +91,8 @@ struct Cube {
             cubeArr.back().pos = sideVertArr[i];
             cubeArr.back().color = glm::vec3(1, 0, 0);
             cubeArr.back().texCoord = sideTexArr[i];
+
+            cubeArr.back().texId = type;
         }
 
         return cubeArr;
@@ -119,12 +121,12 @@ private:
     Cube cube;
     std::vector<Vertex> voxelDrawSides;
     std::vector<uint32_t> indiceDrawSides;
-    void DrawCubeSideLeft(glm::vec3 gridPos, uint32_t& offset);
-    void DrawCubeSideRight(glm::vec3 gridPos, uint32_t& offset);
-    void DrawCubeSideFront(glm::vec3 gridPos, uint32_t& offset);
-    void DrawCubeSideBack(glm::vec3 gridPos, uint32_t& offset);
-    void DrawCubeSideBottom(glm::vec3 gridPos, uint32_t& offset);
-    void DrawCubeSideTop(glm::vec3 gridPos, uint32_t& offset);
+    void DrawCubeSideLeft(glm::vec3 gridPos, uint32_t& offset, uint8_t type);
+    void DrawCubeSideRight(glm::vec3 gridPos, uint32_t& offset, uint8_t type);
+    void DrawCubeSideFront(glm::vec3 gridPos, uint32_t& offset, uint8_t type);
+    void DrawCubeSideBack(glm::vec3 gridPos, uint32_t& offset, uint8_t type);
+    void DrawCubeSideBottom(glm::vec3 gridPos, uint32_t& offset, uint8_t type);
+    void DrawCubeSideTop(glm::vec3 gridPos, uint32_t& offset, uint8_t type);
     int32_t PositionToArrayIndex(glm::vec3 position);
     glm::vec3 ArrayIndexToPosition(int32_t arrayIndex);
 

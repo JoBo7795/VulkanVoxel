@@ -33,12 +33,18 @@ VoxelMesh::VoxelMesh() {
 			auto val = perlin.octave2D_01(x * .1, z * .1, 4,.2);
 			int perlinY = round(val * (gridHeight - 1));
 			int arrIndex = PositionToArrayIndex(glm::vec3(x, perlinY, z));
+
+			std::random_device rd;  // Zufallsgerät
+			std::mt19937 gen(rd()); // Mersenne-Twister-Generator
+			std::uniform_int_distribution<> dis(1, 2); // Gleichverteilte Zufallszahlen zwischen 0 und 1
+
+			uint8_t type = dis(gen);
 			
 			heightMap.push_back(round(val * (gridLength - 1)));
-			voxelGrid[arrIndex] = 1;
+			voxelGrid[arrIndex] = type;
 
 			for (int i = 0; i < perlinY;i++) {
-				voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z)) ] = 1;
+				voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z)) ] = type;
 			}
 		}
 
@@ -68,21 +74,19 @@ void VoxelMesh::LoadVoxelMesh() {
 	uint32_t offset = 0;
 	for (int32_t i = 0; i < size; i++) {
 
-		if (voxelGrid[i] == 1) {
+		if (voxelGrid[i] > 0) {
 			num++;
 			glm::vec3 gridPos = ArrayIndexToPosition(i);
-			//std::cout << "array Index: " << i << '\t';
-			//std::cout << "gridPos: " << "x: " << gridPos.x << " y: " << gridPos.y << " z: " << gridPos.z << std::endl;
 
 			if (i - 1 < gridLength * gridHeight * gridDepth) {
 
 				if (voxelGrid[i - 1] == 0) {
-					DrawCubeSideFront(gridPos,offset);
+					DrawCubeSideFront(gridPos,offset, voxelGrid[i]);
 				}
 			}
 			if (i + 1 < gridLength * gridHeight * gridDepth) {
 				if (voxelGrid[i + 1] == 0) {
-					DrawCubeSideBack(gridPos, offset);
+					DrawCubeSideBack(gridPos, offset, voxelGrid[i]);
 				}
 			}
 
@@ -90,50 +94,50 @@ void VoxelMesh::LoadVoxelMesh() {
 
 
 				if (i - gridLength < 0) {
-					DrawCubeSideTop(gridPos, offset);
+					DrawCubeSideTop(gridPos, offset, voxelGrid[i]);
 					continue;
 				}
 
 				if (voxelGrid[i - gridLength] == 0) {
-					DrawCubeSideTop(gridPos, offset);
+					DrawCubeSideTop(gridPos, offset, voxelGrid[i]);
 				}
 			}
 			if (i + gridLength < gridLength * gridHeight * gridDepth) {
 
 
 				if (i + gridLength < 0) {
-					DrawCubeSideBottom(gridPos, offset);
+					DrawCubeSideBottom(gridPos, offset, voxelGrid[i]);
 					continue;
 				}
 
 				if (voxelGrid[i + gridLength] == 0) {
-					DrawCubeSideBottom(gridPos, offset);						
+					DrawCubeSideBottom(gridPos, offset, voxelGrid[i]);
 				}
 			}
 
 			if ((i - gridLength * gridHeight< gridLength * gridHeight * gridDepth) ) {
 
 				if (i - gridLength * gridHeight< 0) {
-					DrawCubeSideLeft(gridPos, offset);
+					DrawCubeSideLeft(gridPos, offset, voxelGrid[i]);
 					continue;
 				}
 
 				if (voxelGrid[i - gridLength * gridHeight] == 0) {
 					
-					DrawCubeSideLeft(gridPos, offset);
+					DrawCubeSideLeft(gridPos, offset, voxelGrid[i]);
 
 				}
 			}
 			if (i + gridLength * gridHeight< gridLength * gridHeight * gridDepth) {
 
 				if (i + gridLength * gridHeight < 0) {
-					DrawCubeSideRight(gridPos, offset);
+					DrawCubeSideRight(gridPos, offset, voxelGrid[i]);
 					continue;
 				}
 
 				if (voxelGrid[i + gridLength * gridHeight] == 0) {
 
-					DrawCubeSideRight(gridPos, offset);
+					DrawCubeSideRight(gridPos, offset, voxelGrid[i]);
 				}
 			}
 		}
@@ -152,54 +156,54 @@ void VoxelMesh::LoadVoxelMesh() {
 	GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
 }
 
-void VoxelMesh::DrawCubeSideLeft(glm::vec3 gridPos, uint32_t& offset)
+void VoxelMesh::DrawCubeSideLeft(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.LEFT, gridPos);
+	auto sideData = cube.getSideAsVertexArray(cube.LEFT, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 1 + offset, 2 + offset, 2 + offset, 3 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
 	offset += sideData.size();
 }
 
-void VoxelMesh::DrawCubeSideRight(glm::vec3 gridPos, uint32_t& offset)
+void VoxelMesh::DrawCubeSideRight(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.RIGHT, gridPos);
+	auto sideData = cube.getSideAsVertexArray(cube.RIGHT, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 3 + offset, 2 + offset, 2 + offset, 1 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
 	offset += sideData.size();
 }
 
-void VoxelMesh::DrawCubeSideFront(glm::vec3 gridPos, uint32_t& offset)
+void VoxelMesh::DrawCubeSideFront(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.FRONT, gridPos);
+	auto sideData = cube.getSideAsVertexArray(cube.FRONT, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 3 + offset, 2 + offset, 2 + offset, 1 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
 	offset += sideData.size();
 }
 
-void VoxelMesh::DrawCubeSideBack(glm::vec3 gridPos, uint32_t& offset)
+void VoxelMesh::DrawCubeSideBack(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.BACK, gridPos);
+	auto sideData = cube.getSideAsVertexArray(cube.BACK, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 1 + offset, 2 + offset, 2 + offset, 3 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
 	offset += sideData.size();
 }
 
-void VoxelMesh::DrawCubeSideBottom(glm::vec3 gridPos, uint32_t& offset)
+void VoxelMesh::DrawCubeSideBottom(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.BOTTOM, gridPos);
+	auto sideData = cube.getSideAsVertexArray(cube.BOTTOM, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 1 + offset, 2 + offset, 2 + offset, 3 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
 	offset += sideData.size();
 }
 
-void VoxelMesh::DrawCubeSideTop(glm::vec3 gridPos, uint32_t& offset)
+void VoxelMesh::DrawCubeSideTop(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.TOP, gridPos);
+	auto sideData = cube.getSideAsVertexArray(cube.TOP, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 3 + offset, 2 + offset, 2 + offset, 1 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
