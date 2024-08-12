@@ -67,3 +67,11 @@ glm::mat4 Camera::LookAt() {
 
 	return glm::lookAt(this->position, this->position + this->direction, this->up);
 }
+
+float Camera::GetCameraSpeed() {
+	return cameraSpeed;
+}
+
+void Camera::SetCameraSpeed(float cameraSpeed) {
+	this->cameraSpeed = cameraSpeed;
+}

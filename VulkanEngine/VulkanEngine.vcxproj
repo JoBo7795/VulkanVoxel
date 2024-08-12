@@ -116,14 +116,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\stb;C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\include;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;$(SolutionDir)VulkanEngine\Libraries\tinyobjloader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\imgui\backends;J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\imgui;J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\stb;C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\include;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;$(SolutionDir)VulkanEngine\Libraries\tinyobjloader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\VulkanSDK\1.3.243.0\Lib;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\lib-vc2022;%(AdditionalIncludeDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\imgui;C:\VulkanSDK\1.3.243.0\Lib;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\lib-vc2022;%(AdditionalIncludeDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -134,7 +134,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\stb;C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\include;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;$(SolutionDir)VulkanEngine\Libraries\tinyobjloader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\imgui\backends;J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\imgui;J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\stb;C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\include;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;$(SolutionDir)VulkanEngine\Libraries\tinyobjloader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -143,7 +143,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\VulkanSDK\1.3.243.0\Lib;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\lib-vc2022;%(AdditionalIncludeDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>J:\VisualStudioProjects\VulkanVoxel\VulkanEngine\Libraries\imgui;C:\VulkanSDK\1.3.243.0\Lib;$(SolutionDir)VulkanEngine\Libraries\glm-1.0.1;$(SolutionDir)VulkanEngine\Libraries\glfw-3.4.bin.WIN64\lib-vc2022;%(AdditionalIncludeDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -157,6 +157,13 @@
     <ClCompile Include="GraphicsPipeline.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="InputControl.cpp" />
+    <ClCompile Include="Libraries\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Libraries\imgui\backends\imgui_impl_vulkan.cpp" />
+    <ClCompile Include="Libraries\imgui\imgui.cpp" />
+    <ClCompile Include="Libraries\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Libraries\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Libraries\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Libraries\imgui\imgui_widgets.cpp" />
     <ClCompile Include="LoadModel.cpp" />
     <ClCompile Include="Main\InitClass.cpp" />
     <ClCompile Include="Libraries\stb\stb_image.cpp" />
@@ -213,6 +220,14 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="Includes.h" />
     <ClInclude Include="InputControl.h" />
+    <ClInclude Include="Libraries\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="Libraries\imgui\backends\imgui_impl_vulkan.h" />
+    <ClInclude Include="Libraries\imgui\imconfig.h" />
+    <ClInclude Include="Libraries\imgui\imgui.h" />
+    <ClInclude Include="Libraries\imgui\imgui_internal.h" />
+    <ClInclude Include="Libraries\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Libraries\imgui\imstb_textedit.h" />
+    <ClInclude Include="Libraries\imgui\imstb_truetype.h" />
     <ClInclude Include="Libraries\PerlinNoise\PerlinNoise.h" />
     <ClInclude Include="LoadModel.h" />
     <ClInclude Include="Main\InitClass.h" />

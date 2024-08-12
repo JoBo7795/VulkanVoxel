@@ -15,6 +15,7 @@
 
 
 
+
 class VulkanInstance
 {
 public:
@@ -34,6 +35,8 @@ private:
 	void MainLoop();
 	void Cleanup();
 	void CreateInstance();
+	void InitImGui(GLFWwindow* window, VkInstance instance, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue);
+	Scene scene;
 
 	std::vector<const char*> GetRequiredExtensions();
 

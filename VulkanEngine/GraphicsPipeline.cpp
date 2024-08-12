@@ -110,9 +110,9 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
 
         VkDeviceSize offsets[] = { 0 };
 
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->vertexBuffers[models.verticeBufferId], offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->GetVertexBuffers()[models.verticeBufferId], offsets);
 
-        vkCmdBindIndexBuffer(commandBuffer, bufferManagerRef->indexBuffers[models.indexBufferId], 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer, bufferManagerRef->GetIndexBuffers()[models.indexBufferId], 0, VK_INDEX_TYPE_UINT32);
 
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[index], 0, nullptr);
        
@@ -120,6 +120,9 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
 
     }
 
+    ImGui::Render();
+    ImDrawData* drawData = ImGui::GetDrawData();
+    ImGui_ImplVulkan_RenderDrawData(drawData,commandBuffer);
 
     vkCmdEndRenderPass(commandBuffer);
 
@@ -213,6 +216,10 @@ void GraphicsPipeline::DrawFrame(Window& windowRef) {
 
 VkRenderPass& GraphicsPipeline::GetRenderPass() {
     return renderPass;
+}
+
+Descriptors& GraphicsPipeline::GetDescriptors() {
+    return descriptors;
 }
 
 void GraphicsPipeline::CreateRenderPass() {

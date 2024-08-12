@@ -8,7 +8,7 @@ class Camera
 private:
 	glm::vec3 position, target, direction, right, front, up;
 	glm::mat4 view;
-
+	float cameraSpeed = 0.05f;
 
 public:
 
@@ -40,6 +40,9 @@ public:
 
 	float GetZoom();
 	void SetZoom(float zoom);
+
+	float GetCameraSpeed();
+	void SetCameraSpeed(float cameraSpeed);
 
 	glm::mat4 LookAt();
 

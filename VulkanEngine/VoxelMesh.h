@@ -130,10 +130,14 @@ private:
     int32_t PositionToArrayIndex(glm::vec3 position);
     glm::vec3 ArrayIndexToPosition(int32_t arrayIndex);
 
+    int vertexBufferSize = 0;
+    int indexBufferSize = 0;
     
 public:
     VoxelMesh();
 	void LoadVoxelMesh();
-
+    void UpdateVoxelMesh();
+    void ChangeVoxelAtIndex(uint32_t index, uint8_t val);
+    int32_t ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val);
 };
 

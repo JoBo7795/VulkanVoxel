@@ -6,7 +6,7 @@ void ModelManager::AppendModelToMap(Model model, uint16_t key) {
 	modelMap[key] = model;
 }
 
-Model ModelManager::GetModelFromQueue(uint16_t key) {
+Model& ModelManager::GetModelFromQueue(uint16_t key) {
 	return modelMap[key];
 }
 

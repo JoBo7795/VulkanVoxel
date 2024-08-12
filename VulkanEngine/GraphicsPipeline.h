@@ -21,6 +21,7 @@ public:
 	void DrawFrame(Window& windowRef);
 
 	VkRenderPass& GetRenderPass();
+	Descriptors& GetDescriptors();
 
 	void CleanUp();
 

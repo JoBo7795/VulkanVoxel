@@ -10,7 +10,8 @@ struct Model
 	std::vector<uint32_t> indices;
 
 	uint16_t indexBufferId, verticeBufferId;
-
+	
 	void LoadModelFromObjFile(const std::string& filename);
+
 };
 

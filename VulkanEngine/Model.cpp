@@ -9,3 +9,4 @@ void Model::LoadModelFromObjFile(const std::string& filename) {
 	vertices = data.vertices;
 	indices = data.indices;
 }
+

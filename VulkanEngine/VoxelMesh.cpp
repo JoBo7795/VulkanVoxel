@@ -3,9 +3,9 @@
 
 VoxelMesh::VoxelMesh() {
 
-	gridLength =	200;
-	gridHeight =	20;
-	gridDepth =		200;
+	gridLength =	5;
+	gridHeight =	5;
+	gridDepth =		5;
 
 	int center = (gridDepth) * (gridHeight) * (gridLength / 2 + 1);
 
@@ -19,6 +19,8 @@ VoxelMesh::VoxelMesh() {
 	for (int i = 0; i < gridLength * gridHeight * gridDepth; i++) {
 		voxelGrid.push_back(0);
 	}
+
+	voxelGrid[PositionToArrayIndex(glm::vec3(1,1,1))] = 1;
 
 	int num = 0;
 
@@ -151,9 +153,110 @@ void VoxelMesh::LoadVoxelMesh() {
 	model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
 	ModelManager::GetInstance()->AppendModelToMap(model, VOXEL_ENV);
 
+	vertexBufferSize = sizeof(model.vertices[0]) * model.vertices.size();
+	indexBufferSize = sizeof(model.indices[0]) * model.indices.size();
+
 	gameObject.modelId = VOXEL_ENV;
 	gameObject.position = glm::vec3(0.0);
 	GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
+}
+
+void VoxelMesh::UpdateVoxelMesh() {
+
+	std::cout << "create Voxel Mesh" << std::endl;
+
+	std::vector<Vertex> cubeArr;
+
+	int size = voxelGrid.size();
+	Model& model = ModelManager::GetInstance()->GetModelFromQueue(VOXEL_ENV);
+
+	std::cout << "vert before: " << model.vertices.size();
+	std::cout << "indice before: " << model.indices.size();
+
+	voxelDrawSides.clear();
+	indiceDrawSides.clear();
+
+	int num = 0;
+	uint32_t offset = 0;
+	for (int32_t i = 0; i < size; i++) {
+
+		if (voxelGrid[i] > 0) {
+			num++;
+			glm::vec3 gridPos = ArrayIndexToPosition(i);
+
+			if (i - 1 < gridLength * gridHeight * gridDepth) {
+
+				if (voxelGrid[i - 1] == 0) {
+					DrawCubeSideFront(gridPos, offset, voxelGrid[i]);
+				}
+			}
+			if (i + 1 < gridLength * gridHeight * gridDepth) {
+				if (voxelGrid[i + 1] == 0) {
+					DrawCubeSideBack(gridPos, offset, voxelGrid[i]);
+				}
+			}
+
+			if (i - gridLength < gridLength * gridHeight * gridDepth) {
+
+
+				if (i - gridLength < 0) {
+					DrawCubeSideTop(gridPos, offset, voxelGrid[i]);
+					continue;
+				}
+
+				if (voxelGrid[i - gridLength] == 0) {
+					DrawCubeSideTop(gridPos, offset, voxelGrid[i]);
+				}
+			}
+			if (i + gridLength < gridLength * gridHeight * gridDepth) {
+
+
+				if (i + gridLength < 0) {
+					DrawCubeSideBottom(gridPos, offset, voxelGrid[i]);
+					continue;
+				}
+
+				if (voxelGrid[i + gridLength] == 0) {
+					DrawCubeSideBottom(gridPos, offset, voxelGrid[i]);
+				}
+			}
+
+			if ((i - gridLength * gridHeight < gridLength * gridHeight * gridDepth)) {
+
+				if (i - gridLength * gridHeight < 0) {
+					DrawCubeSideLeft(gridPos, offset, voxelGrid[i]);
+					continue;
+				}
+
+				if (voxelGrid[i - gridLength * gridHeight] == 0) {
+
+					DrawCubeSideLeft(gridPos, offset, voxelGrid[i]);
+
+				}
+			}
+			if (i + gridLength * gridHeight < gridLength * gridHeight * gridDepth) {
+
+				if (i + gridLength * gridHeight < 0) {
+					DrawCubeSideRight(gridPos, offset, voxelGrid[i]);
+					continue;
+				}
+
+				if (voxelGrid[i + gridLength * gridHeight] == 0) {
+
+					DrawCubeSideRight(gridPos, offset, voxelGrid[i]);
+				}
+			}
+		}
+	}
+
+	std::cout << "drawn voxel: " << num << std::endl;
+
+	std::cout << "vert after: " << voxelDrawSides.size() << std::endl;
+	std::cout << "indice after: " << indiceDrawSides.size() << std::endl;
+
+	model.vertices = voxelDrawSides;
+	model.indices = indiceDrawSides;
+
 }
 
 void VoxelMesh::DrawCubeSideLeft(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
@@ -235,4 +338,48 @@ glm::vec3 VoxelMesh::ArrayIndexToPosition(int32_t arrayIndex) {
 	int32_t z = arrayIndex;
 
 	return glm::vec3(x, y, z);
+}
+
+void VoxelMesh::ChangeVoxelAtIndex(uint32_t index, uint8_t val) {
+
+	voxelGrid[index] = val;
+}
+
+int32_t VoxelMesh::ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val) {
+
+	voxelGrid[PositionToArrayIndex(indexVector)] = val;
+
+	Model& model = ModelManager::GetInstance()->GetModelFromQueue(VOXEL_ENV);
+
+	auto dat = (void*)&voxelGrid[PositionToArrayIndex(indexVector)];
+
+	UpdateVoxelMesh();
+
+	auto bmanagerRef = BufferManager::GetInstance();
+
+	if (vertexBufferSize < sizeof(model.vertices[0]) * model.vertices.size()) {
+		bmanagerRef->DeleteVertexBuffer(model.verticeBufferId);
+		model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices, sizeof(model.vertices[0]) * model.vertices.size());
+		vertexBufferSize = sizeof(model.vertices[0]) * model.vertices.size();
+		std::cout << "Create New VertexBuffer with size: " << vertexBufferSize << std::endl;
+	}
+	else {
+		BufferManager::GetInstance()->UpdateVertexBuffer(model.verticeBufferId, (void*)&model.vertices[0], sizeof(model.vertices[0]) * model.vertices.size());
+		std::cout << "Update VertexBuffer" << std::endl;
+	}
+
+	if (indexBufferSize < sizeof(model.indices[0]) * model.indices.size()) {
+		bmanagerRef->DeleteIndexBuffer(model.indexBufferId);
+		model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices, sizeof(model.indices[0]) * model.indices.size());
+		indexBufferSize = sizeof(model.indices[0]) * model.indices.size();
+		std::cout << "Create New IndexBuffer with size: " << indexBufferSize << std::endl;
+	}
+	else {
+		BufferManager::GetInstance()->UpdateIndexBuffer(model.indexBufferId, (void*)&model.indices[0], sizeof(model.indices[0]) * model.indices.size());
+		std::cout << "Update IndexBuffer with size: " << sizeof(model.indices[0])* model.indices.size() << std::endl;
+	}
+
+
+	return PositionToArrayIndex(indexVector);
+
 }

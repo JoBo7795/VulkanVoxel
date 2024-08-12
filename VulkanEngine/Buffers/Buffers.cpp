@@ -68,11 +68,13 @@ void BufferManager::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, Vk
     vkBindBufferMemory(device, buffer, bufferMemory, 0);
 }
 
-void BufferManager::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size, VkQueue queue) {
+void BufferManager::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size, VkQueue queue, VkDeviceSize srcOffset, VkDeviceSize dstOffset) {
     VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
     VkBufferCopy copyRegion{};
     copyRegion.size = size;
+    copyRegion.dstOffset = dstOffset;
+    copyRegion.srcOffset = srcOffset;
     vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
     EndSingleTimeCommands(commandBuffer, queue);
@@ -165,12 +167,17 @@ void BufferManager::EndSingleTimeCommands(VkCommandBuffer commandBuffer, VkQueue
     vkFreeCommandBuffers(VulkanDevices::GetInstance()->GetDevice(), CommandPoolManager::GetInstance()->GetCommandPool(), 1, &commandBuffer);
 }
 
-uint16_t BufferManager::CreateVertexBuffer(std::vector<Vertex>& vertices) {
+uint16_t BufferManager::CreateVertexBuffer(std::vector<Vertex>& vertices, VkDeviceSize bSize) {
 
     VkDevice device = VulkanDevices::GetInstance()->GetDevice();
     VkPhysicalDevice physicalDevice = VulkanDevices::GetInstance()->GetPhysicalDevice();
 
-    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+    VkDeviceSize bufferSize = bSize;
+
+    if(bSize == VK_WHOLE_SIZE)
+        bufferSize = sizeof(vertices[0]) * vertices.size();
+
+
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -194,12 +201,16 @@ uint16_t BufferManager::CreateVertexBuffer(std::vector<Vertex>& vertices) {
     return vertexBuffers.size() - 1;
 }
 
-uint16_t BufferManager::CreateIndexBuffer(std::vector<uint32_t>& indices) {
+uint16_t BufferManager::CreateIndexBuffer(std::vector<uint32_t>& indices, VkDeviceSize bSize) {
 
     VkDevice device = VulkanDevices::GetInstance()->GetDevice();
     VkPhysicalDevice physicalDevice = VulkanDevices::GetInstance()->GetPhysicalDevice();
 
-    VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+    VkDeviceSize bufferSize = bSize;
+
+    if (bSize == VK_WHOLE_SIZE)
+        bufferSize = sizeof(indices[0]) * indices.size();
+
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -222,6 +233,58 @@ uint16_t BufferManager::CreateIndexBuffer(std::vector<uint32_t>& indices) {
     vkFreeMemory(device, stagingBufferMemory, nullptr);
 
     return indexBuffers.size() - 1;
+}
+
+void BufferManager::UpdateVertexBuffer(uint32_t index, void* newData, size_t dataSize) {
+   
+
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    CreateBuffer(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory, VulkanDevices::GetInstance()->GetPhysicalDevice());
+
+    VkDevice device = VulkanDevices::GetInstance()->GetDevice();
+
+    // Daten in den Staging-Buffer kopieren
+    void* data;
+    VkResult result = vkMapMemory(device, stagingBufferMemory, 0, dataSize, 0, &data);
+    if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to map memory!");
+    }
+    memcpy(data, newData, dataSize);
+    vkUnmapMemory(device, stagingBufferMemory);
+
+    // Daten in den Ziel-Buffer kopieren
+    CopyBuffer(stagingBuffer, vertexBuffers[index], dataSize, VulkanQueueManager::GetInstance()->GetGraphicsQueue());
+
+    // Staging-Buffer freigeben
+    vkDestroyBuffer(device, stagingBuffer, nullptr);
+    vkFreeMemory(device, stagingBufferMemory, nullptr);
+
+}
+
+
+void BufferManager::UpdateIndexBuffer(uint32_t index, void* newData, size_t dataSize) {
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    CreateBuffer(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory, VulkanDevices::GetInstance()->GetPhysicalDevice());
+
+    VkDevice device = VulkanDevices::GetInstance()->GetDevice();
+
+    // Daten in den Staging-Buffer kopieren
+    void* data;
+    VkResult result = vkMapMemory(device, stagingBufferMemory, 0, dataSize, 0, &data);
+    if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to map memory!");
+    }
+    memcpy(data, newData, dataSize);
+    vkUnmapMemory(device, stagingBufferMemory);
+
+    // Daten in den Ziel-Buffer kopieren
+    CopyBuffer(stagingBuffer, indexBuffers[index], dataSize, VulkanQueueManager::GetInstance()->GetGraphicsQueue());
+
+    // Staging-Buffer freigeben
+    vkDestroyBuffer(device, stagingBuffer, nullptr);
+    vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
 void BufferManager::CreateUniformBuffers() {
@@ -270,6 +333,31 @@ void BufferManager::CreateCommandBuffers() {
     }
 }
 
+void BufferManager::DeleteVertexBuffer(uint32_t vertexBufferId) {
+
+    VkDevice device = VulkanDevices::GetInstance()->GetDevice();
+
+    vkQueueWaitIdle(VulkanQueueManager::GetInstance()->GetGraphicsQueue());
+   
+    vkDestroyBuffer(device, vertexBuffers[vertexBufferId], nullptr);
+    vkFreeMemory(device, vertexBufferMemoryVector[vertexBufferId], nullptr);
+
+}
+
+void BufferManager::DeleteIndexBuffer(uint32_t indexbufferId) {
+
+    VkDevice device = VulkanDevices::GetInstance()->GetDevice();
+    vkQueueWaitIdle(VulkanQueueManager::GetInstance()->GetGraphicsQueue());
+
+    vkDestroyBuffer(device, indexBuffers[indexbufferId], nullptr);
+    vkFreeMemory(device, indexBufferMemoryVector[indexbufferId], nullptr);
+}
+
+void BufferManager::DeleteBufferQueueSync() {
+
+
+}
+
 std::vector<VkBuffer>& BufferManager::GetUniformBuffers() {
 
     return uniformBuffers;
@@ -290,3 +378,44 @@ std::vector<VkCommandBuffer>& BufferManager::GetCommandBuffers() {
     return commandBuffers;
 }
 
+std::vector<VkBuffer>& BufferManager::GetVertexBuffers() {
+
+    return vertexBuffers;
+}
+
+VkBuffer& BufferManager::GetVertexBuffer(uint32_t id) {
+
+    return vertexBuffers[id];
+}
+
+void BufferManager::SetVertexBuffers(std::vector<VkBuffer>& vertexBuffers) {
+    this->vertexBuffers = vertexBuffers;
+}
+
+
+std::vector<VkDeviceMemory>& BufferManager::GetVertexBufferMemoryVector() {
+    return vertexBufferMemoryVector;
+}
+
+void BufferManager::SetVertexBufferMemoryVector(std::vector<VkDeviceMemory>& vertexBufferMemoryVector) {
+    this->vertexBufferMemoryVector = vertexBufferMemoryVector;
+}
+
+
+std::vector<VkBuffer>& BufferManager::GetIndexBuffers() {
+    return indexBuffers;
+}
+
+void BufferManager::SetIndexBuffers(std::vector<VkBuffer>& indexBuffers) {
+
+    this->indexBuffers = indexBuffers;
+}
+
+
+std::vector<VkDeviceMemory>& BufferManager::GetIndexBufferMemoryVector() {
+    return indexBufferMemoryVector;
+}
+
+void BufferManager::SetIndexBufferMemoryVector(std::vector<VkDeviceMemory>& indexBufferMemoryVector) {
+    this->indexBufferMemoryVector = indexBufferMemoryVector;
+}
