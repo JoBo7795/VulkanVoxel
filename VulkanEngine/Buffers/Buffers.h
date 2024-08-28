@@ -28,6 +28,7 @@ public:
 	void UpdateIndexBuffer(uint32_t index, void* newData, size_t dataSize);
 
 	void CreateUniformBuffers();
+	void CreateUniformBuffer();
 	void DeleteVertexBuffer(uint32_t vertexBufferId);
 	void DeleteIndexBuffer(uint32_t indexBufferId);
 
@@ -54,8 +55,6 @@ public:
 
 	std::vector<VkDeviceMemory>& GetIndexBufferMemoryVector();
 	void SetIndexBufferMemoryVector(std::vector<VkDeviceMemory>& indexBufferMemoryVector);
-
-
 
 	static BufferManager* GetInstance();
 

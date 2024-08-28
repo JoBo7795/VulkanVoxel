@@ -12,10 +12,14 @@ public:
 
 	void CreateDescriptorSetLayout();
 	void CreateDescriptorPool();
+	size_t CreateDescriptorPool(VkDescriptorPoolCreateInfo& poolInfo, std::vector<VkDescriptorPoolSize>& poolSizes);
 	void CreateDescriptorSets();
+	void CreateDescriptorSet(GameObject& gameObject,const uint32_t uboCount);
+	void DeleteDescriptorSet();
+	void UpdateDescriptorSets();
 
 	void SetDescriptorPool(VkDescriptorPool& in_descriptorPool);
-	VkDescriptorPool& GetDescriptorPool();
+	VkDescriptorPool& GetDescriptorPool(uint32_t index);
 
 	void SetDescriptorSets(std::vector<VkDescriptorSet>& in_descriptorSets);
 	std::vector<VkDescriptorSet>& GetDescriptorSets();
@@ -25,9 +29,19 @@ public:
 
 	void CleanUp();
 
+	Descriptors();
+
+	static Descriptors* GetInstance();
+
 private:
 
-	VkDescriptorPool descriptorPool;
+	static Descriptors* instance;
+
+	uint32_t poolSize;
+	uint8_t updateSize;
+	std::unordered_map<size_t, bool> goCreationMap;
+
+	std::vector<VkDescriptorPool> descriptorPools;
 	std::vector<VkDescriptorSet> descriptorSets;
 	VkDescriptorSetLayout descriptorSetLayout;
 };

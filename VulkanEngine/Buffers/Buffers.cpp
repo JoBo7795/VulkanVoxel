@@ -5,7 +5,9 @@
 BufferManager* BufferManager::instance = nullptr;
 
 BufferManager::BufferManager() {
-
+    //uniformBuffers.resize(100);
+    //uniformBuffersMemory.resize(100);
+    //uniformBuffersMapped.resize(100);
 }
 
 BufferManager::~BufferManager() {
@@ -304,6 +306,23 @@ void BufferManager::CreateUniformBuffers() {
     }
 }
 
+void BufferManager::CreateUniformBuffer() {
+
+    VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+
+    uniformBuffers.resize(uniformBuffers.size() + 1);
+    uniformBuffersMemory.resize(uniformBuffersMemory.size() + 1);
+    uniformBuffersMapped.resize(uniformBuffersMapped.size() + 1);
+
+    CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers.back(), uniformBuffersMemory.back(), VulkanDevices::GetInstance()->GetPhysicalDevice());
+
+    vkMapMemory(VulkanDevices::GetInstance()->GetDevice(), uniformBuffersMemory.back(), 0, bufferSize, 0, &uniformBuffersMapped.back());
+
+
+}
+
+
+
 void BufferManager::UpdateUniformBuffer(glm::vec3& position,Camera& camera, uint32_t currentImage, float swapChainExtentWidth, float swapChainExtentHeight) {
 
     static auto startTime = std::chrono::high_resolution_clock::now();
@@ -311,7 +330,7 @@ void BufferManager::UpdateUniformBuffer(glm::vec3& position,Camera& camera, uint
     auto currentTime = std::chrono::high_resolution_clock::now();
     float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
     UniformBufferObject ubo{};
-    ubo.model = glm::translate(glm::mat4(1.0f), position);
+    ubo.model = glm::translate(glm::mat4(1.0f), position);// *glm::rotate(glm::mat4(1), time, glm::vec3(1, 0, 0));
     ubo.view = camera.LookAt();
     ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtentWidth / swapChainExtentHeight, 0.1f, 1000.0f);
     ubo.proj[1][1] *= -1;

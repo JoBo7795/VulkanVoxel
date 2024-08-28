@@ -3,9 +3,9 @@
 
 VoxelMesh::VoxelMesh() {
 
-	gridLength =	5;
-	gridHeight =	5;
-	gridDepth =		5;
+	gridLength =	VOXEL_GRID_LENGTH;
+	gridHeight =	VOXEL_GRID_HEIGHT;
+	gridDepth =		VOXEL_GRID_DEPTH;
 
 	int center = (gridDepth) * (gridHeight) * (gridLength / 2 + 1);
 
@@ -38,7 +38,7 @@ VoxelMesh::VoxelMesh() {
 
 			std::random_device rd;  // Zufallsgerät
 			std::mt19937 gen(rd()); // Mersenne-Twister-Generator
-			std::uniform_int_distribution<> dis(1, 2); // Gleichverteilte Zufallszahlen zwischen 0 und 1
+			std::uniform_int_distribution<> dis(1, 2); // Gleichverteilte Zufallszahlen zwischen 1 und 2
 
 			uint8_t type = dis(gen);
 			
@@ -58,6 +58,18 @@ VoxelMesh::VoxelMesh() {
 	cam.SetPosition(glm::vec3(gridLength / 2, gridHeight/2, gridDepth / 2));
 	Renderer::GetInstance()->SetCamera(cam);
 
+}
+
+uint32_t VoxelMesh::GetGridLength() {
+	return gridLength;
+}
+
+uint32_t VoxelMesh::GetGridHeigth() {
+	return gridHeight;
+}
+
+uint32_t VoxelMesh::GetGridDepth() {
+	return gridDepth;
 }
 
 void VoxelMesh::LoadVoxelMesh() {

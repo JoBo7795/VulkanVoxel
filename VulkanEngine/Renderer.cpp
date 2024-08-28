@@ -28,7 +28,6 @@ void Renderer::Render() {
 }
 
 GLfloat Renderer::DeltaTime() {
-
 	return 0.0f;
 }
 
@@ -41,12 +40,10 @@ Camera& Renderer::GetCamera() {
 }
 
 void Renderer::SetGraphicsPipeline(GraphicsPipeline& in_graphicsPipeline) {
-
 	graphicsPipeline = in_graphicsPipeline;
 }
 
 GraphicsPipeline& Renderer::GetGraphicsPipeline() {
-
 	return graphicsPipeline;
 }
 

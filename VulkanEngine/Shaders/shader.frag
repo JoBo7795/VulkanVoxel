@@ -13,8 +13,8 @@ void main() {
     outColor = texture(sampler2D(textureArray[inTexIndex - 1],texSampler), fragTexCoord);
 
 
-    //if(inTexIndex == 1)
-    //    outColor = vec4(1.0, 0.0, 0.0, 1.0);
+    if(inTexIndex == 0)
+        outColor = vec4(1.0, 0.0, 0.0, 1.0);
     //else if(inTexIndex == 2)
     //    outColor = vec4(0.0, float(inTexIndex), 0.0, 1.0);
 }

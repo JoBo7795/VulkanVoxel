@@ -1,5 +1,7 @@
 #include "SceneDescription.h"
 
+VoxelMesh Scene::voxelMesh;
+
 void Scene::LoadRessources() {
 
     std::vector<Texture> textureArr;
@@ -24,17 +26,23 @@ void Scene::LoadRessources() {
     
     textureArr.push_back(texture3);
 
+
+
     Model model;
     model.LoadModelFromObjFile(MODEL_PATH);    
     model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
     model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
     ModelManager::GetInstance()->AppendModelToMap(model,MODEL_AFFE);
 
-
     model.LoadModelFromObjFile(VIKING_MODEL_PATH);
     model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
     model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
     ModelManager::GetInstance()->AppendModelToMap(model, MODEL_VIKING);
+
+    model.LoadModelFromObjFile(MARKER_SPHERE_MODEL_PATH);
+    model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
+    model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
+    ModelManager::GetInstance()->AppendModelToMap(model, MARKER_SPHERE);
 
     voxelMesh.LoadVoxelMesh();
 }
@@ -42,12 +50,21 @@ void Scene::LoadRessources() {
 void Scene::SceneDescription() {
 
 
-     GameObject gameObject;
-     
-     gameObject.textureId = 0;
-     gameObject.position = glm::vec3(-0.5, 1.5, 0.0);
-     gameObject.modelId = MODEL_AFFE;
 
+    // TODO nur letztes Objekt wird angezeigt
+    GameObject go;
+
+    go.modelId = MODEL_VIKING;
+    go.position = glm::vec3(glm::vec3(3,3,0));
+    GameObjectManager::GetInstance()->AppendGameObjectToQueue(go);
+
+
+
+    go.modelId = MODEL_AFFE;
+    go.position = glm::vec3(glm::vec3(0, 3, 0));
+    GameObjectManager::GetInstance()->AppendGameObjectToQueue(go);
+
+    
 }
 
 void Scene::ChangeVoxelAtIndex(uint32_t index, uint8_t val) {

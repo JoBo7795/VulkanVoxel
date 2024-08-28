@@ -33,7 +33,7 @@ private:
 
 	SyncObjects syncObjects;
 	DepthRessources depthRessources;
-	Descriptors descriptors;
+	Descriptors* descriptorsRef;
 
 	VkPipeline graphicsPipeline;
 	VkPipelineLayout pipelineLayout;

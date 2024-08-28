@@ -10,6 +10,11 @@
 #include "../PerlinNoise/PerlinNoise.h"
 #include "Renderer.h"
 
+#define VOXEL_GRID_LENGTH 5
+#define VOXEL_GRID_HEIGHT 5
+#define VOXEL_GRID_DEPTH 5
+#define VOXEL_BOX_DIM_SIZE 1.0
+
 struct Cube {
 
     enum CubeSides {
@@ -134,10 +139,15 @@ private:
     int indexBufferSize = 0;
     
 public:
+
     VoxelMesh();
+
+    uint32_t GetGridLength();
+    uint32_t GetGridHeigth();
+    uint32_t GetGridDepth();
+
 	void LoadVoxelMesh();
     void UpdateVoxelMesh();
     void ChangeVoxelAtIndex(uint32_t index, uint8_t val);
     int32_t ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val);
 };
-

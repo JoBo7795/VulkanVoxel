@@ -14,8 +14,6 @@
 #include "SceneDescription.h"
 
 
-
-
 class VulkanInstance
 {
 public:

@@ -25,14 +25,10 @@ VulkanInstance::VulkanInstance() {
     scene.LoadRessources();
     scene.SceneDescription();
 
-    for (int i = 0; i < GameObjectManager::GetInstance()->GetGameObjectQueueSize(); i++) {
-        BufferManager::GetInstance()->CreateUniformBuffers();
-    }
+    InitVulkan();   
 
 
-    InitVulkan();    
-   
-    
+
 }
 
 VulkanInstance::~VulkanInstance() {
@@ -65,7 +61,7 @@ void VulkanInstance::InitVulkan() {
     
     rendererInstance->SetCamera(camera);
     rendererInstance->InitRenderer(window);
-
+    
     InitImGui(window.GetWindowRef(), instance,VulkanDevices::GetInstance()->GetDevice(), VulkanDevices::GetInstance()->GetPhysicalDevice(),VulkanQueueManager::GetInstance()->GetGraphicsQueue());
 }
 
@@ -78,7 +74,7 @@ void VulkanInstance::InitImGui(GLFWwindow* window, VkInstance instance, VkDevice
 
     Renderer* rendererInstance = Renderer::GetInstance();
 
-    VkDescriptorPoolSize pool_sizes[] =
+    std::vector<VkDescriptorPoolSize> pool_sizes =
     {
         { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 },
     };
@@ -86,9 +82,14 @@ void VulkanInstance::InitImGui(GLFWwindow* window, VkInstance instance, VkDevice
     pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
     pool_info.maxSets = 1;
-    pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
-    pool_info.pPoolSizes = pool_sizes;
-    if (vkCreateDescriptorPool(device, &pool_info, nullptr, &rendererInstance->GetGraphicsPipeline().GetDescriptors().GetDescriptorPool()) != VK_SUCCESS) {
+    pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(&pool_sizes);
+    pool_info.pPoolSizes = pool_sizes.data();
+
+
+    auto descriptorInstance = Descriptors::GetInstance();
+    size_t index = descriptorInstance->CreateDescriptorPool(pool_info, pool_sizes);
+
+    if (vkCreateDescriptorPool(device, &pool_info, nullptr, &Descriptors::GetInstance()->GetDescriptorPool(index)) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor pool!");
     }
 
@@ -98,7 +99,7 @@ void VulkanInstance::InitImGui(GLFWwindow* window, VkInstance instance, VkDevice
     init_info.PhysicalDevice = physicalDevice;
     init_info.Device = device;
     init_info.Queue = graphicsQueue;
-    init_info.DescriptorPool = rendererInstance->GetGraphicsPipeline().GetDescriptors().GetDescriptorPool();
+    init_info.DescriptorPool = rendererInstance->GetGraphicsPipeline().GetDescriptors().GetDescriptorPool(index);
     init_info.MinImageCount = 2;
     init_info.ImageCount = 4;
     init_info.RenderPass = rendererInstance->GetGraphicsPipeline().GetRenderPass();
@@ -109,6 +110,7 @@ void VulkanInstance::MainLoop() {
 
     glm::vec3 voxelIndex = glm::vec3(0);
     int voxelVal = 0;
+    auto gOManagerRef = GameObjectManager::GetInstance();
 
     while (!glfwWindowShouldClose(window.GetWindowRef())) {
         glfwPollEvents();
@@ -117,8 +119,7 @@ void VulkanInstance::MainLoop() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         {
-
-
+        
             ImGui::Begin("Voxel");                          
             ImGui::Text("Select Voxel Index");
             ImGui::InputFloat3("VoxelIndex", &voxelIndex[0]);
@@ -126,11 +127,13 @@ void VulkanInstance::MainLoop() {
             if (ImGui::Button("Set VoxelType")) {
                 scene.ChangeVoxelAtIndex(voxelIndex,voxelVal);
             }
-
+        
             ImGui::End();
         }
-
+        
         ImGui::Render();
+        
+        gOManagerRef->UpdateGameObjectUBOs();
 
         Renderer::GetInstance()->Render();
         

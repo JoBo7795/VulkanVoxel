@@ -11,16 +11,17 @@ GraphicsPipeline::GraphicsPipeline() {
 }
 
 GraphicsPipeline::~GraphicsPipeline() {
-    descriptors.CleanUp();
+    Descriptors::GetInstance()->CleanUp();
 }
 
 void GraphicsPipeline::SetupGraphicsPipeline(){
 
-    descriptors.CreateDescriptorPool();
-    descriptors.CreateDescriptorSetLayout();
+    descriptorsRef = Descriptors::GetInstance();
+    std::cout << "descriptors pointer: " << descriptorsRef << std::endl;
 
-    descriptors.CreateDescriptorSets();
-
+    descriptorsRef->CreateDescriptorPool();
+    descriptorsRef->CreateDescriptorSetLayout();
+    GameObjectManager::GetInstance()->UpdateGameObjectUBOs();
 
     this->syncObjects.CreateSyncObjects();
     BufferManager::GetInstance()->CreateCommandBuffers();
@@ -103,9 +104,11 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     Model models;
     auto numUBOs = (bufferManagerRef->GetUniformBuffers().size() / MAX_FRAMES_IN_FLIGHT);
     int size = GameObjectManager::GetInstance()->GetGameObjectQueueSize();
+    int index = 0;
+
 
     for (int i = 0; i < size; i++) {
-        int index = (i * MAX_FRAMES_IN_FLIGHT + currentFrame);
+        index = (i * MAX_FRAMES_IN_FLIGHT + currentFrame);
         models = managerRef->GetModelFromQueue(gOManagerRef->GetGameObjectFromQueue(i).modelId);
 
         VkDeviceSize offsets[] = { 0 };
@@ -114,7 +117,7 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
 
         vkCmdBindIndexBuffer(commandBuffer, bufferManagerRef->GetIndexBuffers()[models.indexBufferId], 0, VK_INDEX_TYPE_UINT32);
 
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptors.GetDescriptorSets()[index], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorsRef->GetDescriptorSets()[index], 0, nullptr);
        
         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(models.indices.size()), 1, 0, 0, 0);
 
@@ -153,6 +156,8 @@ void GraphicsPipeline::DrawFrame(Window& windowRef) {
         throw std::runtime_error("failed to acquire swap chain image!");
     }
 
+
+
     vkResetFences(device, 1, &syncObjects.GetInFlightFences()[currentFrame]);
 
     auto commandBuffers = bufferManagerRef->GetCommandBuffers();
@@ -160,12 +165,15 @@ void GraphicsPipeline::DrawFrame(Window& windowRef) {
     auto goManagerRef = GameObjectManager::GetInstance();
     auto numGOs = goManagerRef->GetGameObjectQueueSize();
     auto extent = swapChainRef->GetSwapChainExtent();
+
+    for (uint16_t i = 0; i < numGOs; i++) {
+        bufferManagerRef->UpdateUniformBuffer(goManagerRef->GetGameObjectFromQueue(i).position, Renderer::GetInstance()->GetCamera(), i * MAX_FRAMES_IN_FLIGHT + currentFrame, extent.width, extent.height);
+    }
+
     vkResetCommandBuffer(commandBuffers[currentFrame], 0);
     RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
 
-    for (uint16_t i = 0; i < numGOs; i++) {
-        bufferManagerRef->UpdateUniformBuffer(goManagerRef->GetGameObjectFromQueue(i).position, Renderer::GetInstance()->GetCamera(), i * MAX_FRAMES_IN_FLIGHT + currentFrame , extent.width, extent.height);
-    }
+
 
     VkSubmitInfo submitInfo{};
 
@@ -219,7 +227,7 @@ VkRenderPass& GraphicsPipeline::GetRenderPass() {
 }
 
 Descriptors& GraphicsPipeline::GetDescriptors() {
-    return descriptors;
+    return *descriptorsRef;
 }
 
 void GraphicsPipeline::CreateRenderPass() {
@@ -376,7 +384,7 @@ void GraphicsPipeline::CreateGraphicsPipeline() {
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &descriptors.GetDescriptorSetLayout();
+    pipelineLayoutInfo.pSetLayouts = &descriptorsRef->GetDescriptorSetLayout();
 
     if (vkCreatePipelineLayout(VulkanDevices::GetInstance()->GetDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create pipeline layout!");
