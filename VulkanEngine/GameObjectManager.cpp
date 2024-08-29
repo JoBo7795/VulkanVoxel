@@ -71,14 +71,11 @@ void GameObjectManager::UpdateGameObjectUBOs() {
 					BufferManager::GetInstance()->CreateUniformBuffer();
 				}
 
-
+				// create ubo and feed with dummy data
 				Camera placeholdCam(glm::vec3(0));
-
 				BufferManager::GetInstance()->UpdateUniformBuffer(gameObjectQueue[i].position, placeholdCam, i * MAX_FRAMES_IN_FLIGHT, 100, 200);
 
-
 				Descriptors::GetInstance()->CreateDescriptorSet(gameObjectQueue[i],MAX_FRAMES_IN_FLIGHT);
-				//Descriptors::GetInstance()->CreateDescriptorSets();
 
 				creationStatus[i] = true;
 			}

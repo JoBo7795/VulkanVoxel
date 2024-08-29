@@ -10,9 +10,9 @@
 #include "../PerlinNoise/PerlinNoise.h"
 #include "Renderer.h"
 
-#define VOXEL_GRID_LENGTH 5
-#define VOXEL_GRID_HEIGHT 5
-#define VOXEL_GRID_DEPTH 5
+#define VOXEL_GRID_LENGTH 3
+#define VOXEL_GRID_HEIGHT 3
+#define VOXEL_GRID_DEPTH 3
 #define VOXEL_BOX_DIM_SIZE 1.0
 
 struct Cube {

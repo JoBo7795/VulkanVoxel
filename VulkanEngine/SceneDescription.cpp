@@ -52,17 +52,17 @@ void Scene::SceneDescription() {
 
 
     // TODO nur letztes Objekt wird angezeigt
-    GameObject go;
-
-    go.modelId = MODEL_VIKING;
-    go.position = glm::vec3(glm::vec3(3,3,0));
-    GameObjectManager::GetInstance()->AppendGameObjectToQueue(go);
-
-
-
-    go.modelId = MODEL_AFFE;
-    go.position = glm::vec3(glm::vec3(0, 3, 0));
-    GameObjectManager::GetInstance()->AppendGameObjectToQueue(go);
+    //GameObject go;
+    //
+    //go.modelId = MODEL_VIKING;
+    //go.position = glm::vec3(glm::vec3(3,3,0));
+    //GameObjectManager::GetInstance()->AppendGameObjectToQueue(go);
+    //
+    //
+    //
+    //go.modelId = MODEL_AFFE;
+    //go.position = glm::vec3(glm::vec3(0, 3, 0));
+    //GameObjectManager::GetInstance()->AppendGameObjectToQueue(go);
 
     
 }

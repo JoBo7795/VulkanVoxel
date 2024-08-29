@@ -42,25 +42,35 @@ void  Physics::BoundingBox::CreateBoundingBox(std::vector<Vertex>& vertexList)
 
 }
 
-bool Physics::CheckRayBoxCollision(Ray& ray, BoundingBox& bb){
+
+bool Physics::CheckRayBoxCollision(Ray& ray, BoundingBox& bb, glm::vec3& collPoint){
 
 
 
-	return(CheckRayOnPlane(ray, glm::abs(bb.zMin - (ray.origin.z + ray.direction.z)), bb.xMin, bb.yMin, bb.xMax, bb.yMax) ||			// Front 
-		CheckRayOnPlane(ray, glm::abs(bb.zMax - (ray.origin.z + ray.direction.z)), bb.xMin, bb.yMin, bb.xMax, bb.yMax));	// Back
-
+	return (CheckRayOnPlane(ray, glm::abs((bb.zMin - ray.origin.z ) * ray.direction.z) , bb.xMin, bb.yMin, bb.xMax, bb.yMax, collPoint) ||			// Front 
+		CheckRayOnPlane(ray, glm::abs((bb.zMax - ray.origin.z) * ray.direction.z), bb.xMin, bb.yMin, bb.xMax, bb.yMax, collPoint)); 	// Back
+		
 
 }
 
-bool Physics::CheckRayOnPlane(Ray& ray, float rayBoxDiff, float xMin, float yMin, float xMax, float yMax) {
-
+bool Physics::CheckRayOnPlane(Ray& ray, float rayBoxDiff, float xMin, float yMin, float xMax, float yMax, glm::vec3& collPoint) {
+	float x2 = 0.0, y2 = 0.0;
 	//  ray.direction.x ,ray.direction.y,
-	return (CheckPointOnPlane(ray.origin.z, ray.origin.z + ray.direction.z * rayBoxDiff, ray.origin.x, xMin, yMin, xMax, yMax, ray.CalculateGradient(ray.direction.z, ray.direction.z * 2.0, ray.direction.x, ray.direction.x * 2.0)) &&
-		CheckPointOnPlane(ray.origin.z, ray.origin.z + ray.direction.z * rayBoxDiff, ray.origin.y, xMin, yMin, xMax, yMax, ray.CalculateGradient(ray.direction.z, ray.direction.z * 2.0, ray.direction.y, ray.direction.y * 2.0)));
+	if (CheckPointOnPlane(ray.origin.z, ray.direction.z * rayBoxDiff, ray.origin.x,x2, xMin, xMax, ray.CalculateGradient(ray.origin.z, ray.origin.z + ray.direction.z, ray.origin.x, ray.origin.x + ray.direction.x),collPoint) &&
+		CheckPointOnPlane(ray.origin.z, ray.direction.z * rayBoxDiff, ray.origin.y,y2,  yMin, yMax, ray.CalculateGradient(ray.origin.z, ray.origin.z + ray.direction.z, ray.origin.y, ray.origin.y + ray.direction.y),collPoint)){
+		
+		collPoint.x = x2;
+		collPoint.y = y2;
+		collPoint.z = ray.origin.z + ray.direction.z * rayBoxDiff;
 
+		return true;
+
+	}
+
+	return false;
 }
 
-bool Physics::CheckPointOnPlane(float x1, float x2, float y1, float xMin, float yMin,float xMax, float yMax, float m){
+bool Physics::CheckPointOnPlane(float x1, float x2, float y1, float& y2, float xMin, float xMax, float m, glm::vec3& collPoint){
 
 	float my;
 
@@ -71,8 +81,9 @@ bool Physics::CheckPointOnPlane(float x1, float x2, float y1, float xMin, float 
 	my = m * (x2 - x1) + y1;
 	//mx = ((y2 - y1) / m) - x1;
 
-	if ( my < yMin || my > yMax )
+	if ( my < xMin || my > xMax )
 		return false;
 
+	y2 = my;
 	return true;
 }
