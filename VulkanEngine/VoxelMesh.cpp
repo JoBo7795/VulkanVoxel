@@ -43,10 +43,13 @@ VoxelMesh::VoxelMesh() {
 			uint8_t type = dis(gen);
 			
 			heightMap.push_back(round(val * (gridLength - 1)));
-			voxelGrid[arrIndex] = type;
+			//voxelGrid[arrIndex] = type;
+			voxelGrid[arrIndex] = 0;
 
 			for (int i = 0; i < perlinY;i++) {
-				voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z)) ] = type;
+				//voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z)) ] = type;
+				voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z)) ] = 0;
+
 			}
 		}
 
@@ -54,7 +57,7 @@ VoxelMesh::VoxelMesh() {
 	}
 	std::cout << num << std::endl;
 
-
+	voxelGrid[PositionToArrayIndex(glm::vec3(1,1,1))] = 1;
 
 	auto cam = Renderer::GetInstance()->GetCamera();
 	cam.SetPosition(glm::vec3(gridLength / 2, gridHeight/2, gridDepth / 2));
@@ -396,4 +399,8 @@ int32_t VoxelMesh::ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val) {
 
 	return PositionToArrayIndex(indexVector);
 
+}
+
+uint8_t VoxelMesh::GetVoxelAtIndex(glm::vec3 indexVector) {
+	return voxelGrid[PositionToArrayIndex(indexVector)];
 }

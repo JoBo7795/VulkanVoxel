@@ -21,14 +21,13 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	
 	auto camRef = Renderer::GetInstance()->GetCamera();
 	Renderer::GetInstance()->GetCamera().SetCameraSpeed(camRef.GetCameraSpeed()+yoffset*.1);
-	
 
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+
 
 		glm::vec3 camPos = Renderer::GetInstance()->GetCamera().GetPosition();
 		glm::vec3 clickDir = Renderer::GetInstance()->GetCamera().GetDirection();
@@ -36,17 +35,26 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		Physics::Ray ray = Physics::Ray(camPos,clickDir,1.0f);
 
 		GameObject posMarker;
-		//posMarker.position = glm::vec3(i + 0.5, j + 0.5, k + 0.5);
+
 		posMarker.position = ray.origin + ray.direction;
 		posMarker.modelId = MARKER_SPHERE;
 		GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
 
 		int c = 0;
+
+		float minDist;
+		glm::vec3 clickIndex;
+		bool first = true, hit = false;
+		float currDist;
+		Physics::BoundingBox bb;
+		glm::vec3 collPoint;
+		uint8_t cubeSide;
+
+		bool leftClick = button == GLFW_MOUSE_BUTTON_LEFT;
+
 		for (int i = 0; i < VOXEL_GRID_LENGTH;i++) {
 			for (int j = 0; j < VOXEL_GRID_HEIGHT; j++) {
 				for (int k = 0; k < VOXEL_GRID_DEPTH; k++) {
-
-					Physics::BoundingBox bb;
 
 					int x =  i, y = VOXEL_GRID_HEIGHT - 1 - j , z = k;
 
@@ -57,102 +65,120 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 					bb.zMin = glm::vec3(x, y, z).z;
 					bb.zMax = glm::vec3(x, y, z + VOXEL_BOX_DIM_SIZE).z;
 
+					if (Physics::CheckRayBoxCollision(ray, bb,collPoint,cubeSide)) {						
 
-					std::cout << "y: " << y << " bb.yMin: " << bb.yMin << " bb.yMax: " << bb.yMax << std::endl;
+						currDist = glm::length(ray.origin - collPoint);
 
-					glm::vec3 collPoint;
-					if (Physics::CheckRayBoxCollision(ray, bb,collPoint)) {
-						std::cout << "hit at: " << x << " " << y << " " << z << std::endl;
-						Scene::ChangeVoxelAtIndex(glm::vec3(x,y,z),0);
-
-
-
-						//posMarker.position = glm::vec3(i + 0.5, j + 0.5, k + 0.5);
-						posMarker.position = collPoint;
-						posMarker.modelId = MARKER_SPHERE;
- 						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);			
-
-						posMarker.position = glm::vec3(x, y, z);
-						posMarker.modelId = MARKER_SPHERE;
-						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-						
-						posMarker.position = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z);
-						posMarker.modelId = MARKER_SPHERE;
-						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-						
-						posMarker.position = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y + VOXEL_BOX_DIM_SIZE, z + VOXEL_BOX_DIM_SIZE);
-						posMarker.modelId = MARKER_SPHERE;
-						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-						
-						
-						posMarker.position = glm::vec3(x, y + VOXEL_BOX_DIM_SIZE, z + VOXEL_BOX_DIM_SIZE);
-						posMarker.modelId = MARKER_SPHERE;
-						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-
-						posMarker.position = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y + VOXEL_BOX_DIM_SIZE, z);
-						posMarker.modelId = MARKER_SPHERE;
-						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-
-						posMarker.position = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z + VOXEL_BOX_DIM_SIZE);
-						posMarker.modelId = MARKER_SPHERE;
-						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-
-						posMarker.position = glm::vec3(x, y , z + VOXEL_BOX_DIM_SIZE);
-						posMarker.modelId = MARKER_SPHERE;
-						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-
-
-						//posMarker.position = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z + VOXEL_BOX_DIM_SIZE);
-						//posMarker.modelId = MARKER_SPHERE;
-						//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-
+						if((first || (minDist > currDist)) && ((Scene::GetVoxelAtIndex(glm::vec3(x, y, z)) != 0) )){
+							minDist = currDist;
+							clickIndex = glm::vec3(x, y, z);
+							first = false;
+							hit = true;
+						}
 						c++;
-						//return;
+
 					}
 				}
 			}
 		}
-		std::cout << "hit :" << c << std::endl;
+		if (hit) {
+			if (leftClick && action == GLFW_PRESS) {
+				Scene::ChangeVoxelAtIndex(clickIndex, 0);
+			}
+			if (!leftClick && action == GLFW_PRESS) {
+				glm::vec3 resIndex;
+
+				switch (cubeSide)
+				{
+
+				case Cube::TOP:
+					resIndex = clickIndex;
+					resIndex.y += 1;
+					Scene::ChangeVoxelAtIndex(resIndex, 1);
+					break;
+
+				case Cube::BOTTOM:
+					resIndex = clickIndex;
+					resIndex.y -= 1;
+					Scene::ChangeVoxelAtIndex(resIndex, 1);
+					break;
+
+				case Cube::FRONT:
+					resIndex = clickIndex;
+					resIndex.x -= 1;
+					Scene::ChangeVoxelAtIndex(resIndex, 1);
+					break;
+
+				case Cube::BACK:
+					resIndex = clickIndex;
+					resIndex.x += 1;
+					Scene::ChangeVoxelAtIndex(resIndex, 1);
+					break;
+
+				case Cube::RIGHT:
+					resIndex = clickIndex;
+					resIndex.z -= 1;
+					Scene::ChangeVoxelAtIndex(resIndex, 1);
+					break;
+
+				case Cube::LEFT:
+					resIndex = clickIndex;
+					resIndex.z += 1;
+					Scene::ChangeVoxelAtIndex(resIndex, 1);
+					break;
+
+				default:
+					break;
+				}
+
+
+
+
+
+				std::cout << "rightclick";
+			}
+
+
 	}
 	
-	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 
-		glm::vec3 camPos = Renderer::GetInstance()->GetCamera().GetPosition();
-		glm::vec3 clickDir = Renderer::GetInstance()->GetCamera().GetDirection();
 
-		Physics::Ray ray = Physics::Ray(camPos, clickDir, 1.0f);
-		int c = 0;
-		for (int i = 0; i < VOXEL_GRID_LENGTH; i++) {
-			for (int j = 0; j < VOXEL_GRID_HEIGHT; j++) {
-				for (int k = 0; k < VOXEL_GRID_DEPTH; k++) {
+		//glm::vec3 camPos = Renderer::GetInstance()->GetCamera().GetPosition();
+		//glm::vec3 clickDir = Renderer::GetInstance()->GetCamera().GetDirection();
+		//
+		//Physics::Ray ray = Physics::Ray(camPos, clickDir, 1.0f);
+		//int c = 0;
+		//for (int i = 0; i < VOXEL_GRID_LENGTH; i++) {
+		//	for (int j = 0; j < VOXEL_GRID_HEIGHT; j++) {
+		//		for (int k = 0; k < VOXEL_GRID_DEPTH; k++) {
+		//
+		//			Physics::BoundingBox bb;
+		//
+		//			int x = i, y = VOXEL_GRID_HEIGHT - j, z = VOXEL_GRID_DEPTH - k;
+		//
+		//			bb.xMin = glm::vec3(x, y, z).x;
+		//			bb.xMax = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z).x;
+		//			bb.yMin = glm::vec3(x, y - VOXEL_BOX_DIM_SIZE, z).y;
+		//			bb.yMax = glm::vec3(x, y, z).y;
+		//			bb.zMin = glm::vec3(x, y, z).z;
+		//			bb.zMax = glm::vec3(x, y, z + VOXEL_BOX_DIM_SIZE).z;
+		//			glm::vec3 collPoint;
+		//			if (Physics::CheckRayBoxCollision(ray, bb,collPoint)) {
+		//				std::cout << "hit at: " << i << " " << j << " " << k << std::endl;
+		//				Scene::ChangeVoxelAtIndex(glm::vec3(x, y - 1, z - 1), 1);
+		//				GameObject posMarker;
+		//				posMarker.position = glm::vec3(i, j, k);
+		//				posMarker.modelId = MARKER_SPHERE;
+		//				GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+		//				c++;
+		//				//return;
+		//			}
+		//		}
+		//	}
+		//}
+		//std::cout << "hit :" << c << std::endl;
 
-					Physics::BoundingBox bb;
-
-					int x = i, y = VOXEL_GRID_HEIGHT - j, z = VOXEL_GRID_DEPTH - k;
-
-					bb.xMin = glm::vec3(x, y, z).x;
-					bb.xMax = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z).x;
-					bb.yMin = glm::vec3(x, y - VOXEL_BOX_DIM_SIZE, z).y;
-					bb.yMax = glm::vec3(x, y, z).y;
-					bb.zMin = glm::vec3(x, y, z).z;
-					bb.zMax = glm::vec3(x, y, z + VOXEL_BOX_DIM_SIZE).z;
-					glm::vec3 collPoint;
-					if (Physics::CheckRayBoxCollision(ray, bb,collPoint)) {
-						std::cout << "hit at: " << i << " " << j << " " << k << std::endl;
-						Scene::ChangeVoxelAtIndex(glm::vec3(x, y - 1, z - 1), 1);
-						GameObject posMarker;
-						posMarker.position = glm::vec3(i, j, k);
-						posMarker.modelId = MARKER_SPHERE;
-						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-						c++;
-						//return;
-					}
-				}
-			}
-		}
-		std::cout << "hit :" << c << std::endl;
-
-	}
+	//}
 
 }
 

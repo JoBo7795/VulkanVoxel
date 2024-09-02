@@ -150,4 +150,5 @@ public:
     void UpdateVoxelMesh();
     void ChangeVoxelAtIndex(uint32_t index, uint8_t val);
     int32_t ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val);
+    uint8_t GetVoxelAtIndex(glm::vec3 indexVector);
 };

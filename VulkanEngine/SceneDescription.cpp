@@ -80,3 +80,9 @@ void Scene::ChangeVoxelAtIndex(uint32_t index, uint8_t val) {
 void Scene::ChangeVoxelAtIndex(glm::vec3 index, uint8_t val) {   
     std::cout << "changed index: " << voxelMesh.ChangeVoxelAtIndex(index, val) << " to value: " << val << std::endl;
 }
+
+uint8_t Scene::GetVoxelAtIndex(glm::vec3 index) {
+    uint8_t voxelVal = voxelMesh.GetVoxelAtIndex(index);
+    std::cout << "get voxel: " << glm::to_string(index) << " with value: " << voxelVal << std::endl;
+    return voxelVal;
+}
