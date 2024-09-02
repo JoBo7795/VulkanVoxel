@@ -65,8 +65,7 @@ void GameObjectManager::UpdateGameObjectUBOs() {
 		int size = gameObjectQueue.size();
 		for (int i = 0; i < size; i++) {
 			if (!creationStatus[i]) {
-				std::cout << "descriptors pointer: " << Descriptors::GetInstance() << std::endl;
-
+				
 				for (int j = 0; j < MAX_FRAMES_IN_FLIGHT; j++) {
 					BufferManager::GetInstance()->CreateUniformBuffer();
 				}

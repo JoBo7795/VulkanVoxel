@@ -6,7 +6,7 @@ Descriptors* Descriptors::instance = nullptr;
 
 
 Descriptors::Descriptors() {
-    poolSize = 100;
+    poolSize = 1000;
     updateSize = 50;
     descriptorSets.reserve(100);
 }
@@ -147,7 +147,7 @@ void Descriptors::CreateDescriptorSets() {
                 bufferInfo.buffer = bufferManagerRef->GetUniformBuffers()[index];
                 bufferInfo.offset = 0;
                 bufferInfo.range = sizeof(UniformBufferObject);
-                std::cout << index << std::endl;
+                //std::cout << index << std::endl;
 
                 const uint16_t drawTextureSize = managerRef->GetTextureQueueSize();
 
@@ -240,7 +240,7 @@ void Descriptors::CreateDescriptorSet(GameObject& gameObject,const uint32_t uboC
             bufferInfo.buffer = bufferManagerRef->GetUniformBuffers()[index];
             bufferInfo.offset = 0;
             bufferInfo.range = sizeof(UniformBufferObject);
-            std::cout << index << std::endl;
+            //std::cout << index << std::endl;
 
             const uint16_t drawTextureSize = managerRef->GetTextureQueueSize();
 

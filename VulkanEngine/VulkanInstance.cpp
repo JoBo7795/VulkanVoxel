@@ -117,20 +117,28 @@ void VulkanInstance::MainLoop() {
 
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+
         {
-        
-            ImGui::Begin("Voxel");                          
+            ImGui::NewFrame();
+            ImGui::Begin("Voxel");
             ImGui::Text("Select Voxel Index");
             ImGui::InputFloat3("VoxelIndex", &voxelIndex[0]);
             ImGui::InputInt("VoxelType", &voxelVal);
             if (ImGui::Button("Set VoxelType")) {
-                scene.ChangeVoxelAtIndex(voxelIndex,voxelVal);
+                scene.ChangeVoxelAtIndex(voxelIndex, voxelVal);
             }
-        
             ImGui::End();
         }
-        
+
+        // Hole die aktuelle Zeichnungsliste für den Hintergrund
+        ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
+
+        // Bestimme die Mitte des Bildes
+        ImVec2 center = ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2);
+
+        // Zeichne einen Punkt in der Mitte des Bildes
+        draw_list->AddCircle(center, 1.0f, IM_COL32(255, 0, 0, 255), 12, 2.0f);
+
         ImGui::Render();
         
         gOManagerRef->UpdateGameObjectUBOs();

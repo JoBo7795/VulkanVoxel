@@ -44,6 +44,11 @@ void Scene::LoadRessources() {
     model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
     ModelManager::GetInstance()->AppendModelToMap(model, MARKER_SPHERE);
 
+    model.LoadModelFromObjFile(DEFAULT_CUBE_MODEL_PATH);
+    model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
+    model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
+    ModelManager::GetInstance()->AppendModelToMap(model, DEFAULT_CUBE);
+
     voxelMesh.LoadVoxelMesh();
 }
 
@@ -51,12 +56,12 @@ void Scene::SceneDescription() {
 
 
 
-    // TODO nur letztes Objekt wird angezeigt
-    //GameObject go;
-    //
-    //go.modelId = MODEL_VIKING;
-    //go.position = glm::vec3(glm::vec3(3,3,0));
-    //GameObjectManager::GetInstance()->AppendGameObjectToQueue(go);
+    
+   // GameObject go;
+   // 
+   // go.modelId = DEFAULT_CUBE;
+   // go.position = glm::vec3(glm::vec3(0,0,0));
+   // GameObjectManager::GetInstance()->AppendGameObjectToQueue(go);
     //
     //
     //

@@ -34,30 +34,78 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		glm::vec3 clickDir = Renderer::GetInstance()->GetCamera().GetDirection();
 
 		Physics::Ray ray = Physics::Ray(camPos,clickDir,1.0f);
+
+		GameObject posMarker;
+		//posMarker.position = glm::vec3(i + 0.5, j + 0.5, k + 0.5);
+		posMarker.position = ray.origin + ray.direction;
+		posMarker.modelId = MARKER_SPHERE;
+		GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+
 		int c = 0;
 		for (int i = 0; i < VOXEL_GRID_LENGTH;i++) {
-			for (int j = 0; j < VOXEL_GRID_LENGTH; j++) {
+			for (int j = 0; j < VOXEL_GRID_HEIGHT; j++) {
 				for (int k = 0; k < VOXEL_GRID_DEPTH; k++) {
 
 					Physics::BoundingBox bb;
 
-					int x =  i, y = VOXEL_GRID_HEIGHT - j, z = VOXEL_GRID_DEPTH - k;
+					int x =  i, y = VOXEL_GRID_HEIGHT - 1 - j , z = k;
 
 					bb.xMin = glm::vec3(x, y, z).x;
 					bb.xMax = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z).x;
-					bb.yMin = glm::vec3(x, y - VOXEL_BOX_DIM_SIZE, z).y;
-					bb.yMax = glm::vec3(x, y , z).y;
+					bb.yMin = glm::vec3(x, y, z).y;
+					bb.yMax = glm::vec3(x, y + VOXEL_BOX_DIM_SIZE , z).y;
 					bb.zMin = glm::vec3(x, y, z).z;
 					bb.zMax = glm::vec3(x, y, z + VOXEL_BOX_DIM_SIZE).z;
+
+
+					std::cout << "y: " << y << " bb.yMin: " << bb.yMin << " bb.yMax: " << bb.yMax << std::endl;
+
 					glm::vec3 collPoint;
 					if (Physics::CheckRayBoxCollision(ray, bb,collPoint)) {
-						std::cout << "hit at: " << i << " " << j << " " << k << std::endl;
-						Scene::ChangeVoxelAtIndex(glm::vec3(x,y - 1,z - 1),0);
-						GameObject posMarker;
+						std::cout << "hit at: " << x << " " << y << " " << z << std::endl;
+						Scene::ChangeVoxelAtIndex(glm::vec3(x,y,z),0);
+
+
+
 						//posMarker.position = glm::vec3(i + 0.5, j + 0.5, k + 0.5);
 						posMarker.position = collPoint;
 						posMarker.modelId = MARKER_SPHERE;
- 						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);						
+ 						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);			
+
+						posMarker.position = glm::vec3(x, y, z);
+						posMarker.modelId = MARKER_SPHERE;
+						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+						
+						posMarker.position = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z);
+						posMarker.modelId = MARKER_SPHERE;
+						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+						
+						posMarker.position = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y + VOXEL_BOX_DIM_SIZE, z + VOXEL_BOX_DIM_SIZE);
+						posMarker.modelId = MARKER_SPHERE;
+						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+						
+						
+						posMarker.position = glm::vec3(x, y + VOXEL_BOX_DIM_SIZE, z + VOXEL_BOX_DIM_SIZE);
+						posMarker.modelId = MARKER_SPHERE;
+						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+
+						posMarker.position = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y + VOXEL_BOX_DIM_SIZE, z);
+						posMarker.modelId = MARKER_SPHERE;
+						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+
+						posMarker.position = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z + VOXEL_BOX_DIM_SIZE);
+						posMarker.modelId = MARKER_SPHERE;
+						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+
+						posMarker.position = glm::vec3(x, y , z + VOXEL_BOX_DIM_SIZE);
+						posMarker.modelId = MARKER_SPHERE;
+						GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+
+
+						//posMarker.position = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z + VOXEL_BOX_DIM_SIZE);
+						//posMarker.modelId = MARKER_SPHERE;
+						//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+
 						c++;
 						//return;
 					}
@@ -80,7 +128,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 					Physics::BoundingBox bb;
 
-					int x = i, y = VOXEL_GRID_HEIGHT - j - 1, z = VOXEL_GRID_DEPTH - k;
+					int x = i, y = VOXEL_GRID_HEIGHT - j, z = VOXEL_GRID_DEPTH - k;
 
 					bb.xMin = glm::vec3(x, y, z).x;
 					bb.xMax = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z).x;
@@ -91,7 +139,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 					glm::vec3 collPoint;
 					if (Physics::CheckRayBoxCollision(ray, bb,collPoint)) {
 						std::cout << "hit at: " << i << " " << j << " " << k << std::endl;
-						Scene::ChangeVoxelAtIndex(glm::vec3(i, j, k), 1);
+						Scene::ChangeVoxelAtIndex(glm::vec3(x, y - 1, z - 1), 1);
 						GameObject posMarker;
 						posMarker.position = glm::vec3(i, j, k);
 						posMarker.modelId = MARKER_SPHERE;

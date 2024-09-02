@@ -18,6 +18,7 @@ const bool enableValidationLayers = true;
 #define MODEL_VIKING 1
 #define VOXEL_ENV 2
 #define MARKER_SPHERE 3
+#define DEFAULT_CUBE 4
 
 
 
@@ -27,6 +28,7 @@ const uint32_t HEIGHT = 600;
 const std::string MODEL_PATH = "Resources/Meshes/affe.obj";
 const std::string VIKING_MODEL_PATH = "Resources/Meshes/viking_room.obj";
 const std::string MARKER_SPHERE_MODEL_PATH = "Resources/Meshes/markerSphere.obj";
+const std::string DEFAULT_CUBE_MODEL_PATH = "Resources/Meshes/defaultCube.obj";
 const std::string TEXTURE_PATH = "Resources/Textures/viking_room.png";
 const std::string TEXTURE_PATH2 = "Resources/Textures/ErdeOberfläche.png";
 

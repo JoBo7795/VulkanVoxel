@@ -54,6 +54,8 @@ VoxelMesh::VoxelMesh() {
 	}
 	std::cout << num << std::endl;
 
+
+
 	auto cam = Renderer::GetInstance()->GetCamera();
 	cam.SetPosition(glm::vec3(gridLength / 2, gridHeight/2, gridDepth / 2));
 	Renderer::GetInstance()->SetCamera(cam);
@@ -375,7 +377,7 @@ int32_t VoxelMesh::ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val) {
 		vertexBufferSize = sizeof(model.vertices[0]) * model.vertices.size();
 		std::cout << "Create New VertexBuffer with size: " << vertexBufferSize << std::endl;
 	}
-	else {
+	else if(model.vertices.size() > 0){
 		BufferManager::GetInstance()->UpdateVertexBuffer(model.verticeBufferId, (void*)&model.vertices[0], sizeof(model.vertices[0]) * model.vertices.size());
 		std::cout << "Update VertexBuffer" << std::endl;
 	}
@@ -386,7 +388,7 @@ int32_t VoxelMesh::ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val) {
 		indexBufferSize = sizeof(model.indices[0]) * model.indices.size();
 		std::cout << "Create New IndexBuffer with size: " << indexBufferSize << std::endl;
 	}
-	else {
+	else if(model.indices.size() > 0) {
 		BufferManager::GetInstance()->UpdateIndexBuffer(model.indexBufferId, (void*)&model.indices[0], sizeof(model.indices[0]) * model.indices.size());
 		std::cout << "Update IndexBuffer with size: " << sizeof(model.indices[0])* model.indices.size() << std::endl;
 	}

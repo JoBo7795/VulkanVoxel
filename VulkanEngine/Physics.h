@@ -11,7 +11,7 @@ namespace Physics
 		float length;
 		float gradient;		
 
-		float CalculateGradient(float x1, float x2, float y1, float y2);
+		
 	};
 
 	struct BoundingBox {
@@ -23,8 +23,13 @@ namespace Physics
 
 	bool CheckRayBoxCollision(Ray& ray, BoundingBox& bb,glm::vec3& collPoint);
 	bool CheckRayOnPlane(Ray& ray, float rayBoxDiff, float xMin, float yMin, float xMax, float yMax, glm::vec3& collPoint);
+	bool CheckRayOnPlane(float rayOriginZ, float raydirZ, float rayOriginX, float rayOriginY, float rayDirX, float rayDirY, float rayBoxDiff, float xMin, float yMin, float xMax, float yMax, glm::vec3& collPoint);
 	bool CheckPointOnPlane(float x1, float x2, float y1, float& y2, float xMin,  float xMax, float m, glm::vec3& collPoint);
+	float CalculateGradient(float x1, float x2, float y1, float y2);
 
+
+	bool CheckRayOnPlane(Ray& ray, float rayBoxDiff, float xMin, float yMin, float xMax, float yMax, glm::vec3& collPoint);
+	bool CheckPointOnPlane(float x1, float x2, float y1, float& y2, float xMin, float xMax, float m, glm::vec3& collPoint);
 
 };
 
