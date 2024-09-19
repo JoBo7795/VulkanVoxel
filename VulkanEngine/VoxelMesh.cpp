@@ -47,8 +47,8 @@ VoxelMesh::VoxelMesh() {
 			voxelGrid[arrIndex] = 0;
 
 			for (int i = 0; i < perlinY;i++) {
-				//voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z)) ] = type;
-				voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z)) ] = 0;
+				voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z)) ] = type;
+				//voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z)) ] = 0;
 
 			}
 		}
@@ -278,7 +278,7 @@ void VoxelMesh::UpdateVoxelMesh() {
 
 void VoxelMesh::DrawCubeSideLeft(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.LEFT, gridPos,type);
+	auto sideData = Cube::getSideAsVertexArray(Cube::LEFT, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 1 + offset, 2 + offset, 2 + offset, 3 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
@@ -287,7 +287,7 @@ void VoxelMesh::DrawCubeSideLeft(glm::vec3 gridPos, uint32_t& offset, uint8_t ty
 
 void VoxelMesh::DrawCubeSideRight(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.RIGHT, gridPos,type);
+	auto sideData = Cube::getSideAsVertexArray(Cube::RIGHT, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 3 + offset, 2 + offset, 2 + offset, 1 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
@@ -296,7 +296,7 @@ void VoxelMesh::DrawCubeSideRight(glm::vec3 gridPos, uint32_t& offset, uint8_t t
 
 void VoxelMesh::DrawCubeSideFront(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.FRONT, gridPos,type);
+	auto sideData = Cube::getSideAsVertexArray(Cube::FRONT, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 3 + offset, 2 + offset, 2 + offset, 1 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
@@ -305,7 +305,7 @@ void VoxelMesh::DrawCubeSideFront(glm::vec3 gridPos, uint32_t& offset, uint8_t t
 
 void VoxelMesh::DrawCubeSideBack(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.BACK, gridPos,type);
+	auto sideData = Cube::getSideAsVertexArray(Cube::BACK, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 1 + offset, 2 + offset, 2 + offset, 3 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
@@ -314,7 +314,7 @@ void VoxelMesh::DrawCubeSideBack(glm::vec3 gridPos, uint32_t& offset, uint8_t ty
 
 void VoxelMesh::DrawCubeSideBottom(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.BOTTOM, gridPos,type);
+	auto sideData = Cube::getSideAsVertexArray(Cube::BOTTOM, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 1 + offset, 2 + offset, 2 + offset, 3 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
@@ -323,7 +323,7 @@ void VoxelMesh::DrawCubeSideBottom(glm::vec3 gridPos, uint32_t& offset, uint8_t 
 
 void VoxelMesh::DrawCubeSideTop(glm::vec3 gridPos, uint32_t& offset, uint8_t type)
 {
-	auto sideData = cube.getSideAsVertexArray(cube.TOP, gridPos,type);
+	auto sideData = Cube::getSideAsVertexArray(Cube::TOP, gridPos,type);
 	voxelDrawSides.insert(voxelDrawSides.end(), sideData.begin(), sideData.end());
 	auto indiceData = { offset, 3 + offset, 2 + offset, 2 + offset, 1 + offset, offset };
 	indiceDrawSides.insert(indiceDrawSides.end(), indiceData.begin(), indiceData.end());
@@ -403,4 +403,55 @@ int32_t VoxelMesh::ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val) {
 
 uint8_t VoxelMesh::GetVoxelAtIndex(glm::vec3 indexVector) {
 	return voxelGrid[PositionToArrayIndex(indexVector)];
+}
+
+void VoxelMesh::AddCubeToCubeSide(glm::vec3 resIndex, uint8_t cubeSide) {
+
+
+		switch (cubeSide)
+		{
+
+		case TOP:
+
+			resIndex.y += 1;
+			ChangeVoxelAtIndex(resIndex, 1);
+			std::cout << "TOP" << std::endl;
+			break;
+
+		case BOTTOM:
+			resIndex.y -= 1;
+			ChangeVoxelAtIndex(resIndex, 1);
+			std::cout << "BOTTOM" << std::endl;
+			break;
+
+		case FRONT:
+			resIndex.x -= 1;
+			ChangeVoxelAtIndex(resIndex, 1);
+			std::cout << "FRONT" << std::endl;
+			break;
+
+		case BACK:
+
+			resIndex.x += 1;
+			ChangeVoxelAtIndex(resIndex, 1);
+			std::cout << "BACK" << std::endl;
+			break;
+
+		case RIGHT:
+
+			resIndex.z -= 1;
+			ChangeVoxelAtIndex(resIndex, 1);
+			std::cout << "RIGHT" << std::endl;
+			break;
+
+		case LEFT:
+			resIndex.z += 1;
+			ChangeVoxelAtIndex(resIndex, 1);
+			std::cout << "LEFT" << std::endl;
+			break;
+
+		default:
+			break;
+		}
+
 }

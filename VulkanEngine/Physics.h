@@ -1,5 +1,7 @@
 #pragma once
 #include "Defs.h"
+#include "CubeData.h"
+
 
 
 namespace Physics

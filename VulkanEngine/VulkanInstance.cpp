@@ -108,7 +108,7 @@ void VulkanInstance::InitImGui(GLFWwindow* window, VkInstance instance, VkDevice
 
 void VulkanInstance::MainLoop() {
 
-    glm::vec3 voxelIndex = glm::vec3(0);
+    glm::vec3 voxelIndex = glm::vec3(1,1,1);
     int voxelVal = 0;
     auto gOManagerRef = GameObjectManager::GetInstance();
 
@@ -127,6 +127,29 @@ void VulkanInstance::MainLoop() {
             if (ImGui::Button("Set VoxelType")) {
                 scene.ChangeVoxelAtIndex(voxelIndex, voxelVal);
             }
+
+            // Array von Strings, das den Enum-Werten entspricht
+            const char* cubeSides[] = { "FRONT", "BACK", "LEFT", "RIGHT", "TOP", "BOTTOM" };
+            static int currentSide = FRONT; // Index des aktuell ausgewählten Seiten
+
+            if (ImGui::BeginCombo("Cube Sides", cubeSides[currentSide]))
+            {
+                for (int n = 0; n < IM_ARRAYSIZE(cubeSides); n++)
+                {
+                    bool is_selected = (currentSide == n);
+                    if (ImGui::Selectable(cubeSides[n], is_selected)) {
+                        currentSide = n;
+                    }
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            if (ImGui::Button("Add Voxel at CubeSide")) {
+                scene.voxelMesh.AddCubeToCubeSide(voxelIndex, currentSide);
+            }
+
             ImGui::End();
         }
 
@@ -165,7 +188,7 @@ void VulkanInstance::CreateInstance() {
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Hello Triangle";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.pEngineName = "No Engine";
+    appInfo.pEngineName = "Voxel Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.apiVersion = VK_API_VERSION_1_0;
 

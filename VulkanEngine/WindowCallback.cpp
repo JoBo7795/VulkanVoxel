@@ -2,8 +2,13 @@
 #include "SceneDescription.h"
 #include "Renderer.h"
 
+bool stopCamMovement = false;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	
+
+	if (stopCamMovement)
+		return;
+
 	Renderer* renderRef = Renderer::GetInstance();
 	
 	glm::vec3 direction = renderRef->GetCamera().GetDirection();
@@ -26,9 +31,10 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
+
+	if (stopCamMovement)
+		return;
 	
-
-
 		glm::vec3 camPos = Renderer::GetInstance()->GetCamera().GetPosition();
 		glm::vec3 clickDir = Renderer::GetInstance()->GetCamera().GetDirection();
 
@@ -38,154 +44,91 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 		posMarker.position = ray.origin + ray.direction;
 		posMarker.modelId = MARKER_SPHERE;
-		GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+		//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
 
 		int c = 0;
 
-		float minDist;
+		double minDist = -1;
 		glm::vec3 clickIndex;
 		bool first = true, hit = false;
-		float currDist;
+		double currDist;
 		Physics::BoundingBox bb;
 		glm::vec3 collPoint;
 		uint8_t cubeSide;
+		uint8_t closestCubeSide = -1;
+		glm::vec3 finalCollPoint;
 
 		bool leftClick = button == GLFW_MOUSE_BUTTON_LEFT;
 
-		for (int i = 0; i < VOXEL_GRID_LENGTH;i++) {
-			for (int j = 0; j < VOXEL_GRID_HEIGHT; j++) {
-				for (int k = 0; k < VOXEL_GRID_DEPTH; k++) {
+		if (action == GLFW_RELEASE) {
 
-					int x =  i, y = VOXEL_GRID_HEIGHT - 1 - j , z = k;
+			for (int i = 0; i < VOXEL_GRID_LENGTH; i++) {
+				for (int j = 0; j < VOXEL_GRID_HEIGHT; j++) {
+					for (int k = 0; k < VOXEL_GRID_DEPTH; k++) {
 
-					bb.xMin = glm::vec3(x, y, z).x;
-					bb.xMax = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z).x;
-					bb.yMin = glm::vec3(x, y, z).y;
-					bb.yMax = glm::vec3(x, y + VOXEL_BOX_DIM_SIZE , z).y;
-					bb.zMin = glm::vec3(x, y, z).z;
-					bb.zMax = glm::vec3(x, y, z + VOXEL_BOX_DIM_SIZE).z;
+						int x = i, y = (VOXEL_GRID_HEIGHT - 1) -j, z = k;
 
-					if (Physics::CheckRayBoxCollision(ray, bb,collPoint,cubeSide)) {						
+						bb.xMin = glm::vec3(x, y, z).x;
+						bb.xMax = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z).x;
+						bb.yMin = glm::vec3(x, y, z).y;
+						bb.yMax = glm::vec3(x, y + VOXEL_BOX_DIM_SIZE, z).y;
+						bb.zMin = glm::vec3(x, y, z).z;
+						bb.zMax = glm::vec3(x, y, z + VOXEL_BOX_DIM_SIZE).z;
 
-						currDist = glm::length(ray.origin - collPoint);
+						if (Physics::CheckRayBoxCollision(ray, bb, collPoint, cubeSide)) {
 
-						if((first || (minDist > currDist)) && ((Scene::GetVoxelAtIndex(glm::vec3(x, y, z)) != 0) )){
-							minDist = currDist;
-							clickIndex = glm::vec3(x, y, z);
-							first = false;
-							hit = true;
+							currDist = glm::distance(ray.origin, collPoint);
+
+							if ((first || (minDist > currDist)) && ((Scene::GetVoxelAtIndex(glm::vec3(x, y, z)) != 0))) {
+								finalCollPoint = collPoint;
+								minDist = currDist;
+								clickIndex = glm::vec3(x, y, z);
+								first = false;
+								hit = true;
+								closestCubeSide = cubeSide;
+							}
+							c++;
+
 						}
-						c++;
-
 					}
 				}
 			}
-		}
-		if (hit) {
-			if (leftClick && action == GLFW_PRESS) {
-				Scene::ChangeVoxelAtIndex(clickIndex, 0);
-			}
-			if (!leftClick && action == GLFW_PRESS) {
-				glm::vec3 resIndex;
 
-				switch (cubeSide)
-				{
+			//posMarker.position = ray.origin + normalize(ray.direction) * minDist;
 
-				case Cube::TOP:
-					resIndex = clickIndex;
-					resIndex.y += 1;
-					Scene::ChangeVoxelAtIndex(resIndex, 1);
-					break;
 
-				case Cube::BOTTOM:
-					resIndex = clickIndex;
-					resIndex.y -= 1;
-					Scene::ChangeVoxelAtIndex(resIndex, 1);
-					break;
 
-				case Cube::FRONT:
-					resIndex = clickIndex;
-					resIndex.x -= 1;
-					Scene::ChangeVoxelAtIndex(resIndex, 1);
-					break;
+			if (hit) {
+				posMarker.position = finalCollPoint;
+				//posMarker.position = ray.origin + normalize(ray.direction) * minDist;
+				GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+				if (leftClick) {
+					Scene::ChangeVoxelAtIndex(clickIndex, 0);
+				}
+				if (!leftClick) {
 
-				case Cube::BACK:
-					resIndex = clickIndex;
-					resIndex.x += 1;
-					Scene::ChangeVoxelAtIndex(resIndex, 1);
-					break;
-
-				case Cube::RIGHT:
-					resIndex = clickIndex;
-					resIndex.z -= 1;
-					Scene::ChangeVoxelAtIndex(resIndex, 1);
-					break;
-
-				case Cube::LEFT:
-					resIndex = clickIndex;
-					resIndex.z += 1;
-					Scene::ChangeVoxelAtIndex(resIndex, 1);
-					break;
-
-				default:
-					break;
+					Scene::voxelMesh.AddCubeToCubeSide(clickIndex, closestCubeSide);
 				}
 
 
-
-
-
-				std::cout << "rightclick";
 			}
 
-
-	}
-	
-
-
-		//glm::vec3 camPos = Renderer::GetInstance()->GetCamera().GetPosition();
-		//glm::vec3 clickDir = Renderer::GetInstance()->GetCamera().GetDirection();
-		//
-		//Physics::Ray ray = Physics::Ray(camPos, clickDir, 1.0f);
-		//int c = 0;
-		//for (int i = 0; i < VOXEL_GRID_LENGTH; i++) {
-		//	for (int j = 0; j < VOXEL_GRID_HEIGHT; j++) {
-		//		for (int k = 0; k < VOXEL_GRID_DEPTH; k++) {
-		//
-		//			Physics::BoundingBox bb;
-		//
-		//			int x = i, y = VOXEL_GRID_HEIGHT - j, z = VOXEL_GRID_DEPTH - k;
-		//
-		//			bb.xMin = glm::vec3(x, y, z).x;
-		//			bb.xMax = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z).x;
-		//			bb.yMin = glm::vec3(x, y - VOXEL_BOX_DIM_SIZE, z).y;
-		//			bb.yMax = glm::vec3(x, y, z).y;
-		//			bb.zMin = glm::vec3(x, y, z).z;
-		//			bb.zMax = glm::vec3(x, y, z + VOXEL_BOX_DIM_SIZE).z;
-		//			glm::vec3 collPoint;
-		//			if (Physics::CheckRayBoxCollision(ray, bb,collPoint)) {
-		//				std::cout << "hit at: " << i << " " << j << " " << k << std::endl;
-		//				Scene::ChangeVoxelAtIndex(glm::vec3(x, y - 1, z - 1), 1);
-		//				GameObject posMarker;
-		//				posMarker.position = glm::vec3(i, j, k);
-		//				posMarker.modelId = MARKER_SPHERE;
-		//				GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-		//				c++;
-		//				//return;
-		//			}
-		//		}
-		//	}
-		//}
-		//std::cout << "hit :" << c << std::endl;
-
-	//}
+		}
 
 }
+
+
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 	auto camRef = Renderer::GetInstance()->GetCamera();
 	auto playerPos = camRef.GetPosition();
+
+	if (key == GLFW_KEY_X && action == GLFW_RELEASE) {
+
+		stopCamMovement = !stopCamMovement;
+	}
+
 
 	const float cameraSpeed = camRef.GetCameraSpeed();
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -223,4 +166,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		playerPos -= camRef.GetUp() * cameraSpeed;
 		Renderer::GetInstance()->GetCamera().SetPosition(playerPos);
 	}
+
+
 }

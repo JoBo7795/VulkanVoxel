@@ -150,6 +150,7 @@
     <ClCompile Include="Buffers\Buffers.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CommandPool.cpp" />
+    <ClCompile Include="CubeData.cpp" />
     <ClCompile Include="DepthRessources.cpp" />
     <ClCompile Include="Descriptors.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="Buffers\Buffers.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommandPool.h" />
+    <ClInclude Include="CubeData.h" />
     <ClInclude Include="Defs.h" />
     <ClInclude Include="DepthRessources.h" />
     <ClInclude Include="Descriptors.h" />

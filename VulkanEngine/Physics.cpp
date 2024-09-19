@@ -1,5 +1,5 @@
 #include "Physics.h"
-#include "VoxelMesh.h"
+
 
 
 Physics::Ray::Ray(glm::vec3 in_origin, glm::vec3 in_direction, float in_length)
@@ -39,84 +39,120 @@ void  Physics::BoundingBox::CreateBoundingBox(std::vector<Vertex>& vertexList)
 			zMax = currPos.z;
 	}
 
-
 }
-
 
 bool Physics::CheckRayBoxCollision(Ray& ray, BoundingBox& bb, glm::vec3& collPoint, uint8_t& cubeSide){
 
 	bool first = true, hit = false;
 	double minDist = -1, dist;
 
-	if (CheckRayOnPlane(ray.origin.z, ray.direction.z, ray.origin.x, ray.direction.x, ray.origin.y, ray.direction.y, bb.zMin - ray.origin.z, bb.xMin, bb.yMin, bb.xMax, bb.yMax, collPoint)) {
-		
-		dist = glm::length(ray.origin-collPoint);
+	auto test1 = (glm::cos(glm::angle(glm::normalize(Cube::cubeNormals.at(Cube::RIGHT)), glm::normalize(ray.direction))));
+	auto test2 = glm::cos(glm::angle(glm::normalize(Cube::cubeNormals.at(Cube::LEFT)), glm::normalize(ray.direction)));
 
+	//std::cout << "z RIGHT: " << test1 << "z LEFT: " << test2 << std::endl;
+
+	if (//(glm::cos(glm::angle(glm::normalize(Cube::cubeNormals.at(Cube::RIGHT)), glm::normalize(ray.direction))) > 0) && 
+		CheckRayOnPlane(ray.origin.z, ray.direction.z, ray.origin.x, ray.direction.x, ray.origin.y, ray.direction.y, bb.zMin - ray.origin.z, bb.xMin, bb.yMin, bb.xMax, bb.yMax, collPoint)) {
+		
+		dist = glm::distance(ray.origin,collPoint);
+	
 		if (first || (minDist > dist)) {
 			minDist = dist;
-			cubeSide = Cube::FRONT;
+			cubeSide = RIGHT;
 			first = false;
 		}
 		hit = true;
 	}			
-	if(CheckRayOnPlane(ray.origin.z, ray.direction.z, ray.origin.x, ray.direction.x, ray.origin.y, ray.direction.y, bb.zMax - ray.origin.z, bb.xMin, bb.yMin, bb.xMax, bb.yMax, collPoint)){
+	if(//(glm::cos(glm::angle(glm::normalize(Cube::cubeNormals.at(Cube::LEFT)), glm::normalize(ray.direction))) > 0) && 
+		CheckRayOnPlane(ray.origin.z, ray.direction.z, ray.origin.x, ray.direction.x, ray.origin.y, ray.direction.y, bb.zMax - ray.origin.z, bb.xMin, bb.yMin, bb.xMax, bb.yMax, collPoint)){
 		
-		dist = glm::length(ray.origin - collPoint);
-
+		dist = glm::distance(ray.origin, collPoint);
+	
 		if (first || (minDist > dist)) {
 			minDist = dist;
-			cubeSide = Cube::BACK;
+			cubeSide = LEFT;
 			first = false;
 		}		
 		hit = true;
 	}
-	if(CheckRayOnPlane(ray.origin.x, ray.direction.x, ray.origin.y, ray.direction.y, ray.origin.z, ray.direction.z, bb.xMin - ray.origin.x, bb.yMin, bb.zMin, bb.yMax, bb.zMax, collPoint)){
-		
-		dist = glm::length(ray.origin - collPoint);
 
+
+	if(//(glm::cos(glm::angle(glm::normalize(Cube::cubeNormals.at(Cube::FRONT)), glm::normalize(ray.direction))) > 0) &&
+		CheckRayOnPlane(ray.origin.x, ray.direction.x, ray.origin.y, ray.direction.y, ray.origin.z, ray.direction.z, bb.xMin - ray.origin.x, bb.yMin, bb.zMin, bb.yMax, bb.zMax, collPoint)){
+		
+		float x = collPoint.x, y = collPoint.y, z = collPoint.z;
+	
+		collPoint.x = z;
+		collPoint.y = x;
+		collPoint.z = y;
+	
+		dist = glm::distance(ray.origin, collPoint);
+	
 		if (first || (minDist > dist)) {
 			minDist = dist;
-			cubeSide = Cube::LEFT;
+			cubeSide = FRONT;
 			first = false;
 		}
 		hit = true;
 	}
-	if(CheckRayOnPlane(ray.origin.x, ray.direction.x, ray.origin.y, ray.direction.y, ray.origin.z, ray.direction.z, bb.xMax - ray.origin.x, bb.yMin, bb.zMin, bb.yMax, bb.zMax, collPoint)){
-		
-		dist = glm::length(ray.origin - collPoint);
-
-		if (first || (minDist > dist)) {
-			minDist = dist;
-			cubeSide = Cube::RIGHT;
-			first = false;
-		}
-		hit = true;
-	}
-	if (CheckRayOnPlane(ray.origin.y, ray.direction.y, ray.origin.x, ray.direction.x, ray.origin.z, ray.direction.z, bb.yMin - ray.origin.y, bb.xMin, bb.zMin, bb.xMax, bb.zMax, collPoint)) {
-		
-		dist = glm::length(ray.origin - collPoint);
-
-		if (first || (minDist > dist)) {
-			minDist = dist;
-			cubeSide = Cube::TOP;
-			first = false;
-		}		
-
-		hit = true;
-	}
-	if (CheckRayOnPlane(ray.origin.y, ray.direction.y, ray.origin.x, ray.direction.x, ray.origin.z, ray.direction.z, bb.yMax - ray.origin.y, bb.xMin, bb.zMin, bb.xMax, bb.zMax, collPoint)) {
-		
-		dist = glm::length(ray.origin - collPoint);
-
-		if (first || (minDist > dist)) {
-			minDist = dist;
-			cubeSide = Cube::BOTTOM;
-			first = false;
-		}	
-
-		hit = true;
-
-	}
+	if (//(glm::cos(glm::angle(glm::normalize(Cube::cubeNormals.at(Cube::BACK)), glm::normalize(ray.direction))) > 0)&&
+		CheckRayOnPlane(ray.origin.x, ray.direction.x, ray.origin.y, ray.direction.y, ray.origin.z, ray.direction.z, bb.xMax - ray.origin.x, bb.yMin, bb.zMin, bb.yMax, bb.zMax, collPoint)) {
+	
+		float x = collPoint.x, y = collPoint.y, z = collPoint.z;
+	
+		collPoint.x = z;
+		collPoint.y = x;
+		collPoint.z = y;
+	
+		dist = glm::distance(ray.origin, collPoint);
+	
+	 	if (first || (minDist > dist)) {
+	 		minDist = dist;
+	 		cubeSide = BACK;
+	 		first = false;
+	 	}
+	 	hit = true;
+	 }
+	 
+	 
+	 if(//(glm::cos(glm::angle(glm::normalize(Cube::cubeNormals.at(Cube::BOTTOM)), glm::normalize(ray.direction))) > 0) &&
+	 	CheckRayOnPlane(ray.origin.y, ray.direction.y, ray.origin.x, ray.direction.x, ray.origin.z, ray.direction.z, bb.yMin - ray.origin.y, bb.xMin, bb.zMin, bb.xMax, bb.zMax, collPoint)) {
+	 	
+	 	float x = collPoint.x, y = collPoint.y, z = collPoint.z;
+	 
+		collPoint.x = x;
+		collPoint.y = z;
+		collPoint.z = y;
+	 
+	 	dist = glm::distance(ray.origin, collPoint);
+	 
+	 	if (first || (minDist > dist)) {
+	 		minDist = dist;
+	 		cubeSide = BOTTOM;
+	 		first = false;
+	 	}		
+	 
+	 	hit = true;
+	 }
+	 if (//(glm::cos(glm::angle(glm::normalize(Cube::cubeNormals.at(Cube::TOP)), glm::normalize(ray.direction))) > 0) &&
+	 	CheckRayOnPlane(ray.origin.y, ray.direction.y, ray.origin.x, ray.direction.x, ray.origin.z, ray.direction.z, bb.yMax - ray.origin.y, bb.xMin, bb.zMin, bb.xMax, bb.zMax, collPoint)) {
+	 	
+	 	float x = collPoint.x, y = collPoint.y, z = collPoint.z;
+	 
+	 	collPoint.x = x;
+	 	collPoint.y = z;
+	 	collPoint.z = y;
+	 
+	 	dist = glm::distance(ray.origin, collPoint);
+	 
+	 	if (first || (minDist > dist)) {
+	 		minDist = dist;
+	 		cubeSide = TOP;
+	 		first = false;
+	 	}	
+	 
+	 	hit = true;
+	 }
 
 	return hit;
 }
@@ -130,10 +166,9 @@ bool Physics::CheckRayOnPlane(float rayOriginZ,float raydirZ, float rayOriginX, 
 
 		collPoint.x = x2;
 		collPoint.y = y2;
-		collPoint.z = rayOriginZ + raydirZ * rayBoxDiff;
+		collPoint.z = rayOriginZ + rayBoxDiff; //rayOriginZ + raydirZ * rayBoxDiff;
 
 		return true;
-
 	}
 
 	return false;
