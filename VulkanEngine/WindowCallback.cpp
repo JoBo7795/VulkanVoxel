@@ -46,8 +46,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		posMarker.modelId = MARKER_SPHERE;
 		//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
 
-		int c = 0;
-
 		double minDist = -1;
 		glm::vec3 clickIndex;
 		bool first = true, hit = false;
@@ -75,6 +73,14 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 						bb.zMin = glm::vec3(x, y, z).z;
 						bb.zMax = glm::vec3(x, y, z + VOXEL_BOX_DIM_SIZE).z;
 
+						glm::vec3 origVec = ray.origin - glm::vec3(x, y, z);
+
+						float dotProduct = glm::dot(glm::normalize(ray.direction), origVec);
+
+						// skip block if it's behind the camera
+						if (!(dotProduct <= 0))
+							continue;
+
 						if (Physics::CheckRayBoxCollision(ray, bb, collPoint, cubeSide)) {
 
 							currDist = glm::distance(ray.origin, collPoint);
@@ -87,7 +93,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 								hit = true;
 								closestCubeSide = cubeSide;
 							}
-							c++;
 
 						}
 					}

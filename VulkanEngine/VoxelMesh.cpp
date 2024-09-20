@@ -425,27 +425,27 @@ void VoxelMesh::AddCubeToCubeSide(glm::vec3 resIndex, uint8_t cubeSide) {
 			break;
 
 		case FRONT:
-			resIndex.x -= 1;
+			resIndex.z -= 1;
 			ChangeVoxelAtIndex(resIndex, 1);
 			std::cout << "FRONT" << std::endl;
 			break;
 
 		case BACK:
 
-			resIndex.x += 1;
+			resIndex.z += 1;
 			ChangeVoxelAtIndex(resIndex, 1);
 			std::cout << "BACK" << std::endl;
 			break;
 
 		case RIGHT:
 
-			resIndex.z -= 1;
+			resIndex.x -= 1;
 			ChangeVoxelAtIndex(resIndex, 1);
 			std::cout << "RIGHT" << std::endl;
 			break;
 
 		case LEFT:
-			resIndex.z += 1;
+			resIndex.x += 1;
 			ChangeVoxelAtIndex(resIndex, 1);
 			std::cout << "LEFT" << std::endl;
 			break;
