@@ -57,7 +57,7 @@ VoxelMesh::VoxelMesh() {
 	}
 	std::cout << num << std::endl;
 
-	voxelGrid[PositionToArrayIndex(glm::vec3(1,1,1))] = 1;
+	//voxelGrid[PositionToArrayIndex(glm::vec3(1,1,1))] = 1;
 
 	auto cam = Renderer::GetInstance()->GetCamera();
 	cam.SetPosition(glm::vec3(gridLength / 2, gridHeight/2, gridDepth / 2));

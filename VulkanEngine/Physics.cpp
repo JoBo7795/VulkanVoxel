@@ -46,10 +46,6 @@ bool Physics::CheckRayBoxCollision(Ray& ray, BoundingBox& bb, glm::vec3& collPoi
 	bool first = true, hit = false;
 	double minDist = -1, dist;
 
-
-
-
-
 	if (CheckRayOnPlane(ray.origin.z, ray.direction.z, ray.origin.x, ray.direction.x, ray.origin.y, ray.direction.y, bb.zMin - ray.origin.z, bb.xMin, bb.yMin, bb.xMax, bb.yMax, collPoint)) {
 		
 		dist = glm::distance(ray.origin,collPoint);

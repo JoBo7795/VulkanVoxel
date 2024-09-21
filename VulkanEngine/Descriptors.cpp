@@ -27,14 +27,12 @@ void Descriptors::CreateDescriptorPool() {
 
     std::array<VkDescriptorPoolSize, 3> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    //poolSizes[0].descriptorCount = static_cast<uint32_t>(descriptorCount);
     poolSizes[0].descriptorCount = static_cast<uint32_t>(poolSize);
+
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_SAMPLER;
-    //poolSizes[1].descriptorCount = static_cast<uint32_t>(descriptorCount);
     poolSizes[1].descriptorCount = static_cast<uint32_t>(poolSize);
 
     poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-    //poolSizes[1].descriptorCount = static_cast<uint32_t>(descriptorCount);
     poolSizes[2].descriptorCount = static_cast<uint32_t>(poolSize);
        
 
@@ -43,7 +41,6 @@ void Descriptors::CreateDescriptorPool() {
     poolInfo.poolSizeCount = poolSizes.size();
     poolInfo.pPoolSizes = poolSizes.data();
 
-    //poolInfo.maxSets = static_cast<uint32_t>(descriptorCount);
     poolInfo.maxSets = static_cast<uint32_t>(poolSize);
 
     descriptorPools.resize(descriptorPools.size()+1);
@@ -57,13 +54,6 @@ void Descriptors::CreateDescriptorPool() {
 
 size_t Descriptors::CreateDescriptorPool(VkDescriptorPoolCreateInfo& poolInfo, std::vector<VkDescriptorPoolSize>& poolSizes) {
 
-
-
-    //poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    //poolInfo.poolSizeCount = poolSizes.size();
-    //poolInfo.pPoolSizes = poolSizes.data();
-    ////poolInfo.maxSets = static_cast<uint32_t>(descriptorCount);
-    //poolInfo.maxSets = static_cast<uint32_t>(poolSize);
 
     descriptorPools.resize(descriptorPools.size() + 1);
 
@@ -118,8 +108,7 @@ void Descriptors::CreateDescriptorSets() {
     std::vector<VkDescriptorSetLayout> layouts(bufferManagerRef->GetUniformBuffers().size(), descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = descriptorPools[0]; // TODO Prüfen ob pointer bzw. gleiche wie bei erstellung ist
-    //std::cout <<"init: " << descriptorPool << std::endl;
+    allocInfo.descriptorPool = descriptorPools[0]; 
     allocInfo.descriptorSetCount =  static_cast<uint32_t>(bufferManagerRef->GetUniformBuffers().size());
     allocInfo.pSetLayouts = layouts.data();
 

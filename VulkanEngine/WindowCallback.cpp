@@ -40,10 +40,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 		Physics::Ray ray = Physics::Ray(camPos,clickDir,1.0f);
 
-		GameObject posMarker;
-
-		posMarker.position = ray.origin + ray.direction;
-		posMarker.modelId = MARKER_SPHERE;
+		//GameObject posMarker;
+		//
+		//posMarker.position = ray.origin + ray.direction;
+		//posMarker.modelId = MARKER_SPHERE;
 		//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
 
 		double minDist = -1;
@@ -99,14 +99,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 				}
 			}
 
-			//posMarker.position = ray.origin + normalize(ray.direction) * minDist;
-
-
-
 			if (hit) {
-				posMarker.position = finalCollPoint;
-				//posMarker.position = ray.origin + normalize(ray.direction) * minDist;
-				GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+				//posMarker.position = finalCollPoint;
+				//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
 				if (leftClick) {
 					Scene::ChangeVoxelAtIndex(clickIndex, 0);
 				}

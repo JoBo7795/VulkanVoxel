@@ -50,6 +50,24 @@ void Scene::LoadRessources() {
     ModelManager::GetInstance()->AppendModelToMap(model, DEFAULT_CUBE);
 
     voxelMesh.LoadVoxelMesh();
+
+    LightManager* lmRef = LightManager::GetInstance();
+
+    Light light;
+    light.position = glm::vec4(VOXEL_GRID_LENGTH/2, VOXEL_GRID_HEIGHT/2, VOXEL_GRID_DEPTH/2, 1);
+    light.color = glm::vec4(1, 1, 0, 1);
+
+    lmRef->AddLightToQueue(light);
+
+    light.position = glm::vec4(-1, 20, 2, 1);
+    light.color = glm::vec4(0, 1, 1, 1);
+
+    lmRef->AddLightToQueue(light);
+
+    light.position = glm::vec4(100, 10, 10, 1);
+    light.color = glm::vec4(0, 1, 0, 1);
+
+    lmRef->AddLightToQueue(light);
 }
 
 void Scene::SceneDescription() {

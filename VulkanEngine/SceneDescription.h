@@ -5,6 +5,7 @@
 #include "GameObjectManager.h"
 #include "ModelManager.h"
 #include "VoxelMesh.h"
+#include "LightManager.h"
 
 class Scene {
 

@@ -120,36 +120,40 @@ void VulkanInstance::MainLoop() {
 
         {
             ImGui::NewFrame();
-            ImGui::Begin("Voxel");
-            ImGui::Text("Select Voxel Index");
-            ImGui::InputFloat3("VoxelIndex", &voxelIndex[0]);
-            ImGui::InputInt("VoxelType", &voxelVal);
-            if (ImGui::Button("Set VoxelType")) {
-                scene.ChangeVoxelAtIndex(voxelIndex, voxelVal);
-            }
+            //ImGui::Begin("Voxel");
+            //ImGui::Text("Select Voxel Index");
+            //ImGui::InputFloat3("VoxelIndex", &voxelIndex[0]);
+            //ImGui::InputInt("VoxelType", &voxelVal);
+            //if (ImGui::Button("Set VoxelType")) {
+            //    scene.ChangeVoxelAtIndex(voxelIndex, voxelVal);
+            //}
+            //
+            //// Array von Strings, das den Enum-Werten entspricht
+            //const char* cubeSides[] = { "FRONT", "BACK", "LEFT", "RIGHT", "TOP", "BOTTOM" };
+            //static int currentSide = FRONT; // Index des aktuell ausgewählten Seiten
+            //
+            //if (ImGui::BeginCombo("Cube Sides", cubeSides[currentSide]))
+            //{
+            //    for (int n = 0; n < IM_ARRAYSIZE(cubeSides); n++)
+            //    {
+            //        bool is_selected = (currentSide == n);
+            //        if (ImGui::Selectable(cubeSides[n], is_selected)) {
+            //            currentSide = n;
+            //        }
+            //        if (is_selected)
+            //            ImGui::SetItemDefaultFocus();
+            //    }
+            //    ImGui::EndCombo();
+            //}
+            //
+            //if (ImGui::Button("Add Voxel at CubeSide")) {
+            //    scene.voxelMesh.AddCubeToCubeSide(voxelIndex, currentSide);
+            //}
+            //
+            //ImGui::End();
 
-            // Array von Strings, das den Enum-Werten entspricht
-            const char* cubeSides[] = { "FRONT", "BACK", "LEFT", "RIGHT", "TOP", "BOTTOM" };
-            static int currentSide = FRONT; // Index des aktuell ausgewählten Seiten
-
-            if (ImGui::BeginCombo("Cube Sides", cubeSides[currentSide]))
-            {
-                for (int n = 0; n < IM_ARRAYSIZE(cubeSides); n++)
-                {
-                    bool is_selected = (currentSide == n);
-                    if (ImGui::Selectable(cubeSides[n], is_selected)) {
-                        currentSide = n;
-                    }
-                    if (is_selected)
-                        ImGui::SetItemDefaultFocus();
-                }
-                ImGui::EndCombo();
-            }
-
-            if (ImGui::Button("Add Voxel at CubeSide")) {
-                scene.voxelMesh.AddCubeToCubeSide(voxelIndex, currentSide);
-            }
-
+            ImGui::Begin("Light");
+            ImGui::InputFloat3("LightPosition", &voxelIndex[0]);
             ImGui::End();
         }
 

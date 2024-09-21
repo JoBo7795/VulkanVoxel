@@ -5,6 +5,7 @@
 #include "../VulkanQueues.h"
 #include "../GameObject.h"
 #include "../Camera.h"
+#include "../LightManager.h"
 
 class BufferManager
 {

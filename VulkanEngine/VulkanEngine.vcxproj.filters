@@ -195,6 +195,9 @@
     <ClCompile Include="CubeData.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\compile_shaders.ps1">
@@ -343,6 +346,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="CubeData.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

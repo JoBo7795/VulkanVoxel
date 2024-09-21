@@ -11,9 +11,9 @@
 #include "Renderer.h"
 #include "CubeData.h"
 
-#define VOXEL_GRID_LENGTH 10
-#define VOXEL_GRID_HEIGHT 10
-#define VOXEL_GRID_DEPTH 10
+#define VOXEL_GRID_LENGTH 50
+#define VOXEL_GRID_HEIGHT 50
+#define VOXEL_GRID_DEPTH 50
 #define VOXEL_BOX_DIM_SIZE 1.0
 
 
@@ -22,7 +22,6 @@ class VoxelMesh
 private:
     uint32_t gridLength, gridHeight, gridDepth;
     std::vector<uint8_t> voxelGrid;
-    //Cube cube;
     std::vector<Vertex> voxelDrawSides;
     std::vector<uint32_t> indiceDrawSides;
     void DrawCubeSideLeft(glm::vec3 gridPos, uint32_t& offset, uint8_t type);

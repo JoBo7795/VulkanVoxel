@@ -68,14 +68,15 @@ namespace Cube {
         std::vector<Vertex> cubeArr;
 
         auto sideVertArr = getSide(side, position);
-        auto size = sideVertArr.size();
         auto sideTexArr = getTexCoords(side);
+        auto size = sideVertArr.size();
 
         for (int i = 0; i < size; i++) {
             cubeArr.push_back(Vertex());
 
             cubeArr.back().pos = sideVertArr[i];
             cubeArr.back().color = glm::vec3(1, 0, 0);
+            cubeArr.back().normal = cubeNormals.at(side);
             cubeArr.back().texCoord = sideTexArr[i];
             cubeArr.back().texId = type;
         }

@@ -321,8 +321,6 @@ void BufferManager::CreateUniformBuffer() {
 
 }
 
-
-
 void BufferManager::UpdateUniformBuffer(glm::vec3& position,Camera& camera, uint32_t currentImage, float swapChainExtentWidth, float swapChainExtentHeight) {
 
     static auto startTime = std::chrono::high_resolution_clock::now();
@@ -330,9 +328,21 @@ void BufferManager::UpdateUniformBuffer(glm::vec3& position,Camera& camera, uint
     auto currentTime = std::chrono::high_resolution_clock::now();
     float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
     UniformBufferObject ubo{};
-    ubo.model = glm::translate(glm::mat4(1.0f), position);// *glm::rotate(glm::mat4(1), time, glm::vec3(1, 0, 0));
+    ubo.model = glm::translate(glm::mat4(1.0f), position);
     ubo.view = camera.LookAt();
     ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtentWidth / swapChainExtentHeight, 0.1f, 1000.0f);
+
+    LightManager* lmRef = LightManager::GetInstance();
+
+    for (int i = 0; i < lmRef->LightQueueSize(); i++) {
+
+        Light light = lmRef->GetLightFromQueue(i);
+
+        ubo.lightPos[i] = light.position;
+        ubo.viewPos[i] = glm::vec4(camera.GetPosition(), 1);
+        ubo.lightColor[i] = light.color;
+    }
+
     ubo.proj[1][1] *= -1;
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }
