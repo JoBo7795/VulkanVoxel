@@ -17,6 +17,7 @@ public:
 	void CreateFramebuffers(VkRenderPass& renderPass, std::array<VkImageView, 2>& attachments, float extentWidth, float extentHeight, VkFramebuffer& frameBuffer);
 		
 	void CreateCommandBuffers();
+	void InitializeCommandBufferStatus(const std::vector<VkCommandBuffer>& commandBuffers);
 	VkCommandBuffer BeginSingleTimeCommands();
 	void EndSingleTimeCommands(VkCommandBuffer commandBuffer, VkQueue& queue);
 
@@ -37,9 +38,11 @@ public:
 
 	std::vector<VkBuffer>& GetUniformBuffers();
 	std::vector<VkDeviceMemory>& GetUniformBuffersMemory();
-
 	std::vector<void*>& GetUniformBuffersMapped();
+
 	std::vector<VkCommandBuffer>& GetCommandBuffers();
+	bool GetCommandBufferUpdateStatus(VkCommandBuffer& in_commandBuffer);
+	void SetCommandBufferUpdateStatus(VkCommandBuffer& in_commandBuffer, bool status);
 
 	std::vector<VkBuffer>& GetVertexBuffers();
 	VkBuffer& GetVertexBuffer(uint32_t id);
@@ -79,5 +82,9 @@ private:
 
 	std::vector<VkBuffer> indexBuffers;
 	std::vector<VkDeviceMemory> indexBufferMemoryVector;
+
+	std::unordered_map<VkCommandBuffer, bool> commandBufferUpdateStatus;
+
+
 };
 

@@ -16,6 +16,12 @@ GraphicsPipeline::~GraphicsPipeline() {
 
 void GraphicsPipeline::SetupGraphicsPipeline(){
 
+    swapChainManagerRef = SwapChainManager::GetInstance();
+    bufferManagerRef = BufferManager::GetInstance();
+    vulkanQueueManagerRef = VulkanQueueManager::GetInstance();
+    GameObjectManager* goManagerRef = GameObjectManager::GetInstance();
+
+
     descriptorsRef = Descriptors::GetInstance();
     std::cout << "descriptors pointer: " << descriptorsRef << std::endl;
 
@@ -26,14 +32,50 @@ void GraphicsPipeline::SetupGraphicsPipeline(){
     this->syncObjects.CreateSyncObjects();
     BufferManager::GetInstance()->CreateCommandBuffers();
 
-    auto swapChainManagerRef = SwapChainManager::GetInstance();
-    auto extent = swapChainManagerRef->GetSwapChainExtent();
+
+    swapChainExtent = swapChainManagerRef->GetSwapChainExtent();
     CreateRenderPass();
     CreateGraphicsPipeline();
-    depthRessources.CreateDepthResources(extent.width, extent.height);
+    depthRessources.CreateDepthResources(swapChainExtent.width, swapChainExtent.height);
     swapChainManagerRef->SetDepthRessources(depthRessources);
     swapChainManagerRef->CreateFrameBufferRessources(renderPass);
+    managerRef = ModelManager::GetInstance();
+    gOManagerRef = GameObjectManager::GetInstance();
+    device = VulkanDevices::GetInstance()->GetDevice();
+
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;    
+
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = renderPass;
+
+    renderPassInfo.renderArea.offset = { 0, 0 };
+    renderPassInfo.renderArea.extent = SwapChainManager::GetInstance()->GetSwapChainExtent();
+
+    clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+
+    clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+    clearValues[1].depthStencil = { 1.0f, 0 };
+
+
+    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+    renderPassInfo.pClearValues = clearValues.data();
+
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = static_cast<float>(swapChainExtent.width);
+    viewport.height = static_cast<float>(swapChainExtent.height);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+
+    scissor.offset = { 0, 0 };
+    scissor.extent = swapChainExtent;
+
+    commandBuffers = bufferManagerRef->GetCommandBuffers();
+
+    bufferManagerRef->InitializeCommandBufferStatus(commandBuffers);
+
 }
+
 
 
 void GraphicsPipeline::CleanUp() {
@@ -54,172 +96,132 @@ void GraphicsPipeline::CleanUp() {
 
 }
 
-void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex) {
 
     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
         throw std::runtime_error("failed to begin recording command buffer!");
     }
 
-    VkRenderPassBeginInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = renderPass;
-    renderPassInfo.framebuffer = SwapChainManager::GetInstance()->GetSwapChainFramebuffers()[imageIndex];
-    renderPassInfo.renderArea.offset = { 0, 0 };
-    renderPassInfo.renderArea.extent = SwapChainManager::GetInstance()->GetSwapChainExtent();
+     renderPassInfo.framebuffer = SwapChainManager::GetInstance()->GetSwapChainFramebuffers()[imageIndex];
 
-    std::array<VkClearValue, 2> clearValues{};
-    clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
-    clearValues[1].depthStencil = { 1.0f, 0 };
+     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+     
+     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-    VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-    renderPassInfo.pClearValues = clearValues.data();
-
-    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-
-    auto swapChainExtent = SwapChainManager::GetInstance()->GetSwapChainExtent();
-
-    VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = static_cast<float>(swapChainExtent.width);
-    viewport.height = static_cast<float>(swapChainExtent.height);
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-
-    VkRect2D scissor{};
-    scissor.offset = { 0, 0 };
-    scissor.extent = swapChainExtent;
-    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-    auto bufferManagerRef = BufferManager::GetInstance();
-    auto gOManagerRef = GameObjectManager::GetInstance();
-    auto managerRef = ModelManager::GetInstance();
-
-    Model models;
-    auto numUBOs = (bufferManagerRef->GetUniformBuffers().size() / MAX_FRAMES_IN_FLIGHT);
-    int size = GameObjectManager::GetInstance()->GetGameObjectQueueSize();
-    int index = 0;
-
-
-    for (int i = 0; i < size; i++) {
-        index = (i * MAX_FRAMES_IN_FLIGHT + currentFrame);
-        models = managerRef->GetModelFromQueue(gOManagerRef->GetGameObjectFromQueue(i).modelId);
-
-        VkDeviceSize offsets[] = { 0 };
-
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->GetVertexBuffers()[models.verticeBufferId], offsets);
-
-        vkCmdBindIndexBuffer(commandBuffer, bufferManagerRef->GetIndexBuffers()[models.indexBufferId], 0, VK_INDEX_TYPE_UINT32);
-
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorsRef->GetDescriptorSets()[index], 0, nullptr);
-       
-        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(models.indices.size()), 1, 0, 0, 0);
-
-    }
-
-    ImGui::Render();
-    ImDrawData* drawData = ImGui::GetDrawData();
-    ImGui_ImplVulkan_RenderDrawData(drawData,commandBuffer);
-
-    vkCmdEndRenderPass(commandBuffer);
-
-    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to record command buffer!");
-    }
+     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+     
+     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+     
+     int numUBOs = (bufferManagerRef->GetUniformBuffers().size() / MAX_FRAMES_IN_FLIGHT);
+     int size = gOManagerRef->GetGameObjectQueueSize();
+     int index = 0;     
+     
+     for (int i = 0; i < size; i++) {
+         index = (i * MAX_FRAMES_IN_FLIGHT + currentFrame);
+     
+         Model& models = managerRef->GetModelFromQueue(gOManagerRef->GetGameObjectFromQueue(i).modelId);
+     
+         VkDeviceSize offsets[] = { 0 };
+     
+         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &bufferManagerRef->GetVertexBuffers()[models.verticeBufferId], offsets);
+     
+         vkCmdBindIndexBuffer(commandBuffer, bufferManagerRef->GetIndexBuffers()[models.indexBufferId], 0, VK_INDEX_TYPE_UINT32);
+     
+         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorsRef->GetDescriptorSets()[index], 0, nullptr);
+        
+         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(models.indices.size()), 1, 0, 0, 0);
+     
+     }
+     
+      ImGui::Render();
+      ImDrawData* drawData = ImGui::GetDrawData();
+      ImGui_ImplVulkan_RenderDrawData(drawData,commandBuffer);
+      
+      vkCmdEndRenderPass(commandBuffer);
+      
+      if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+          throw std::runtime_error("failed to record command buffer!");
+      }
 }
 
-void GraphicsPipeline::DrawFrame(Window& windowRef) {
 
-    auto swapChainRef = SwapChainManager::GetInstance();
-    auto bufferManagerRef = BufferManager::GetInstance();
-    auto vulkanQueueManagerRef = VulkanQueueManager::GetInstance();
-
-    VkDevice device = VulkanDevices::GetInstance()->GetDevice();
+void GraphicsPipeline::DrawFrame(Window& windowRef) {   
 
     vkWaitForFences(device, 1, &this->syncObjects.GetInFlightFences()[currentFrame], VK_TRUE, UINT64_MAX);
-
-
+    
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(device, swapChainRef->GetSwapChain() , UINT64_MAX, syncObjects.GetImageAvailableSemaphores()[currentFrame], VK_NULL_HANDLE, &imageIndex);
-
+    VkResult result = vkAcquireNextImageKHR(device, swapChainManagerRef->GetSwapChain() , UINT64_MAX, syncObjects.GetImageAvailableSemaphores()[currentFrame], VK_NULL_HANDLE, &imageIndex);
+    
+       
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        swapChainRef->RecreateSwapChain(windowRef, renderPass);
+        swapChainManagerRef->RecreateSwapChain(windowRef, renderPass);
         return;
     }
     else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw std::runtime_error("failed to acquire swap chain image!");
     }
-
-
-
-    vkResetFences(device, 1, &syncObjects.GetInFlightFences()[currentFrame]);
-
-    auto commandBuffers = bufferManagerRef->GetCommandBuffers();
-
-    auto goManagerRef = GameObjectManager::GetInstance();
-    auto numGOs = goManagerRef->GetGameObjectQueueSize();
-    auto extent = swapChainRef->GetSwapChainExtent();
-
+    
+    vkResetFences(device, 1, &syncObjects.GetInFlightFences()[currentFrame]);    
+    
+    int numGOs = gOManagerRef->GetGameObjectQueueSize();
+    
     for (uint16_t i = 0; i < numGOs; i++) {
-        bufferManagerRef->UpdateUniformBuffer(goManagerRef->GetGameObjectFromQueue(i).position, Renderer::GetInstance()->GetCamera(), i * MAX_FRAMES_IN_FLIGHT + currentFrame, extent.width, extent.height);
+        bufferManagerRef->UpdateUniformBuffer(gOManagerRef->GetGameObjectFromQueue(i).position, Renderer::GetInstance()->GetCamera(), i * MAX_FRAMES_IN_FLIGHT + currentFrame, swapChainExtent.width, swapChainExtent.height);
     }
-
-    vkResetCommandBuffer(commandBuffers[currentFrame], 0);
-    RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
-
-
-
+    
+    auto currBuff = commandBuffers[currentFrame];
+    auto currBuffStat = bufferManagerRef->GetCommandBufferUpdateStatus(currBuff);
+        
+    vkResetCommandBuffer(currBuff, 0);
+    RecordCommandBuffer(currBuff, imageIndex);
+    
     VkSubmitInfo submitInfo{};
-
+    
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
+    
     VkSemaphore waitSemaphores[] = { syncObjects.GetImageAvailableSemaphores()[currentFrame] };
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
-
+    
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
-
+    
     VkSemaphore signalSemaphores[] = { syncObjects.GetRenderFinishedSemaphores()[currentFrame] };
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
-
+    
     if (vkQueueSubmit(vulkanQueueManagerRef->GetGraphicsQueue(), 1, &submitInfo, syncObjects.GetInFlightFences()[currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error("failed to submit draw command buffer!");
     }
-
+    
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
+    
     presentInfo.waitSemaphoreCount = 1;
     presentInfo.pWaitSemaphores = signalSemaphores;
-
-    VkSwapchainKHR swapChains[] = { swapChainRef->GetSwapChain() };
+    
+    VkSwapchainKHR swapChains[] = { swapChainManagerRef->GetSwapChain() };
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
-
+    
     presentInfo.pImageIndices = &imageIndex;
-
+    
     result = vkQueuePresentKHR(vulkanQueueManagerRef->GetPresentQueue(), &presentInfo);
-
-
+    
+    
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || windowRef.GetFramebufferResized()) {
         windowRef.SetFrameBufferResized(false);
-        swapChainRef->RecreateSwapChain(windowRef, renderPass);
+        swapChainManagerRef->RecreateSwapChain(windowRef, renderPass);
     }
     else if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to present swap chain image!");
-    }
+    }      
+    
+    currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT; 
 
-    currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 VkRenderPass& GraphicsPipeline::GetRenderPass() {

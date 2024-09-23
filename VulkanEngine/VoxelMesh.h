@@ -11,9 +11,9 @@
 #include "Renderer.h"
 #include "CubeData.h"
 
-#define VOXEL_GRID_LENGTH 50
-#define VOXEL_GRID_HEIGHT 50
-#define VOXEL_GRID_DEPTH 50
+#define VOXEL_GRID_LENGTH 500
+#define VOXEL_GRID_HEIGHT 10
+#define VOXEL_GRID_DEPTH 500
 #define VOXEL_BOX_DIM_SIZE 1.0
 
 

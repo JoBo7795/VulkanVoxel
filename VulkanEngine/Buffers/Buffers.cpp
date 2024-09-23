@@ -360,6 +360,24 @@ void BufferManager::CreateCommandBuffers() {
     if (vkAllocateCommandBuffers(VulkanDevices::GetInstance()->GetDevice(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate command buffers!");
     }
+
+    InitializeCommandBufferStatus(commandBuffers);
+}
+
+bool BufferManager::GetCommandBufferUpdateStatus(VkCommandBuffer& in_commandBuffer) {
+    return commandBufferUpdateStatus[in_commandBuffer];
+}
+
+void BufferManager::SetCommandBufferUpdateStatus(VkCommandBuffer& in_commandBuffer, bool status) {
+    commandBufferUpdateStatus[in_commandBuffer] = status;
+}
+
+void BufferManager::InitializeCommandBufferStatus(const std::vector<VkCommandBuffer>& commandBuffers) {
+
+    for (const auto& commandBuffer : commandBuffers) {
+        if(!commandBufferUpdateStatus.count(commandBuffer))
+            commandBufferUpdateStatus[commandBuffer] = true;
+    }
 }
 
 void BufferManager::DeleteVertexBuffer(uint32_t vertexBufferId) {

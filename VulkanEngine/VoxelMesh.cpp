@@ -32,7 +32,7 @@ VoxelMesh::VoxelMesh() {
 
 		{
 			num++;
-			auto val = perlin.octave2D_01(x * .1, z * .1, 4,.2);
+			auto val = perlin.octave2D_01(x * .01, z * .01, 4,.2);
 			int perlinY = round(val * (gridHeight - 1));
 			int arrIndex = PositionToArrayIndex(glm::vec3(x, perlinY, z));
 

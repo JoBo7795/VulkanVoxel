@@ -53,6 +53,7 @@ void GameObjectManager::CreateGameObjectUBOs() {
 				BufferManager::GetInstance()->CreateUniformBuffer();
 
 				creationStatus[i] = true;
+
 			}
 		}
 		uboUpdate = false;
@@ -77,6 +78,7 @@ void GameObjectManager::UpdateGameObjectUBOs() {
 				Descriptors::GetInstance()->CreateDescriptorSet(gameObjectQueue[i],MAX_FRAMES_IN_FLIGHT);
 
 				creationStatus[i] = true;
+				
 			}
 		}
 		uboUpdate = false;

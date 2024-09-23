@@ -8,10 +8,13 @@
 #include "GameObjectManager.h"
 #include "ModelManager.h"
 
+class SwapChainManager;
+
 class GraphicsPipeline
 {
 public:
-	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+	void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
+
 
 	void CreateRenderPass();
 	void CreateGraphicsPipeline();
@@ -27,6 +30,8 @@ public:
 
 	GraphicsPipeline();
 	~GraphicsPipeline();
+
+	
 private:
 
 	uint32_t currentFrame = 0;
@@ -37,6 +42,25 @@ private:
 
 	VkPipeline graphicsPipeline;
 	VkPipelineLayout pipelineLayout;
-	VkRenderPass renderPass;	
+	VkRenderPass renderPass;
+
+	BufferManager* bufferManagerRef;
+	VulkanQueueManager* vulkanQueueManagerRef;
+	SwapChainManager*  swapChainManagerRef;
+	VkExtent2D swapChainExtent;
+	ModelManager* managerRef;
+	GameObjectManager* gOManagerRef;
+	VkDevice device;
+	std::vector<VkCommandBuffer> commandBuffers;
+
+	// Render variables
+	VkCommandBufferBeginInfo beginInfo{};
+	VkRenderPassBeginInfo renderPassInfo{};
+	std::array<VkClearValue, 2> clearValues{};
+	VkClearValue clearColor;
+	VkViewport viewport{};
+	VkRect2D scissor{};
+
+
 };
 

@@ -32,7 +32,7 @@ const std::string DEFAULT_CUBE_MODEL_PATH = "Resources/Meshes/defaultCube.obj";
 const std::string TEXTURE_PATH = "Resources/Textures/viking_room.png";
 const std::string TEXTURE_PATH2 = "Resources/Textures/ErdeOberfläche.png";
 
-const int MAX_FRAMES_IN_FLIGHT = 2;
+const int MAX_FRAMES_IN_FLIGHT = 1;
 
 
 
