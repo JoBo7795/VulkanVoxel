@@ -10,7 +10,7 @@ layout(location = 4) in vec3 fragPos;
 layout(location = 5) in vec3 fragLightPos[3];
 layout(location = 8) in vec3 fragViewPos[3];
 layout(location = 11) in vec3 fragLightColor[3];
-layout(location = 15) flat in int LightCount;
+layout(location = 15) flat in int lightCount;
 
 layout(binding = 1) uniform sampler texSampler;
 
@@ -18,7 +18,8 @@ layout(set = 0, binding = 2) uniform texture2D textureArray[2];
 
 layout(location = 0) out vec4 outColor;
 
-void main() {
+void main() {    
+
     vec4 objectColor = vec4(1.0); // Initialisiere objectColor
 
     if (inTexIndex > 0 && inTexIndex <= 2) {
@@ -30,7 +31,7 @@ void main() {
     } else {
         outColor = vec4(0.0); // Initialisiere outColor
 
-        for (int i = 0; i < LightCount; i++) {
+        for (int i = 0; i < lightCount; i++) {
             // Ambient Lighting
             float ambientStrength = 0.1;
             vec3 ambient = ambientStrength * fragLightColor[i];
@@ -49,7 +50,7 @@ void main() {
             vec3 specular = specularStrength * spec * fragLightColor[i];
 
             // Kombiniere alle Beleuchtungskomponenten
-            outColor += (vec4((ambient + diffuse + specular), 1.0) * objectColor) / float(LightCount);
+            outColor += (vec4((ambient + diffuse + specular), 1.0) * objectColor) / float(lightCount);
         }
     }
 }

@@ -75,8 +75,8 @@ namespace Cube {
             cubeArr.push_back(Vertex());
 
             cubeArr.back().pos = sideVertArr[i];
-            cubeArr.back().color = glm::vec3(1, 0, 0);
-            cubeArr.back().normal = cubeNormals.at(side);
+            //cubeArr.back().color = glm::vec3(1, 0, 0);
+            //cubeArr.back().normal = cubeNormals.at(side);
             cubeArr.back().texCoord = sideTexArr[i];
             cubeArr.back().texId = type;
         }
