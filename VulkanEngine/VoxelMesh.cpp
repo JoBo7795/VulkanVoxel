@@ -244,7 +244,9 @@ void VoxelMesh::UpdateVoxelMesh() {
 		}
 	}
 
-	std::cout << "drawn voxel: " << num << std::endl;
+	int sizeInBytes = voxelGrid.size() * sizeof(Vertex);
+
+	std::cout << "drawn voxel: " << num << "size in byte: " << sizeInBytes << "size in mb: " << static_cast<double>(sizeInBytes) / (1024 * 1024) << std::endl;
 
 	std::cout << "vert after: " << voxelDrawSides.size() << std::endl;
 	std::cout << "indice after: " << indiceDrawSides.size() << std::endl;

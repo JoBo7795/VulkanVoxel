@@ -11,6 +11,11 @@ vec3 cubeNormals[6] = {
         vec3(0, -1, 0)
 };
 
+//Texturekoordinate lookup
+const vec2 cubeSideTexCoords[4] = {   
+
+    vec2(0, 0), vec2(1, 0), vec2(1, 1), vec2(0, 1),
+};
 
 layout(binding = 0) uniform UniformBufferObject {
     mat4 model;
@@ -30,8 +35,9 @@ layout(location = 2) in ivec2 cubeSideTexIndex;
 
 layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec3 fragNormal;
-layout(location = 2) out vec2 fragTexCoord;
+layout(location = 2) out vec2 fragTexCoords;
 layout(location = 3) out int fragTexIndex;
+
 
 layout(location = 4) out vec3 fragPos;
 
@@ -45,7 +51,7 @@ void main() {
     gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
 
     fragColor = vec3(1,0,0);
-    fragTexCoord = inTexCoord;
+    fragTexCoords = cubeSideTexCoords[gl_VertexIndex % 4];
     fragNormal = cubeNormals[int(cubeSideTexIndex.x)];
     fragTexIndex = int(cubeSideTexIndex.y);
     fragPos = vec3(ubo.model * vec4(inPosition, 1.0));

@@ -2,7 +2,7 @@
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec3 fragNormal;
-layout(location = 2) in vec2 fragTexCoord;
+layout(location = 2) in vec2 fragTexCoords;
 layout(location = 3) flat in int inTexIndex;
 
 layout(location = 4) in vec3 fragPos;
@@ -23,7 +23,8 @@ void main() {
     vec4 objectColor = vec4(1.0); // Initialisiere objectColor
 
     if (inTexIndex > 0 && inTexIndex <= 2) {
-        objectColor = texture(sampler2D(textureArray[inTexIndex - 1], texSampler), fragTexCoord);
+
+        objectColor = texture(sampler2D(textureArray[inTexIndex - 1], texSampler), fragTexCoords);
     }
 
     if (inTexIndex == 0) {
