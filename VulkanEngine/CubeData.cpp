@@ -48,10 +48,10 @@ namespace Cube {
         {RIGHT, {{{1, 2, 6}, {6, 5, 1}}}}
     };
 
-    std::vector<glm::vec3> getSide(CubeSides side, glm::vec3 position) {
-        std::vector<glm::vec3> sideCoordinates;
-        for (const auto& vertices : cubeSides.at(side)) {
-            sideCoordinates.push_back(vertices + position);
+    std::array<glm::vec3, 4> getSide(CubeSides side, glm::vec3 position) {
+        std::array<glm::vec3, 4> sideCoordinates;
+        for (int i = 0; i < cubeSides.at(side).size(); i++) {
+            sideCoordinates[i] = (cubeSides.at(side)[i] + position);
         }
         return sideCoordinates;
     }
@@ -64,18 +64,18 @@ namespace Cube {
         return texCoords;
     }
 
-    std::vector<Vertex> getSideAsVertexArray(CubeSides side, glm::vec3 position, uint8_t type) {
-        std::vector<Vertex> cubeArr;
+    std::array<Vertex,4> getSideAsVertexArray(CubeSides side, glm::vec3 position, uint8_t type) {
+        std::array<Vertex,4> cubeArr;
 
         auto sideVertArr = getSide(side, position);
-        auto sideTexArr = getTexCoords(side);
+        //auto sideTexArr = getTexCoords(side);
         auto size = sideVertArr.size();
 
         for (int i = 0; i < size; i++) {
-            cubeArr.push_back(Vertex());
+            //cubeArr[i](Vertex());
 
-            cubeArr.back().pos = sideVertArr[i];
-            cubeArr.back().texId = type;
+            cubeArr[i].pos = sideVertArr[i];
+            cubeArr[i].texId = type;
         }
 
         return cubeArr;

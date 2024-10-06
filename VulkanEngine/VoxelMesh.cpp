@@ -13,9 +13,9 @@ VoxelMesh::VoxelMesh() {
 	const siv::PerlinNoise perlin{ seed };
 
 	int num = 0;
-	std::vector<double> heightMap;
 
-	heightMap.reserve(gridLength * gridDepth);
+	std::array<double, VOXEL_GRID_LENGTH * VOXEL_GRID_DEPTH> heightMap;
+
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -29,7 +29,7 @@ VoxelMesh::VoxelMesh() {
 			size_t arrIndex = PositionToArrayIndex(glm::vec3(x, perlinY, z));
 
 			uint8_t type = dis(gen);
-			heightMap.push_back(round(val * (gridHeight - 1)));
+			heightMap[num] = (round(val * (gridHeight - 1)));
 			voxelGrid[arrIndex] = 0;
 
 			for (int i = 0; i < perlinY; i++) {
@@ -65,8 +65,6 @@ void VoxelMesh::LoadVoxelMesh() {
 	
 	Model model;
 	GameObject gameObject;
-	
-	std::vector<Vertex> cubeArr;
 	
 	int size = voxelGrid.size();
 	
@@ -134,25 +132,74 @@ for (int32_t i = 0; i < size; i++) {
 			numSkip++;
 		}
 	}
+
 }
 
 	std::cout << "drawn voxel: " << num << std::endl;
 	std::cout << "skipped voxel: " << numSkip << std::endl;
+
+	int sizeInBytes = voxelGrid.size() * sizeof(Vertex);
+	int totalMemInBytes = 0;
+
+	std::cout << "drawn voxel: " << num << "size in byte: " << sizeInBytes << "size in mb: " << static_cast<double>(sizeInBytes) / (1024 * 1024) << std::endl;
 	
+	totalMemInBytes += sizeInBytes;
+
 	model.vertices = voxelDrawSides;
+
+	voxelDrawSides.clear();
+	voxelDrawSides.shrink_to_fit();
+
+	std::cout << "vertexbuffer: " << voxelDrawSides.size() << "size in byte: " << voxelDrawSides.size() * sizeof(model.vertices[0]) << "size in mb: " << static_cast<double>(voxelDrawSides.size() * sizeof(model.vertices[0])) / (1024 * 1024) << std::endl;
+
+	totalMemInBytes += voxelDrawSides.size() * sizeof(model.vertices[0]);
+
 	model.indices = indiceDrawSides;
+	model.indiceCount = model.indices.size();
+
+	indiceDrawSides.clear();
+	indiceDrawSides.shrink_to_fit();
+
+	std::cout << "vertexbuffer: " << indiceDrawSides.size() << "size in byte: " << indiceDrawSides.size() * sizeof(model.vertices[0]) << "size in mb: " << static_cast<double>(indiceDrawSides.size() * sizeof(model.vertices[0])) / (1024 * 1024) << std::endl;
 	
+	totalMemInBytes += indiceDrawSides.size() * sizeof(model.vertices[0]);
+
 	model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
+
+	model.vertices.clear();
+	model.vertices.shrink_to_fit();
+
 	model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
-	ModelManager::GetInstance()->AppendModelToMap(model, VOXEL_ENV);
+
+	model.indices.clear();
+	model.indices.shrink_to_fit();
 	
 	vertexBufferSize = sizeof(model.vertices[0]) * model.vertices.size();
+
+	std::cout << "vertexbuffer: " << model.vertices.size() << "size in byte: " << model.vertices.size() * sizeof(model.vertices[0]) << "size in mb: " << static_cast<double>(model.vertices.size() * sizeof(model.vertices[0])) / (1024 * 1024) << std::endl;
+
+	totalMemInBytes += model.vertices.size() * sizeof(model.vertices[0]);
+
+
+
 	indexBufferSize = sizeof(model.indices[0]) * model.indices.size();
+
+	std::cout << "drawn voxel: " << model.indices.size() << "size in byte: " << sizeof(model.indices[0]) * model.indices.size() << "size in mb: " << static_cast<double>(sizeof(model.indices[0]) * model.indices.size()) / (1024 * 1024) << std::endl;
 	
+	totalMemInBytes += sizeof(model.indices[0]) * model.indices.size();
+
 	gameObject.modelId = VOXEL_ENV;
 	gameObject.position = glm::vec3(0.0);
 	GameObjectManager::GetInstance()->AppendGameObjectToQueue(gameObject);
 
+	std::cout <<  " total size in byte: " << totalMemInBytes << " size in mb: " << static_cast<double>(totalMemInBytes) / (1024 * 1024) << std::endl;
+
+	//model.verticeCount = model.vertices.size();
+	//model.indiceCount = model.indices.size();
+
+	// clear model data to save memory
+
+	ModelManager::GetInstance()->AppendModelToMap(model, VOXEL_ENV);	
 
 }
 
@@ -170,6 +217,7 @@ void VoxelMesh::UpdateVoxelMesh() {
 
 	voxelDrawSides.clear();
 	indiceDrawSides.clear();
+
 
 	int num = 0;
 	size_t offset = 0;

@@ -130,7 +130,7 @@ void GraphicsPipeline::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint3
      
          vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorsRef->GetDescriptorSets()[index], 0, nullptr);
         
-         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(models.indices.size()), 1, 0, 0, 0);
+         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(models.indiceCount), 1, 0, 0, 0);
      
      }
      

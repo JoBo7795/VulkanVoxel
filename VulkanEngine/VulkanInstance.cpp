@@ -27,8 +27,6 @@ VulkanInstance::VulkanInstance() {
 
     InitVulkan();   
 
-
-
 }
 
 VulkanInstance::~VulkanInstance() {

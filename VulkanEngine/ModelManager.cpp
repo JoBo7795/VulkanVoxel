@@ -2,7 +2,7 @@
 
 ModelManager* ModelManager::instance = nullptr;
 
-void ModelManager::AppendModelToMap(Model model, uint16_t key) {
+void ModelManager::AppendModelToMap(Model& model, uint16_t key) {
 	modelMap[key] = model;
 }
 
