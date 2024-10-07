@@ -7,38 +7,58 @@ VoxelMesh::VoxelMesh() {
 	gridHeight = VOXEL_GRID_HEIGHT;
 	gridDepth = VOXEL_GRID_DEPTH;
 
-	uint64_t center = (uint64_t)gridDepth * gridHeight * (gridLength / 2 + 1);
+	int heightmapIterations = 10;
 
 	const siv::PerlinNoise::seed_type seed = 78394279843u;
 	const siv::PerlinNoise perlin{ seed };
-
-	int num = 0;
-
-	std::array<double, VOXEL_GRID_LENGTH * VOXEL_GRID_DEPTH> heightMap;
-
+	std::array<double, VOXEL_GRID_LENGTH* VOXEL_GRID_DEPTH> heightMap;
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(1, 2);
 
+	int num = 0;
+	float frequency = 0.005, octaves = 2, persistence = 0.05;
 	for (int x = 0; x < gridLength; x++) {
 		for (int z = 0; z < gridDepth; z++) {
 			num++;
-			auto val = perlin.octave2D_01(x * .1, z * .1, 4, .2);
-			int perlinY = round(val * (gridHeight - 1));
+			auto val = perlin.octave2D_01(x * frequency, z * frequency, octaves, persistence);
+			int perlinY = round(val * ((gridHeight/1.3)-1));
 			size_t arrIndex = PositionToArrayIndex(glm::vec3(x, perlinY, z));
-
+	
 			uint8_t type = dis(gen);
 			heightMap[num] = (round(val * (gridHeight - 1)));
-			voxelGrid[arrIndex] = 0;
-
+			//voxelGrid[arrIndex] = 0;
+	
 			for (int i = 0; i < perlinY; i++) {
 				voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z))] = type;
 			}
 		}
 	}
 
-	std::cout << "num loops: "<<num << "heightMapSize: " << heightMap.size() << "maximum Size: " << gridDepth * gridHeight * gridLength << std::endl;
+
+	num = 0;
+	frequency = 0.0025, octaves = 6, persistence = 0.5;
+
+	for (int x = 0; x < gridLength; x++) {
+		for (int z = 0; z < gridDepth; z++) {
+			num++;
+			auto val = perlin.octave2D_01(x * frequency, z * frequency, octaves, persistence);
+			int perlinY = round(val * ((gridHeight) - 1));
+			size_t arrIndex = PositionToArrayIndex(glm::vec3(x, perlinY, z));
+	
+			uint8_t type = dis(gen);
+			heightMap[num] = (round(val * (gridHeight - 1)));
+			//voxelGrid[arrIndex] = 0;
+	
+			for (int i = 0; i < perlinY; i++) {
+				voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z))] = type;
+			}
+		}
+	}
+
+
+	//std::cout << "num loops: "<<num << "heightMapSize: " << heightMap.size() << "maximum Size: " << gridDepth * gridHeight * gridLength << std::endl;
 
 	auto cam = Renderer::GetInstance()->GetCamera();
 	cam.SetPosition(glm::vec3(gridLength / 2, gridHeight / 2, gridDepth / 2));
