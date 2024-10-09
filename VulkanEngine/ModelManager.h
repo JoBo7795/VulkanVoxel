@@ -7,7 +7,7 @@ class ModelManager
 {
 
 public:
-	void AppendModelToMap(Model& model, uint16_t key);
+	void AppendModelToMap(Model model, uint16_t key);
 	Model& GetModelFromQueue(uint16_t key);
 
 	static ModelManager* GetInstance();

@@ -11,11 +11,32 @@
 #include "Renderer.h"
 #include "CubeData.h"
 
-#define VOXEL_GRID_LENGTH 1000
+#define VOXEL_GRID_LENGTH 100
 #define VOXEL_GRID_HEIGHT 400
-#define VOXEL_GRID_DEPTH 1000
+#define VOXEL_GRID_DEPTH 100
 #define VOXEL_BOX_DIM_SIZE 1.0
 #define VOXEL_GRID_SIZE VOXEL_GRID_LENGTH * VOXEL_GRID_HEIGHT * VOXEL_GRID_DEPTH
+
+#define CHUNK_LENGTH 160
+#define CHUNK_HEIGHT 300
+#define CHUNK_DEPTH 160
+#define CHUNK_SIZE CHUNK_LENGTH * CHUNK_HEIGHT * CHUNK_DEPTH
+
+
+struct Chunk {
+    glm::vec3 position;
+    size_t voxelCount;
+    size_t length, height, depth;
+    std::vector<Vertex> voxelDrawSides;
+    std::vector<uint32_t> indiceDrawSides;
+    std::array<uint8_t, CHUNK_SIZE> voxelGrid;
+
+    Chunk(glm::vec3 pos, size_t vCount, size_t d, size_t l, size_t h)
+        : position(pos), voxelCount(vCount), length(l), height(h), depth(d)
+    {
+        voxelGrid.fill(0);
+    }
+};
 
 
 class VoxelMesh
@@ -25,18 +46,33 @@ private:
     std::array<uint8_t, VOXEL_GRID_SIZE> voxelGrid;
     std::vector<Vertex> voxelDrawSides;
     std::vector<uint32_t> indiceDrawSides;
+    
     void DrawCubeSideLeft(glm::vec3 gridPos, size_t& offset, uint8_t type);
     void DrawCubeSideRight(glm::vec3 gridPos, size_t& offset, uint8_t type);
     void DrawCubeSideFront(glm::vec3 gridPos, size_t& offset, uint8_t type);
     void DrawCubeSideBack(glm::vec3 gridPos, size_t& offset, uint8_t type);
     void DrawCubeSideBottom(glm::vec3 gridPos, size_t& offset, uint8_t type);
     void DrawCubeSideTop(glm::vec3 gridPos, size_t& offset, uint8_t type);
+
+
+    void DrawCubeSideLeft(Chunk& chunk, glm::vec3 gridPos, size_t& offset, uint8_t type);
+    void DrawCubeSideRight(Chunk& chunk, glm::vec3 gridPos, size_t& offset, uint8_t type);
+    void DrawCubeSideFront(Chunk& chunk, glm::vec3 gridPos, size_t& offset, uint8_t type);
+    void DrawCubeSideBack(Chunk& chunk, glm::vec3 gridPos, size_t& offset, uint8_t type);
+    void DrawCubeSideBottom(Chunk& chunk, glm::vec3 gridPos, size_t& offset, uint8_t type);
+    void DrawCubeSideTop(Chunk& chunk, glm::vec3 gridPos, size_t& offset, uint8_t type);
+    size_t PositionToArrayIndex(Chunk& chunk, glm::vec3 position);
+    glm::vec3 ChunkArrayIndexToPosition(Chunk& chunk, int32_t arrayIndex);
+
     size_t PositionToArrayIndex(glm::vec3 position);
     glm::vec3 ArrayIndexToPosition(int32_t arrayIndex);
 
 
+
     int vertexBufferSize = 0;
     int indexBufferSize = 0;
+
+    std::vector<Chunk> chunkArr;
     
 public:
 

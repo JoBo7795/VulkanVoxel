@@ -30,7 +30,7 @@ int GameObjectManager::GetGameObjectQueueSize() {
 
 }
 
-uint16_t GameObjectManager::AppendGameObjectToQueue(GameObject& gameObject) {
+uint16_t GameObjectManager::AppendGameObjectToQueue(GameObject gameObject) {
 
 	gameObjectQueue.push_back(gameObject);
 	uboUpdate = true;

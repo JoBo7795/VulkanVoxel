@@ -15,7 +15,7 @@ public:
 
 	GameObject& GetGameObjectFromQueue(int index);
 	int GetGameObjectQueueSize();
-	uint16_t AppendGameObjectToQueue(GameObject& gameObject);
+	uint16_t AppendGameObjectToQueue(GameObject gameObject);
 	void DeleteGameObjectToQueue(GameObject& gameObject);
 	void CreateGameObjectUBOs();
 	void UpdateGameObjectUBOs();

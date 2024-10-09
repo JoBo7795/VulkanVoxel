@@ -68,13 +68,12 @@ namespace Cube {
         std::array<Vertex,4> cubeArr;
 
         auto sideVertArr = getSide(side, position);
-        //auto sideTexArr = getTexCoords(side);
         auto size = sideVertArr.size();
 
         for (int i = 0; i < size; i++) {
-            //cubeArr[i](Vertex());
 
             cubeArr[i].pos = sideVertArr[i];
+            //cubeArr[i].cubeSide = side;
             cubeArr[i].texId = type;
         }
 
