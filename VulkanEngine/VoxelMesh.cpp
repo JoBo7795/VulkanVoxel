@@ -16,34 +16,36 @@ VoxelMesh::VoxelMesh() {
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(1, 2);
 
+	ChunkManager* chunkManagerRef = ChunkManager::GetInstance();
 
 
-	for (int chunkX = 0; chunkX < 5; chunkX++) {
+	for (int chunkX = 0; chunkX < chunkManagerRef->GetLength(); chunkX++) {
 
-			for (int chunkZ = 0; chunkZ < 5; chunkZ++) {
+			for (int chunkZ = 0; chunkZ < chunkManagerRef->GetDepth(); chunkZ++) {
 
-				chunkArr.emplace_back(glm::vec3(chunkX, 0, chunkZ), CHUNK_SIZE, CHUNK_LENGTH, CHUNK_DEPTH, CHUNK_HEIGHT);
+				//chunkArr.emplace_back(glm::vec3(chunkX, 0, chunkZ), CHUNK_SIZE, CHUNK_LENGTH, CHUNK_DEPTH, CHUNK_HEIGHT);
+				Chunk chunkGen = Chunk(glm::vec3(chunkX, 0, chunkZ), CHUNK_SIZE, CHUNK_LENGTH, CHUNK_DEPTH, CHUNK_HEIGHT);
+				glm::vec3 chunkPosition = chunkManagerRef->AppendChunkToChunkArr(chunkGen);
+				Chunk& chunk = chunkManagerRef->GetChunkFromChunkArr(chunkPosition);
 
 				int num = 0;
 				float frequency = 0.005, octaves = 2, persistence = 0.05;
 				for (size_t x = 0; x < CHUNK_LENGTH; x++) {
 					for (size_t z = 0; z < CHUNK_DEPTH; z++) {
 						
-						auto inputX = (x + chunkArr.back().position.x * chunkArr.back().length) * frequency;
-						auto inputZ = (z + chunkArr.back().position.z * chunkArr.back().depth) * frequency;
-						//std::cout << "inputX: " << inputX << ", inputZ: " << inputZ << std::endl;
-						auto val = perlin.octave2D_01(inputX, inputZ, octaves, persistence);
-						//std::cout << "val: " << val << std::endl;
+						float inputX = (x + chunkPosition.x * chunk.length) * frequency;
+						float inputZ = (z + chunkPosition.z * chunk.depth) * frequency;
+
+						float val = perlin.octave2D_01(inputX, inputZ, octaves, persistence);
 
 						int perlinY = round(val * ((CHUNK_HEIGHT / 1.3) - 1));
-						//size_t arrIndex = PositionToArrayIndex(chunkArr.back(), glm::vec3(x, perlinY, z));
 				
 						uint8_t type = dis(gen);
 						heightMap[num] = perlinY;
-						//voxelGrid[arrIndex] = 0;
+
 						num++;
 						for (int i = 0; i < perlinY; i++) {
-							chunkArr.back().voxelGrid[PositionToArrayIndex(chunkArr.back(), glm::vec3(x, i, z))] = type;
+							chunk.voxelGrid[PositionToArrayIndex(chunk, glm::vec3(x, i, z))] = type;
 						}
 					}
 				}
@@ -54,68 +56,25 @@ VoxelMesh::VoxelMesh() {
 				
 				for (size_t x = 0; x < CHUNK_LENGTH; x++) {
 					for (size_t z = 0; z < CHUNK_DEPTH; z++) {
-						auto inputX = (x + chunkArr.back().position.x * chunkArr.back().length) * frequency;
-						auto inputZ = (z + chunkArr.back().position.z * chunkArr.back().depth) * frequency;
-						//std::cout << "inputX: " << inputX << ", inputZ: " << inputZ << std::endl;
-						auto val = perlin.octave2D_01(inputX, inputZ, octaves, persistence);
+						float inputX = (x + chunkPosition.x * chunk.length) * frequency;
+						float inputZ = (z + chunkPosition.z * chunk.depth) * frequency;
+
+						float val = perlin.octave2D_01(inputX, inputZ, octaves, persistence);
 						int perlinY = round(val * ((CHUNK_HEIGHT / 1.3) - 1));
-						//size_t arrIndex = PositionToArrayIndex(chunkArr.back(), glm::vec3(x, perlinY, z));
 				
 						uint8_t type = dis(gen);
 						heightMap[num] = perlinY;
-						//voxelGrid[arrIndex] = 0;
+
 						num++;
 						for (int i = 0; i < perlinY; i++) {
-							chunkArr.back().voxelGrid[PositionToArrayIndex(chunkArr.back(), glm::vec3(x, i, z))] = type;
+							chunk.voxelGrid[PositionToArrayIndex(chunk, glm::vec3(x, i, z))] = type;
 						}
 					}
 				}
 
 			}
 		
-	}
-
-
-	// int num = 0;
-	// float frequency = 0.005, octaves = 2, persistence = 0.05;
-	// for (int x = 0; x < gridLength; x++) {
-	// 	for (int z = 0; z < gridDepth; z++) {
-	// 		num++;
-	// 		auto val = perlin.octave2D_01(x * frequency, z * frequency, octaves, persistence);
-	// 		int perlinY = round(val * ((gridHeight/1.3)-1));
-	// 		size_t arrIndex = PositionToArrayIndex(glm::vec3(x, perlinY, z));
-	// 
-	// 		uint8_t type = dis(gen);
-	// 		heightMap[num] = (round(val * (gridHeight - 1)));
-	// 		//voxelGrid[arrIndex] = 0;
-	// 
-	// 		for (int i = 0; i < perlinY; i++) {
-	// 			voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z))] = type;
-	// 		}
-	// 	}
-	// }
-	// 
-	// 
-	// num = 0;
-	// frequency = 0.0025, octaves = 6, persistence = 0.5;
-	// 
-	// for (int x = 0; x < gridLength; x++) {
-	// 	for (int z = 0; z < gridDepth; z++) {
-	// 		num++;
-	// 		auto val = perlin.octave2D_01(x * frequency, z * frequency, octaves, persistence);
-	// 		int perlinY = round(val * ((gridHeight) - 1));
-	// 		size_t arrIndex = PositionToArrayIndex(glm::vec3(x, perlinY, z));
-	// 
-	// 		uint8_t type = dis(gen);
-	// 		heightMap[num] = (round(val * (gridHeight - 1)));
-	// 		//voxelGrid[arrIndex] = 0;
-	// 
-	// 		for (int i = 0; i < perlinY; i++) {
-	// 			voxelGrid[PositionToArrayIndex(glm::vec3(x, i, z))] = type;
-	// 		}
-	// 	}
-	// }
-
+	}	
 
 	//std::cout << "num loops: "<<num << "heightMapSize: " << heightMap.size() << "maximum Size: " << gridDepth * gridHeight * gridLength << std::endl;
 
@@ -144,13 +103,16 @@ void VoxelMesh::LoadVoxelMesh() {
 	
 	Model model;
 	GameObject gameObject;
+	ChunkManager* chunkManagerRef = ChunkManager::GetInstance();
 	
 	//int size = voxelGrid.size();
 	
-	int num = 0, numSkip = 0, chunkNum = 0;
+	int num = 0, numSkip = 0, chunkNum = 0, chunkArrSize = chunkManagerRef->GetChunkArrSize();
 
 
-	for (Chunk& chunk: chunkArr) {
+	for (size_t chunkCum = 0; chunkNum < chunkArrSize; chunkNum++) {
+		Chunk& chunk = chunkManagerRef->GetChunkFromChunkArr(chunkNum);
+		std::cout << chunk.position.x * chunk.length << std::endl;
 
 		size_t offset = 0;
 		for (int32_t i = 0; i < chunk.voxelCount; i++) {
@@ -159,7 +121,7 @@ void VoxelMesh::LoadVoxelMesh() {
 
 				num++;
 				glm::vec3 gridPos = ChunkArrayIndexToPosition(chunk, i);
-
+				//std::cout << "gridPos: " << glm::to_string(gridPos) << std::endl;
 				//if (i > 0 && i - 1 < gridLength * gridHeight * gridDepth) {
 				if (i > 0 && i - 1 < chunk.voxelCount) {
 					if (chunk.voxelGrid[i - 1] == 0) {
@@ -279,7 +241,8 @@ void VoxelMesh::LoadVoxelMesh() {
 		std::cout <<  " total size in byte: " << totalMemInBytes << " size in mb: " << static_cast<double>(totalMemInBytes) / (1024 * 1024) << std::endl;
 		
 		ModelManager::GetInstance()->AppendModelToMap(model, chunkNum);
-		chunkNum++;
+
+		std::cout << "chunkNum: " << chunkNum << std::endl;
 	}
 }
 

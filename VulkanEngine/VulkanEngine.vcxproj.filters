@@ -198,6 +198,9 @@
     <ClCompile Include="LightManager.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="ChunkManager.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\compile_shaders.ps1">
@@ -349,6 +352,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="LightManager.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkManager.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Chunk.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

@@ -8,7 +8,6 @@ GameObjectManager* GameObjectManager::GetInstance() {
 		instance = new GameObjectManager();
 
 	return instance;
-
 }
 
 GameObjectManager::GameObjectManager() {
@@ -16,18 +15,15 @@ GameObjectManager::GameObjectManager() {
 }
 
 GameObjectManager::~GameObjectManager() {
-
 	delete instance;
 }
 
 GameObject& GameObjectManager::GetGameObjectFromQueue(int index) {
-
 	return gameObjectQueue[index];
 }
 
 int GameObjectManager::GetGameObjectQueueSize() {
 	return gameObjectQueue.size();
-
 }
 
 uint16_t GameObjectManager::AppendGameObjectToQueue(GameObject gameObject) {
