@@ -73,7 +73,6 @@ namespace Cube {
         for (int i = 0; i < size; i++) {
 
             cubeArr[i].pos = sideVertArr[i];
-            //cubeArr[i].cubeSide = side;
             cubeArr[i].texId = type;
         }
 

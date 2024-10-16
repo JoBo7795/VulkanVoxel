@@ -6,9 +6,9 @@ ChunkManager* ChunkManager::instance = nullptr;
 ChunkManager::ChunkManager()
 {
 
-	length = 30;
+	length = 1;
 	height = 1;
-	depth = 30;
+	depth = 1;
 
 }
 
