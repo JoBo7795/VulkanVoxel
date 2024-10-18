@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="Buffers\Buffers.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="ChunkManager.cpp" />
     <ClCompile Include="CommandPool.cpp" />
     <ClCompile Include="CubeData.cpp" />

@@ -6,9 +6,9 @@ ChunkManager* ChunkManager::instance = nullptr;
 ChunkManager::ChunkManager()
 {
 
-	length = 1;
+	length = 30;
 	height = 1;
-	depth = 1;
+	depth = 30;
 
 }
 
@@ -78,10 +78,10 @@ void ChunkManager::SetDepth(size_t in_depth)
 
 glm::vec3 ChunkManager::ChunkIdToPosition(size_t chunkId)
 {
-	int32_t x = chunkId / (length * height);
-	chunkId -= (x * length * height);
-	int32_t y = chunkId / length;
-	chunkId -= (y * length);
+	int32_t x = chunkId / (depth * height);
+	chunkId -= (x * depth * height);
+	int32_t y = chunkId / depth;
+	chunkId -= (y * depth);
 	int32_t z = chunkId;
 
 	return glm::vec3(x, y, z);
@@ -91,4 +91,6 @@ size_t ChunkManager::ChunkPositionToId(glm::vec3 chunkPosition)
 {	
 	return ((size_t)chunkPosition.x * depth * height) + ((size_t)chunkPosition.y * depth) + (size_t)chunkPosition.z;
 }
+
+
 

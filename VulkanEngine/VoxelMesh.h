@@ -42,7 +42,9 @@ private:
     void DrawCubeSideBottom(Chunk& chunk, glm::vec3 gridPos, size_t& offset, uint8_t type);
     void DrawCubeSideTop(Chunk& chunk, glm::vec3 gridPos, size_t& offset, uint8_t type);
     size_t PositionToArrayIndex(Chunk& chunk, glm::vec3 position);
+    glm::vec3 ChunkArrayIndexToRoomPosition(Chunk& chunk, int32_t arrayIndex);
     glm::vec3 ChunkArrayIndexToPosition(Chunk& chunk, int32_t arrayIndex);
+    size_t RelativeChunkPositionToArrayIndex(Chunk& chunk, glm::vec3 position);
 
     size_t PositionToArrayIndex(glm::vec3 position);
     glm::vec3 ArrayIndexToPosition(int32_t arrayIndex);

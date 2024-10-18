@@ -34,5 +34,6 @@ public:
 	glm::vec3 ChunkIdToPosition(size_t chunkId);
 	size_t ChunkPositionToId(glm::vec3 chunkPosition);
 
+
 };
 

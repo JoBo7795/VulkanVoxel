@@ -19,23 +19,16 @@ VoxelMesh::VoxelMesh() {
 	ChunkManager* chunkManagerRef = ChunkManager::GetInstance();
 
 
-
-
 	for (int chunkX = 0; chunkX < chunkManagerRef->GetLength(); chunkX++) {
 	
-			for (int chunkZ = 0; chunkZ < chunkManagerRef->GetDepth(); chunkZ++) {
-	
-				//chunkArr.emplace_back(glm::vec3(chunkX, 0, chunkZ), CHUNK_SIZE, CHUNK_LENGTH, CHUNK_DEPTH, CHUNK_HEIGHT);
+			for (int chunkZ = 0; chunkZ < chunkManagerRef->GetDepth(); chunkZ++) {	
+
 				Chunk chunkGen = Chunk(glm::vec3(chunkX, 0, chunkZ), CHUNK_SIZE, CHUNK_LENGTH, CHUNK_DEPTH, CHUNK_HEIGHT);
 				glm::vec3 chunkPosition = chunkManagerRef->AppendChunkToChunkArr(chunkGen);
 				Chunk& chunk = chunkManagerRef->GetChunkFromChunkArr(chunkPosition);
-				//chunk.voxelGrid[PositionToArrayIndex(chunk, glm::vec3(1, 1, 1))] = 1;
+
 				int num = 0;
 				float frequency = 0.005, octaves = 2, persistence = 0.05;
-				//chunk.voxelGrid[PositionToArrayIndex(chunk, glm::vec3(1, 1, 1))] = 1;
-				//chunk.voxelGrid[PositionToArrayIndex(chunk, glm::vec3(1, 1, 2))] = 1;
-				//chunk.voxelGrid[PositionToArrayIndex(chunk, glm::vec3(1, 1, 0))] = 1;
-				//chunk.voxelGrid[PositionToArrayIndex(chunk, glm::vec3(2, 1, 0))] = 1;
 
 				for (size_t x = 0; x < CHUNK_LENGTH; x++) {
 					for (size_t z = 0; z < CHUNK_DEPTH; z++) {
@@ -115,121 +108,169 @@ void VoxelMesh::LoadVoxelMesh() {
 	GameObject gameObject;
 	ChunkManager* chunkManagerRef = ChunkManager::GetInstance();
 	
-	//int size = voxelGrid.size();
-	
 	int num = 0, numSkip = 0, chunkNum = 0, chunkArrSize = chunkManagerRef->GetChunkArrSize();
 
-
 	for (size_t chunkCum = 0; chunkNum < chunkArrSize; chunkNum++) {
-		Chunk& chunk = chunkManagerRef->GetChunkFromChunkArr(chunkNum);
-		//std::cout << chunk.position.x * chunk.length << std::endl;
 
+		Chunk& chunk = chunkManagerRef->GetChunkFromChunkArr(chunkNum);
+		glm::vec3 chunkPosition = (chunkManagerRef->ChunkIdToPosition(chunkManagerRef->ChunkPositionToId(chunk.position)));
+		size_t chunkId = chunkManagerRef->ChunkPositionToId(chunk.position);
 		size_t offset = 0;
-		for (int32_t i = 0; i < chunk.voxelCount; i++) {
+
+		for (size_t i = 0; i < chunk.voxelCount; i++) {
 
 			if (chunk.voxelGrid[i] > 0) {
 
-				num++;
-				// 3d Position
-				glm::vec3 gridPos = ChunkArrayIndexToPosition(chunk, i);
+				num++;		
 
-				//position relative to chunk grid
-				glm::vec3 chunkGridPos = ChunkArrayIndexToPosition(chunk,i);
+				glm::vec3 chunkGridPos = ChunkArrayIndexToRoomPosition(chunk,i);
 
-				if (chunkGridPos.x - 1 >= 0 ) {
+				glm::vec3 relGridPos = ChunkArrayIndexToPosition(chunk, i);
+
+				if (relGridPos.x - 1 >= 0 ) {
 					glm::vec3 checkPos = chunkGridPos;
-					checkPos.x -= 1;
-					if (chunk.voxelGrid[PositionToArrayIndex(chunk, checkPos)] == 0) {
+					checkPos.x--;
+
+					if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
 						DrawCubeSideLeft(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
 					}
 				}
-				else if (chunkGridPos.x - 1 < 0 ) {
-				
+				else if ((relGridPos.x - 1 < 0) && (chunkPosition.x - 1) >= 0) {
+
+					glm::vec3 checkPos = chunkGridPos;
+					checkPos.x = CHUNK_LENGTH - 1;
+					glm::vec3 neighborChunk = chunkPosition;
+					neighborChunk.x--;
+
+					if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+						DrawCubeSideLeft(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+					}
 				}
 				else {
 				
 					numSkip++;
 				}
+
 				
-				
-				if (chunkGridPos.x + 1 < chunk.length) {
+				if (relGridPos.x + 1 < chunk.length) {
+
 					glm::vec3 checkPos = chunkGridPos;
 					checkPos.x += 1;
-					int val = PositionToArrayIndex(chunk, checkPos);
-					if (chunk.voxelGrid[PositionToArrayIndex(chunk, checkPos)] == 0) {
-						DrawCubeSideRight(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
-						
+
+					if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+						DrawCubeSideRight(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);						
 					}
 				}
-				else if (chunkGridPos.x + 1 >= chunk.length) {
-				
+				else if ((relGridPos.x + 1 >= chunk.length )&& (chunkPosition.x + 1) < chunkManagerRef->GetLength()) {
+
+					glm::vec3 checkPos = chunkGridPos;
+					checkPos.x = 0;
+					glm::vec3 neighborChunk = chunkPosition;
+					neighborChunk.x++;
+
+					if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+						DrawCubeSideRight(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+					}
 				}
 				else {
 					numSkip++;
 				}
 
-				if (chunkGridPos.y - 1 >= 0 ) {
+				if (relGridPos.y - 1 >= 0 ) {
+
 					glm::vec3 checkPos = chunkGridPos;
 					checkPos.y -= 1;
-					int val = PositionToArrayIndex(chunk, checkPos);
-					if (chunk.voxelGrid[PositionToArrayIndex(chunk, checkPos)] == 0) {
-						DrawCubeSideTop(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
-						
-						//DrawCubeSideFront(chunk, gridPos, offset, chunk.voxelGrid[i]);
+
+					if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+						DrawCubeSideTop(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);	
 						
 					}
 				}
-				else if (chunkGridPos.y - 1 < 0) {
-					std::cout << "y < 0" << std::endl;
-					//DrawCubeSideTop(chunk, gridPos, offset, chunk.voxelGrid[i]);
+				else if (relGridPos.y - 1 < 0 && (chunkPosition.y - 1) >= 0) {
+
+					glm::vec3 checkPos = chunkGridPos;
+					checkPos.y = CHUNK_HEIGHT - 1;
+					glm::vec3 neighborChunk = chunkPosition;
+					neighborChunk.y --;
+
+					if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+						DrawCubeSideTop(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+					}
 				}
 				else {
 					numSkip++;
 				}
 				
-				if (chunkGridPos.y + 1 < chunk.height) {
+				if (relGridPos.y + 1 < chunk.height) {
 					glm::vec3 checkPos = chunkGridPos;
-					checkPos.y += 1;
-					int val = PositionToArrayIndex(chunk, checkPos);
-					if (chunk.voxelGrid[PositionToArrayIndex(chunk, checkPos)] == 0) {
+					checkPos.y++;
+
+					if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
 						DrawCubeSideBottom(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
 
 					}
 				}
-				else if (chunkGridPos.y + 1 >= chunk.height) {
-					//DrawCubeSideBottom(chunk, gridPos, offset, chunk.voxelGrid[i]);
-					std::cout << "y > chunk.height" << std::endl;
+				else if (relGridPos.y + 1 >= chunk.length && (chunkPosition.y + 1) < chunkManagerRef->GetHeigth()) {
+
+					glm::vec3 checkPos = chunkGridPos;
+					checkPos.y = 0;
+					glm::vec3 neighborChunk = chunkPosition;
+					neighborChunk.y++;
+
+					if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+						DrawCubeSideBottom(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+					}
 				}
 				else {
 					numSkip++;
 				}
 				
-				if (chunkGridPos.z - 1 >= 0) {
+				if (relGridPos.z - 1 >= 0) {
+
 					glm::vec3 checkPos = chunkGridPos;
 					checkPos.z -= 1;
-					if (chunk.voxelGrid[PositionToArrayIndex(chunk, checkPos)] == 0) {
+
+					if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
 						
 						DrawCubeSideFront(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
 						
 					}
 				}
-				else if (chunkGridPos.z - 1 < 0) {
-				
+				else if (relGridPos.z - 1 < 0 && chunkPosition.z - 1 >= 0) {
+
+					glm::vec3 checkPos = chunkGridPos;
+					checkPos.z = CHUNK_DEPTH - 1;
+					glm::vec3 neighborChunk = chunkPosition;
+					neighborChunk.z--;
+
+					if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+						DrawCubeSideFront(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+					}
 				}
 				else {
 					numSkip++;
 				}
 				
-				if (chunkGridPos.z + 1 < chunk.depth) {
+				if (relGridPos.z + 1 < chunk.depth) {
+
 					glm::vec3 checkPos = chunkGridPos;
 					checkPos.z += 1;
-					if (chunk.voxelGrid[PositionToArrayIndex(chunk, checkPos)] == 0) {
+
+					if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
 						DrawCubeSideBack(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
 						
 					}
 				}
-				else if (chunkGridPos.z + 1 >= chunk.depth) {
-				
+				else if (relGridPos.z + 1 >= chunk.length && (chunkPosition.z + 1) < chunkManagerRef->GetDepth()) {
+
+					glm::vec3 checkPos = chunkGridPos;
+					checkPos.z = 0;
+					glm::vec3 neighborChunk = chunkPosition;
+					neighborChunk.z++;
+
+					if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+						DrawCubeSideBack(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+					}
 				}
 				else {
 					numSkip++;
@@ -532,23 +573,44 @@ size_t VoxelMesh::PositionToArrayIndex(Chunk& chunk, glm::vec3 position) {
 
 }
 
-glm::vec3 VoxelMesh::ChunkArrayIndexToPosition(Chunk& chunk, int32_t arrayIndex) {
+size_t VoxelMesh::RelativeChunkPositionToArrayIndex(Chunk& chunk, glm::vec3 position) {
 
-	int32_t x = arrayIndex / (chunk.length * chunk.height);
-	arrayIndex -= (x * chunk.length * chunk.height);
-	int32_t y = arrayIndex / chunk.length;
-	arrayIndex -= (y * chunk.length);
+	return ((size_t)((size_t)position.x %chunk.length ) * chunk.depth * chunk.height)
+		+ ((size_t)((size_t)position.y % chunk.height ) * chunk.depth)
+		+ (size_t)((size_t)position.z % chunk.depth);
+
+}
+
+// 3D Room position of voxel
+glm::vec3 VoxelMesh::ChunkArrayIndexToRoomPosition(Chunk& chunk, int32_t arrayIndex) {
+
+	int32_t x = arrayIndex / (chunk.depth * chunk.height);
+	arrayIndex -= (x * chunk.depth * chunk.height);
+	int32_t y = arrayIndex / chunk.depth;
+	arrayIndex -= (y * chunk.depth);
 	int32_t z = arrayIndex;
 
 	return glm::vec3(chunk.position.x*chunk.length + x, chunk.position.y * chunk.height + y, chunk.position.z * chunk.depth + z);
 }
 
+// Position relative to chunk grid
+glm::vec3 VoxelMesh::ChunkArrayIndexToPosition(Chunk& chunk, int32_t arrayIndex) {
+
+	int32_t x = arrayIndex / (chunk.depth * chunk.height);
+	arrayIndex -= (x * chunk.depth * chunk.height);
+	int32_t y = arrayIndex / chunk.depth;
+	arrayIndex -= (y * chunk.depth);
+	int32_t z = arrayIndex;
+
+	return glm::vec3( x, y, z);
+}
+
 glm::vec3 VoxelMesh::ArrayIndexToPosition(int32_t arrayIndex) {
 
-	int32_t x = arrayIndex / (gridLength * gridHeight);
-	arrayIndex -= (x * gridLength * gridHeight);
-	int32_t y = arrayIndex / gridLength;
-	arrayIndex -= (y * gridLength);
+	int32_t x = arrayIndex / (gridDepth * gridHeight);
+	arrayIndex -= (x * gridDepth * gridHeight);
+	int32_t y = arrayIndex / gridDepth;
+	arrayIndex -= (y * gridDepth);
 	int32_t z = arrayIndex;
 
 	return glm::vec3(x, y, z);
