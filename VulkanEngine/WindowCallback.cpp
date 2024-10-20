@@ -56,6 +56,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		uint8_t closestCubeSide = -1;
 		glm::vec3 finalCollPoint;
 		ChunkManager* chunkManagerRef = ChunkManager::GetInstance();
+		glm::vec3 hitChunkPos;
 
 		bool leftClick = button == GLFW_MOUSE_BUTTON_LEFT;
 
@@ -102,6 +103,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 									first = false;
 									hit = true;
 									closestCubeSide = cubeSide;
+									hitChunkPos = chunk.position;
 								}
 
 							}
@@ -109,22 +111,22 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 					}
 				}
 			
-
+			}
 				if (hit) {
 					//posMarker.position = finalCollPoint;
 					//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
 					if (leftClick) {
-						Scene::ChangeVoxelAtIndex(chunk, clickIndex, 0);
+						Scene::ChangeVoxelAtIndex(chunkManagerRef->GetChunkFromChunkArr(hitChunkPos), clickIndex, 0);
 					}
 					if (!leftClick) {
 						
-						Scene::voxelMesh.AddCubeToCubeSide(chunk, clickIndex, closestCubeSide);
+						Scene::voxelMesh.AddCubeToCubeSide(chunkManagerRef->GetChunkFromChunkArr(hitChunkPos), clickIndex, closestCubeSide);
 					}
 
 
 				}
 
-			}
+			
 
 		}
 
