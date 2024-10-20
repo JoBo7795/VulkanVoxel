@@ -55,61 +55,74 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		uint8_t cubeSide;
 		uint8_t closestCubeSide = -1;
 		glm::vec3 finalCollPoint;
+		ChunkManager* chunkManagerRef = ChunkManager::GetInstance();
 
 		bool leftClick = button == GLFW_MOUSE_BUTTON_LEFT;
 
 		if (action == GLFW_RELEASE) {
+			
+			for (int chunkNum = 0; chunkNum < chunkManagerRef->GetChunkArrSize(); chunkNum++) {
+				Chunk& chunk = chunkManagerRef->GetChunkFromChunkArr(chunkNum);
 
-			for (int i = 0; i < VOXEL_GRID_LENGTH; i++) {
-				for (int j = 0; j < VOXEL_GRID_HEIGHT; j++) {
-					for (int k = 0; k < VOXEL_GRID_DEPTH; k++) {
+				for (int i = 0; i < chunk.length; i++) {
+					for (int j = 0; j < chunk.height; j++) {
+						for (int k = 0; k < chunk.depth; k++) {
 
-						int x = i, y = (VOXEL_GRID_HEIGHT - 1) -j, z = k;
+							size_t x = (size_t)i,
+								y = (size_t)(chunk.height - 1) - j,
+								z = (size_t)k;
 
-						bb.xMin = glm::vec3(x, y, z).x;
-						bb.xMax = glm::vec3(x + VOXEL_BOX_DIM_SIZE, y, z).x;
-						bb.yMin = glm::vec3(x, y, z).y;
-						bb.yMax = glm::vec3(x, y + VOXEL_BOX_DIM_SIZE, z).y;
-						bb.zMin = glm::vec3(x, y, z).z;
-						bb.zMax = glm::vec3(x, y, z + VOXEL_BOX_DIM_SIZE).z;
+							size_t x_room = (size_t)chunk.length * chunk.position.x + (size_t)i,
+								y_room = (size_t)chunk.height * chunk.position.y + (size_t)(chunk.height - 1) - j,
+								z_room = (size_t)chunk.depth * chunk.position.z + (size_t)k;
 
-						glm::vec3 origVec = ray.origin - glm::vec3(x, y, z);
+							bb.xMin = glm::vec3(x_room, y_room, z_room).x;
+							bb.xMax = glm::vec3(x_room + VOXEL_BOX_DIM_SIZE, y_room, z_room).x;
+							bb.yMin = glm::vec3(x_room, y_room, z_room).y;
+							bb.yMax = glm::vec3(x_room, y_room + VOXEL_BOX_DIM_SIZE, z_room).y;
+							bb.zMin = glm::vec3(x_room, y_room, z_room).z;
+							bb.zMax = glm::vec3(x_room, y_room, z_room + VOXEL_BOX_DIM_SIZE).z;
 
-						float dotProduct = glm::dot(glm::normalize(ray.direction), origVec);
+							glm::vec3 origVec = ray.origin - glm::vec3(x_room, y_room, z_room);
 
-						// skip block if it's behind the camera
-						if (!(dotProduct <= 0))
-							continue;
+							float dotProduct = glm::dot(glm::normalize(ray.direction), origVec);
 
-						if (Physics::CheckRayBoxCollision(ray, bb, collPoint, cubeSide)) {
+							// skip block if it's behind the camera
+							if (!(dotProduct <= 0))
+								continue;
 
-							currDist = glm::distance(ray.origin, collPoint);
+							if (Physics::CheckRayBoxCollision(ray, bb, collPoint, cubeSide)) {
 
-							if ((first || (minDist > currDist)) && ((Scene::GetVoxelAtIndex(glm::vec3(x, y, z)) != 0))) {
-								finalCollPoint = collPoint;
-								minDist = currDist;
-								clickIndex = glm::vec3(x, y, z);
-								first = false;
-								hit = true;
-								closestCubeSide = cubeSide;
+								currDist = glm::distance(ray.origin, collPoint);
+
+								if ((first || (minDist > currDist)) && ((Scene::GetVoxelAtIndex(chunk, glm::vec3(x, y, z)) != 0))) {
+									finalCollPoint = collPoint;
+									minDist = currDist;
+									clickIndex = glm::vec3(x, y, z);
+									first = false;
+									hit = true;
+									closestCubeSide = cubeSide;
+								}
+
 							}
-
 						}
 					}
 				}
-			}
+			
 
-			if (hit) {
-				//posMarker.position = finalCollPoint;
-				//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-				if (leftClick) {
-					Scene::ChangeVoxelAtIndex(clickIndex, 0);
+				if (hit) {
+					//posMarker.position = finalCollPoint;
+					//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+					if (leftClick) {
+						Scene::ChangeVoxelAtIndex(chunk, clickIndex, 0);
+					}
+					if (!leftClick) {
+						
+						Scene::voxelMesh.AddCubeToCubeSide(chunk, clickIndex, closestCubeSide);
+					}
+
+
 				}
-				if (!leftClick) {
-
-					Scene::voxelMesh.AddCubeToCubeSide(clickIndex, closestCubeSide);
-				}
-
 
 			}
 

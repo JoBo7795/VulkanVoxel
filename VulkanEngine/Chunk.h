@@ -2,9 +2,9 @@
 
 #include "Defs.h"
 
-#define CHUNK_LENGTH 50
-#define CHUNK_HEIGHT 300
-#define CHUNK_DEPTH 50
+#define CHUNK_LENGTH 5
+#define CHUNK_HEIGHT 3
+#define CHUNK_DEPTH 5
 #define CHUNK_SIZE CHUNK_LENGTH * CHUNK_HEIGHT * CHUNK_DEPTH
 
 struct Chunk {

@@ -345,14 +345,14 @@ void VoxelMesh::LoadVoxelMesh() {
 	}
 }
 
-void VoxelMesh::UpdateVoxelMesh() {
+void VoxelMesh::UpdateVoxelMesh(Chunk& chunk) {
 
 	std::cout << "create Voxel Mesh" << std::endl;
 
 	std::vector<Vertex> cubeArr;
-
+	ChunkManager* chunkManagerRef = ChunkManager::GetInstance();
 	int size = voxelGrid.size();
-	Model& model = ModelManager::GetInstance()->GetModelFromQueue(VOXEL_ENV);
+	Model& model = ModelManager::GetInstance()->GetModelFromQueue(chunkManagerRef->ChunkPositionToId(chunk.position));
 
 	std::cout << "vert before: " << model.vertices.size();
 	std::cout << "indice before: " << model.indices.size();
@@ -361,85 +361,219 @@ void VoxelMesh::UpdateVoxelMesh() {
 	indiceDrawSides.clear();
 
 
-	int num = 0;
+	int num = 0, chunkArrSize = chunkManagerRef->GetChunkArrSize();
+
+	glm::vec3 chunkPosition = (chunkManagerRef->ChunkIdToPosition(chunkManagerRef->ChunkPositionToId(chunk.position)));
+	size_t chunkId = chunkManagerRef->ChunkPositionToId(chunk.position);
 	size_t offset = 0;
-	for (size_t i = 0; i < size; i++) {
 
-		if (voxelGrid[i] > 0) {
+	for (size_t i = 0; i < chunk.voxelCount; i++) {
+
+		if (chunk.voxelGrid[i] > 0) {
+
 			num++;
-			glm::vec3 gridPos = ArrayIndexToPosition(i);
 
-			if (i - 1 < gridLength * gridHeight * gridDepth) {
+			glm::vec3 chunkGridPos = ChunkArrayIndexToRoomPosition(chunk, i);
 
-				if (voxelGrid[i - 1] == 0) {
-					DrawCubeSideFront(gridPos, offset, voxelGrid[i]);
+			glm::vec3 relGridPos = ChunkArrayIndexToPosition(chunk, i);
+
+			if (relGridPos.x - 1 >= 0) {
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.x--;
+
+				if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideLeft(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
 				}
 			}
-			if (i + 1 < gridLength * gridHeight * gridDepth) {
-				if (voxelGrid[i + 1] == 0) {
-					DrawCubeSideBack(gridPos, offset, voxelGrid[i]);
-				}
-			}
+			else if ((relGridPos.x - 1 < 0) && (chunkPosition.x - 1) >= 0) {
 
-			if (i - gridLength < gridLength * gridHeight * gridDepth) {
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.x = CHUNK_LENGTH - 1;
+				glm::vec3 neighborChunk = chunkPosition;
+				neighborChunk.x--;
 
-
-				if (i - gridLength < 0 || ((i - gridLength) % (gridLength - 1 == 0))) {
-					DrawCubeSideTop(gridPos, offset, voxelGrid[i]);
-					continue;
-				}
-
-				if (voxelGrid[i - gridLength] == 0) {
-					DrawCubeSideTop(gridPos, offset, voxelGrid[i]);
-				}
-			}
-			if (i + gridLength < gridLength * gridHeight * gridDepth) {
-
-
-				if (i + gridLength < 0 || ((i + gridLength) % (gridLength - 1) == 0)) {
-					DrawCubeSideBottom(gridPos, offset, voxelGrid[i]);
-					continue;
-				}
-
-				if (voxelGrid[i + gridLength] == 0) {
-					DrawCubeSideBottom(gridPos, offset, voxelGrid[i]);
+				if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideLeft(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
 				}
 			}
 
-			if ((i - gridLength * gridHeight < gridLength * gridHeight * gridDepth)) {
 
-				if (i - gridLength * gridHeight < 0 || ((i - gridLength * gridHeight) % (gridLength * gridHeight) == 0)) {
-					DrawCubeSideLeft(gridPos, offset, voxelGrid[i]);
-					continue;
+
+			if (relGridPos.x + 1 < chunk.length) {
+
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.x += 1;
+
+				if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideRight(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
 				}
+			}
+			else if ((relGridPos.x + 1 >= chunk.length) && (chunkPosition.x + 1) < chunkManagerRef->GetLength()) {
 
-				if (voxelGrid[i - gridLength * gridHeight] == 0) {
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.x = 0;
+				glm::vec3 neighborChunk = chunkPosition;
+				neighborChunk.x++;
 
-					DrawCubeSideLeft(gridPos, offset, voxelGrid[i]);
+				if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideRight(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+				}
+			}
+
+
+			if (relGridPos.y - 1 >= 0) {
+
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.y -= 1;
+
+				if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideTop(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
 
 				}
 			}
-			if (i + gridLength * gridHeight < gridLength * gridHeight * gridDepth) {
+			else if (relGridPos.y - 1 < 0 && (chunkPosition.y - 1) >= 0) {
 
-				if (i + gridLength * gridHeight < 0 || ((i + gridLength * gridHeight) % (gridLength * gridHeight) == 0)) {
-					DrawCubeSideRight(gridPos, offset, voxelGrid[i]);
-					continue;
-				}
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.y = CHUNK_HEIGHT - 1;
+				glm::vec3 neighborChunk = chunkPosition;
+				neighborChunk.y--;
 
-				if (voxelGrid[i + gridLength * gridHeight] == 0) {
-
-					DrawCubeSideRight(gridPos, offset, voxelGrid[i]);
+				if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideTop(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
 				}
 			}
+
+
+			if (relGridPos.y + 1 < chunk.height) {
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.y++;
+
+				if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideBottom(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+
+				}
+			}
+			else if (relGridPos.y + 1 >= chunk.length && (chunkPosition.y + 1) < chunkManagerRef->GetHeigth()) {
+
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.y = 0;
+				glm::vec3 neighborChunk = chunkPosition;
+				neighborChunk.y++;
+
+				if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideBottom(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+				}
+			}
+
+
+			if (relGridPos.z - 1 >= 0) {
+
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.z -= 1;
+
+				if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+
+					DrawCubeSideFront(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+
+				}
+			}
+			else if (relGridPos.z - 1 < 0 && chunkPosition.z - 1 >= 0) {
+
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.z = CHUNK_DEPTH - 1;
+				glm::vec3 neighborChunk = chunkPosition;
+				neighborChunk.z--;
+
+				if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideFront(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+				}
+			}
+
+
+			if (relGridPos.z + 1 < chunk.depth) {
+
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.z += 1;
+
+				if (chunk.voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideBack(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+
+				}
+			}
+			else if (relGridPos.z + 1 >= chunk.length && (chunkPosition.z + 1) < chunkManagerRef->GetDepth()) {
+
+				glm::vec3 checkPos = chunkGridPos;
+				checkPos.z = 0;
+				glm::vec3 neighborChunk = chunkPosition;
+				neighborChunk.z++;
+
+				if (chunkManagerRef->GetChunkFromChunkArr(chunkManagerRef->ChunkPositionToId(neighborChunk)).voxelGrid[RelativeChunkPositionToArrayIndex(chunk, checkPos)] == 0) {
+					DrawCubeSideBack(chunk, chunkGridPos, offset, chunk.voxelGrid[i]);
+				}
+			}
+
 		}
-	}
 
-	int sizeInBytes = voxelGrid.size() * sizeof(Vertex);
+	}
+	
+
+	int sizeInBytes = chunk.voxelGrid.size() * sizeof(Vertex);
 
 	std::cout << "drawn voxel: " << num << "size in byte: " << sizeInBytes << "size in mb: " << static_cast<double>(sizeInBytes) / (1024 * 1024) << std::endl;
 
 	std::cout << "vert after: " << voxelDrawSides.size() << std::endl;
 	std::cout << "indice after: " << indiceDrawSides.size() << std::endl;
+
+	// TODO chunk muss korrekt geupdated werden
+
+
+	int totalMemInBytes = 0;
+
+	totalMemInBytes += sizeInBytes;
+
+	model.vertices = chunk.voxelDrawSides;
+
+	chunk.voxelDrawSides.clear();
+	chunk.voxelDrawSides.shrink_to_fit();
+
+	//std::cout << "vertexbuffer: " << voxelDrawSides.size() << "size in byte: " << voxelDrawSides.size() * sizeof(model.vertices[0]) << "size in mb: " << static_cast<double>(voxelDrawSides.size() * sizeof(model.vertices[0])) / (1024 * 1024) << std::endl;
+
+	totalMemInBytes += voxelDrawSides.size() * sizeof(model.vertices[0]);
+
+	model.indices = chunk.indiceDrawSides;
+	model.indiceCount = model.indices.size();
+
+	chunk.indiceDrawSides.clear();
+	chunk.indiceDrawSides.shrink_to_fit();
+
+	//std::cout << "vertexbuffer: " << indiceDrawSides.size() << "size in byte: " << indiceDrawSides.size() * sizeof(model.vertices[0]) << "size in mb: " << static_cast<double>(indiceDrawSides.size() * sizeof(model.vertices[0])) / (1024 * 1024) << std::endl;
+
+	totalMemInBytes += indiceDrawSides.size() * sizeof(model.vertices[0]);
+
+	model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
+
+	model.vertices.clear();
+	model.vertices.shrink_to_fit();
+
+	model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
+
+	model.indices.clear();
+	model.indices.shrink_to_fit();
+
+	vertexBufferSize = sizeof(model.vertices[0]) * model.vertices.size();
+
+	//std::cout << "vertexbuffer: " << model.vertices.size() << "size in byte: " << model.vertices.size() * sizeof(model.vertices[0]) << "size in mb: " << static_cast<double>(model.vertices.size() * sizeof(model.vertices[0])) / (1024 * 1024) << std::endl;
+
+	totalMemInBytes += model.vertices.size() * sizeof(model.vertices[0]);
+
+
+
+	indexBufferSize = sizeof(model.indices[0]) * model.indices.size();
+
+	//std::cout << "drawn voxel: " << model.indices.size() << "size in byte: " << sizeof(model.indices[0]) * model.indices.size() << "size in mb: " << static_cast<double>(sizeof(model.indices[0]) * model.indices.size()) / (1024 * 1024) << std::endl;
+
+	totalMemInBytes += sizeof(model.indices[0]) * model.indices.size();
+
 
 	model.vertices = voxelDrawSides;
 	model.indices = indiceDrawSides;
@@ -621,7 +755,7 @@ void VoxelMesh::ChangeVoxelAtIndex(size_t index, uint8_t val) {
 	voxelGrid[index] = val;
 }
 
-int32_t VoxelMesh::ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val) {
+size_t VoxelMesh::ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val) {
 
 	voxelGrid[PositionToArrayIndex(indexVector)] = val;
 
@@ -629,7 +763,7 @@ int32_t VoxelMesh::ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val) {
 
 	auto dat = (void*)&voxelGrid[PositionToArrayIndex(indexVector)];
 
-	UpdateVoxelMesh();
+	//UpdateVoxelMesh();
 
 	auto bmanagerRef = BufferManager::GetInstance();
 
@@ -658,8 +792,47 @@ int32_t VoxelMesh::ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val) {
 	return PositionToArrayIndex(indexVector);
 }
 
-size_t VoxelMesh::GetVoxelAtIndex(glm::vec3 indexVector) {
-	return voxelGrid[PositionToArrayIndex(indexVector)];
+
+
+size_t VoxelMesh::ChangeVoxelAtIndex(Chunk& chunk, glm::vec3 indexVector, uint8_t val) {
+
+	chunk.voxelGrid[PositionToArrayIndex(chunk, indexVector)] = val;
+
+	Model& model = ModelManager::GetInstance()->GetModelFromQueue(ChunkManager::GetInstance()->ChunkPositionToId(chunk.position));
+
+	auto dat = (void*)&voxelGrid[PositionToArrayIndex(indexVector)];
+
+	UpdateVoxelMesh(chunk);
+
+	auto bmanagerRef = BufferManager::GetInstance();
+
+	if (vertexBufferSize < sizeof(model.vertices[0]) * model.vertices.size()) {
+		bmanagerRef->DeleteVertexBuffer(model.verticeBufferId);
+		model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices, sizeof(model.vertices[0]) * model.vertices.size());
+		vertexBufferSize = sizeof(model.vertices[0]) * model.vertices.size();
+		std::cout << "Create New VertexBuffer with size: " << vertexBufferSize << std::endl;
+	}
+	else if (model.vertices.size() > 0) {
+		BufferManager::GetInstance()->UpdateVertexBuffer(model.verticeBufferId, (void*)&model.vertices[0], sizeof(model.vertices[0]) * model.vertices.size());
+		std::cout << "Update VertexBuffer" << std::endl;
+	}
+
+	if (indexBufferSize < sizeof(model.indices[0]) * model.indices.size()) {
+		bmanagerRef->DeleteIndexBuffer(model.indexBufferId);
+		model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices, sizeof(model.indices[0]) * model.indices.size());
+		indexBufferSize = sizeof(model.indices[0]) * model.indices.size();
+		std::cout << "Create New IndexBuffer with size: " << indexBufferSize << std::endl;
+	}
+	else if (model.indices.size() > 0) {
+		BufferManager::GetInstance()->UpdateIndexBuffer(model.indexBufferId, (void*)&model.indices[0], sizeof(model.indices[0]) * model.indices.size());
+		std::cout << "Update IndexBuffer with size: " << sizeof(model.indices[0]) * model.indices.size() << std::endl;
+	}
+
+	return PositionToArrayIndex(indexVector);
+}
+
+size_t VoxelMesh::GetVoxelAtIndex(Chunk& chunk, glm::vec3 indexVector) {
+	return chunk.voxelGrid[PositionToArrayIndex(chunk, indexVector)];
 }
 
 void VoxelMesh::AddCubeToCubeSide(glm::vec3 resIndex, uint8_t cubeSide) {
@@ -710,5 +883,56 @@ void VoxelMesh::AddCubeToCubeSide(glm::vec3 resIndex, uint8_t cubeSide) {
 		default:
 			break;
 		}
+
+}
+
+void VoxelMesh::AddCubeToCubeSide(Chunk& chunk, glm::vec3 resIndex, uint8_t cubeSide) {
+
+
+	switch (cubeSide)
+	{
+
+	case TOP:
+
+		resIndex.y += 1;
+		ChangeVoxelAtIndex(chunk, resIndex, 1);
+		std::cout << "TOP" << std::endl;
+		break;
+
+	case BOTTOM:
+		resIndex.y -= 1;
+		ChangeVoxelAtIndex(chunk, resIndex, 1);
+		std::cout << "BOTTOM" << std::endl;
+		break;
+
+	case FRONT:
+		resIndex.z -= 1;
+		ChangeVoxelAtIndex(chunk, resIndex, 1);
+		std::cout << "FRONT" << std::endl;
+		break;
+
+	case BACK:
+
+		resIndex.z += 1;
+		ChangeVoxelAtIndex(chunk, resIndex, 1);
+		std::cout << "BACK" << std::endl;
+		break;
+
+	case RIGHT:
+
+		resIndex.x -= 1;
+		ChangeVoxelAtIndex(chunk, resIndex, 1);
+		std::cout << "RIGHT" << std::endl;
+		break;
+
+	case LEFT:
+		resIndex.x += 1;
+		ChangeVoxelAtIndex(chunk, resIndex, 1);
+		std::cout << "LEFT" << std::endl;
+		break;
+
+	default:
+		break;
+	}
 
 }

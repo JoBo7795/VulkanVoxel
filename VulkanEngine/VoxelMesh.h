@@ -65,9 +65,12 @@ public:
     size_t GetGridDepth();
 
 	void LoadVoxelMesh();
-    void UpdateVoxelMesh();
+    //void UpdateVoxelMesh();
+    void UpdateVoxelMesh(Chunk& chunk);
     void ChangeVoxelAtIndex(size_t index, uint8_t val);
-    int32_t ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val);
-    size_t GetVoxelAtIndex(glm::vec3 indexVector);
+    size_t ChangeVoxelAtIndex(glm::vec3 indexVector, uint8_t val);
+    size_t ChangeVoxelAtIndex(Chunk& chunk, glm::vec3 indexVector, uint8_t val);
+    size_t GetVoxelAtIndex(Chunk& chunk, glm::vec3 indexVector);
     void AddCubeToCubeSide(glm::vec3 resIndex, uint8_t cubeSide);
+    void AddCubeToCubeSide(Chunk& chunk, glm::vec3 resIndex, uint8_t cubeSide);
 };

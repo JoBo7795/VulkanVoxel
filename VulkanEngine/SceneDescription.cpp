@@ -54,19 +54,19 @@ void Scene::LoadRessources() {
     LightManager* lmRef = LightManager::GetInstance();
 
     Light light;
-    light.position = glm::vec4(VOXEL_GRID_LENGTH/2, VOXEL_GRID_HEIGHT/2, VOXEL_GRID_DEPTH/2, 1);
+    light.position = glm::vec4(500, VOXEL_GRID_HEIGHT*2, 500, 1);
     light.color = glm::vec4(1, 1, 0, 1);
 
     lmRef->AddLightToQueue(light);
 
-    light.position = glm::vec4(-1, 20, 2, 1);
+    light.position = glm::vec4(-1, 2000, 2, 1);
     light.color = glm::vec4(0, 1, 1, 1);
-
+    
     lmRef->AddLightToQueue(light);
-
-    light.position = glm::vec4(100, 10, 10, 1);
+    
+    light.position = glm::vec4(100, 300, 10, 1);
     light.color = glm::vec4(0, 1, 0, 1);
-
+    
     lmRef->AddLightToQueue(light);
 }
 
@@ -99,8 +99,12 @@ void Scene::ChangeVoxelAtIndex(glm::vec3 index, uint8_t val) {
     std::cout << "changed index: " << voxelMesh.ChangeVoxelAtIndex(index, val) << " to value: " << val << std::endl;
 }
 
-uint8_t Scene::GetVoxelAtIndex(glm::vec3 index) {
-    uint8_t voxelVal = voxelMesh.GetVoxelAtIndex(index);
+void Scene::ChangeVoxelAtIndex(Chunk& chunk, glm::vec3 index, uint8_t val) {
+    std::cout << "changed index: " << voxelMesh.ChangeVoxelAtIndex(chunk, index, val) << " to value: " << val << std::endl;
+}
+
+uint8_t Scene::GetVoxelAtIndex(Chunk& chunk, glm::vec3 index) {
+    uint8_t voxelVal = voxelMesh.GetVoxelAtIndex(chunk, index);
     //std::cout << "get voxel: " << glm::to_string(index) << " with value: " << voxelVal << std::endl;
     return voxelVal;
 }
