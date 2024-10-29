@@ -35,16 +35,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (stopCamMovement)
 		return;
 	
-		glm::vec3 camPos = Renderer::GetInstance()->GetCamera().GetPosition();
-		glm::vec3 clickDir = Renderer::GetInstance()->GetCamera().GetDirection();
 
-		Physics::Ray ray = Physics::Ray(camPos,clickDir,1.0f);
 
-		//GameObject posMarker;
-		//
-		//posMarker.position = ray.origin + ray.direction;
-		//posMarker.modelId = MARKER_SPHERE;
-		//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+
+
+		GameObject posMarker;
+		
+
 
 		double minDist = -1;
 		glm::vec3 clickIndex;
@@ -58,12 +55,104 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		ChunkManager* chunkManagerRef = ChunkManager::GetInstance();
 		glm::vec3 hitChunkPos;
 
+		glm::vec3 camPos = Renderer::GetInstance()->GetCamera().GetPosition();
+		glm::vec3 clickDir = Renderer::GetInstance()->GetCamera().GetDirection();
+		Physics::Ray ray = Physics::Ray(camPos, clickDir, 1.0f);
+
+		int camX = camPos.x > 0 ? camPos.x : 0,
+			camY = 1,// camPos.y > 0 ? camPos.y / chunkManagerRef->GetHeigth() : 0,
+			camZ = camPos.z > 0 ? camPos.z  : 0;
+		Chunk currentChunk = chunkManagerRef->GetChunkFromChunkArr(glm::vec3(camX / CHUNK_LENGTH, 0, camZ / CHUNK_DEPTH));
+		std::vector<Chunk> chunkArr;
+		chunkArr.reserve(3);
+		glm::vec3 normClickDir = normalize(clickDir);
+		ray.gradient = Physics::CalculateGradient(ray.origin.x,ray.origin.y,ray.origin.x+ray.direction.x,ray.origin.y+ray.direction.y);
+
+
+		int x0 = camX;
+		int x1 = camX + normClickDir.x * CHUNK_LENGTH > (CHUNK_LENGTH - 1) ? CHUNK_LENGTH - 1 : camX + normClickDir.x * CHUNK_LENGTH;
+		int y0 = camZ;
+		int y1 = camZ + normClickDir.z * CHUNK_DEPTH > (CHUNK_DEPTH - 1) ? CHUNK_DEPTH - 1 : camZ + normClickDir.z * CHUNK_DEPTH;
+		int e2 = 0;
+
+		int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+		int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+
+		//int dx = abs(x1 - x0), sx = x0 < x1 ? CHUNK_LENGTH : -CHUNK_LENGTH;
+		//int dy = -abs(y1 - y0), sy = y0 < y1 ? CHUNK_DEPTH : -CHUNK_DEPTH;
+
+		int err = dx + dy; // Fehlerwert e_xy
+
+		posMarker.position = glm::vec3(x0, 0, y0);
+		posMarker.modelId = MARKER_SPHERE;
+		GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+		
+		posMarker.position = glm::vec3(x1, 0, y1);
+		posMarker.modelId = MARKER_SPHERE;
+		GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+
+		std::cout << "begin x0: " << x0 << " begin y0: " << y0 << std::endl;
+		std::cout << "end x1: " << x1 << " end y1: " << y1 << std::endl;
+
+		while (true) {
+			
+
+			
+			std::cout << "x0: " << x0 << " y0: " << y0 << std::endl;
+
+			// Positionen für Chunks berechnen
+			int posX = x0 / CHUNK_LENGTH;
+			int posY = y0 / CHUNK_DEPTH;
+
+			if (posX < 0) posX = 0;
+			if (!(posX < chunkManagerRef->GetLength() * CHUNK_LENGTH)) posX = chunkManagerRef->GetLength() * CHUNK_LENGTH - 1;
+
+			if (posY < 0) posY = 0;
+			if (!(posY < chunkManagerRef->GetDepth() * CHUNK_DEPTH)) posY = chunkManagerRef->GetDepth() * CHUNK_DEPTH - 1;
+
+			chunkArr.push_back(chunkManagerRef->GetChunkFromChunkArr(glm::vec3(posX, 0, posY)));
+
+			posMarker.position = glm::vec3(x0, 0, y0);
+			posMarker.modelId = MARKER_SPHERE;
+			GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+
+			if (x0 >= x1 && y0 >= y1) {
+				break;
+			}
+
+			e2 = 2 * err;
+
+			if (e2 > dy) {
+				err += dy;
+				x0 += sx * CHUNK_LENGTH;
+				//x0 += sx ;
+			}
+
+			if (e2 < dx) {
+				err += dx;
+				y0 += sy * CHUNK_DEPTH;
+			}
+
+			// Sicherstellen, dass y0 und y1 innerhalb der Grenzen bleiben
+
+		}
+
+
+
 		bool leftClick = button == GLFW_MOUSE_BUTTON_LEFT;
 
 		if (action == GLFW_RELEASE) {
-			
-			for (int chunkNum = 0; chunkNum < chunkManagerRef->GetChunkArrSize(); chunkNum++) {
-				Chunk& chunk = chunkManagerRef->GetChunkFromChunkArr(chunkNum);
+
+
+
+			chunkArr.push_back(currentChunk);
+			//for (int chunkNum = 0; chunkNum < chunkManagerRef->GetChunkArrSize(); chunkNum++) {
+			for (Chunk& chunk: chunkArr) {
+				//Chunk& chunk = chunkManagerRef->GetChunkFromChunkArr(chunkNum);
+
+				posMarker.position = glm::vec3(chunk.position.x * CHUNK_LENGTH,0, chunk.position.z * CHUNK_DEPTH);
+				posMarker.modelId = MARKER_SPHERE;
+				//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
 
 				for (int i = 0; i < chunk.length; i++) {
 					for (int j = 0; j < chunk.height; j++) {

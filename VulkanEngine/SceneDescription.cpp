@@ -32,21 +32,29 @@ void Scene::LoadRessources() {
     model.LoadModelFromObjFile(MODEL_PATH);    
     model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
     model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
+    model.verticeCount = model.vertices.size();
+    model.indiceCount = model.indices.size();
     ModelManager::GetInstance()->AppendModelToMap(model,MODEL_AFFE);
 
     model.LoadModelFromObjFile(VIKING_MODEL_PATH);
     model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
     model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
+    model.verticeCount = model.vertices.size();
+    model.indiceCount = model.indices.size();
     ModelManager::GetInstance()->AppendModelToMap(model, MODEL_VIKING);
 
     model.LoadModelFromObjFile(MARKER_SPHERE_MODEL_PATH);
     model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
     model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
+    model.verticeCount = model.vertices.size();
+    model.indiceCount = model.indices.size();
     ModelManager::GetInstance()->AppendModelToMap(model, MARKER_SPHERE);
 
     model.LoadModelFromObjFile(DEFAULT_CUBE_MODEL_PATH);
     model.verticeBufferId = BufferManager::GetInstance()->CreateVertexBuffer(model.vertices);
     model.indexBufferId = BufferManager::GetInstance()->CreateIndexBuffer(model.indices);
+    model.verticeCount = model.vertices.size();
+    model.indiceCount = model.indices.size();
     ModelManager::GetInstance()->AppendModelToMap(model, DEFAULT_CUBE);
 
     voxelMesh.LoadVoxelMesh();

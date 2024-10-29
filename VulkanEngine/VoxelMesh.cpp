@@ -800,8 +800,6 @@ size_t VoxelMesh::ChangeVoxelAtIndex(Chunk& chunk, glm::vec3 indexVector, uint8_
 
 	Model& model = ModelManager::GetInstance()->GetModelFromQueue(ChunkManager::GetInstance()->ChunkPositionToId(chunk.position));
 
-	//auto dat = (void*)&chunk.voxelGrid[PositionToArrayIndex(chunk, indexVector)];
-
 	UpdateVoxelMesh(chunk);
 
 	auto bmanagerRef = BufferManager::GetInstance();

@@ -11,7 +11,7 @@ namespace Physics
 		Ray(glm::vec3 in_origin, glm::vec3 in_direction, float in_length = 1.0f);
 		glm::vec3 origin, direction;
 		float length;
-		float gradient;		
+		float gradient;
 	};
 
 	struct BoundingBox {

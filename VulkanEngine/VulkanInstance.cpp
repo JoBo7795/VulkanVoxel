@@ -26,7 +26,6 @@ VulkanInstance::VulkanInstance() {
     scene.SceneDescription();
 
     InitVulkan();   
-
 }
 
 VulkanInstance::~VulkanInstance() {

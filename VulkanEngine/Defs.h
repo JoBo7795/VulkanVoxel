@@ -17,7 +17,7 @@ const bool enableValidationLayers = true;
 #define MODEL_AFFE 0
 #define MODEL_VIKING 1
 #define VOXEL_ENV 2
-#define MARKER_SPHERE 3
+#define MARKER_SPHERE 999
 #define DEFAULT_CUBE 4
 
 
