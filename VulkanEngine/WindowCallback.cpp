@@ -29,6 +29,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 }
 
+
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 
@@ -69,73 +70,151 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		ray.gradient = Physics::CalculateGradient(ray.origin.x,ray.origin.y,ray.origin.x+ray.direction.x,ray.origin.y+ray.direction.y);
 
 
+		//int x0 = camX;
+		//int x1 = camX + normClickDir.x * CHUNK_LENGTH > (CHUNK_LENGTH - 1) ? CHUNK_LENGTH - 1 : camX + normClickDir.x * CHUNK_LENGTH;
+		//int y0 = camZ;
+		//int y1 = camZ + normClickDir.z * CHUNK_DEPTH > (CHUNK_DEPTH - 1) ? CHUNK_DEPTH - 1 : camZ + normClickDir.z * CHUNK_DEPTH;
+		//int e2 = 0;
+		//
+		//int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+		//int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+		//
+		////int dx = abs(x1 - x0), sx = x0 < x1 ? CHUNK_LENGTH : -CHUNK_LENGTH;
+		////int dy = -abs(y1 - y0), sy = y0 < y1 ? CHUNK_DEPTH : -CHUNK_DEPTH;
+		//
+		//int err = dx + dy; // Fehlerwert e_xy
+		//
+		//posMarker.position = glm::vec3(x0, 0, y0);
+		//posMarker.modelId = MARKER_SPHERE;
+		//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+		//
+		//posMarker.position = glm::vec3(x1, 0, y1);
+		//posMarker.modelId = MARKER_SPHERE;
+		//GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+		//
+		//std::cout << "begin x0: " << x0 << " begin y0: " << y0 << std::endl;
+		//std::cout << "end x1: " << x1 << " end y1: " << y1 << std::endl;
+		//
+		//while (true) {
+		//
+		//
+		//
+		//	std::cout << "x0: " << x0 << " y0: " << y0 << std::endl;
+		//
+		//	// Positionen für Chunks berechnen
+		//	int posX = x0 / CHUNK_LENGTH;
+		//	int posY = y0 / CHUNK_DEPTH;
+		//
+		//	if (posX < 0) posX = 0;
+		//	if (!(posX < chunkManagerRef->GetLength() * CHUNK_LENGTH)) posX = chunkManagerRef->GetLength() * CHUNK_LENGTH - 1;
+		//
+		//	if (posY < 0) posY = 0;
+		//	if (!(posY < chunkManagerRef->GetDepth() * CHUNK_DEPTH)) posY = chunkManagerRef->GetDepth() * CHUNK_DEPTH - 1;
+		//
+		//	chunkArr.push_back(chunkManagerRef->GetChunkFromChunkArr(glm::vec3(posX, 0, posY)));
+		//
+		//	posMarker.position = glm::vec3(x0, 0, y0);
+		//	posMarker.modelId = MARKER_SPHERE;
+		//	GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+		//
+		//	if (x0 >= x1 && y0 >= y1) {
+		//		break;
+		//	}
+		//
+		//	e2 = 2 * err;
+		//
+		//	if (e2 > dy) {
+		//		err += dy;
+		//		x0 += sx * CHUNK_LENGTH;
+		//		//x0 += sx ;
+		//	}
+		//
+		//	if (e2 < dx) {
+		//		err += dx;
+		//		y0 += sy * CHUNK_DEPTH;
+		//	}
+		//
+		//	// Sicherstellen, dass y0 und y1 innerhalb der Grenzen bleiben
+		//
+		//}
+
+
 		int x0 = camX;
 		int x1 = camX + normClickDir.x * CHUNK_LENGTH > (CHUNK_LENGTH - 1) ? CHUNK_LENGTH - 1 : camX + normClickDir.x * CHUNK_LENGTH;
 		int y0 = camZ;
 		int y1 = camZ + normClickDir.z * CHUNK_DEPTH > (CHUNK_DEPTH - 1) ? CHUNK_DEPTH - 1 : camZ + normClickDir.z * CHUNK_DEPTH;
-		int e2 = 0;
 
-		int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-		int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+		int dx = abs(x1 - x0);
+		int dy = abs(y1 - y0);
+		int sx = x0 < x1 ? CHUNK_LENGTH : -CHUNK_LENGTH;
+		int sy = y0 < y1 ? CHUNK_DEPTH : -CHUNK_DEPTH;
 
-		//int dx = abs(x1 - x0), sx = x0 < x1 ? CHUNK_LENGTH : -CHUNK_LENGTH;
-		//int dy = -abs(y1 - y0), sy = y0 < y1 ? CHUNK_DEPTH : -CHUNK_DEPTH;
+		bool steep = dy > dx;
+		if (steep) {
+			std::swap(x0, y0);
+			std::swap(x1, y1);
+			std::swap(dx, dy);
+			std::swap(sx, sy);
+		}
 
-		int err = dx + dy; // Fehlerwert e_xy
+		float gradient = static_cast<float>(dy) / dx;
+		float intery = y0 + (gradient > 1 ? 0.5 : 0);  // Interpolated y coordinate (initially y0)
+		int xend = x0;
 
-		posMarker.position = glm::vec3(x0, 0, y0);
-		posMarker.modelId = MARKER_SPHERE;
-		GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-		
-		posMarker.position = glm::vec3(x1, 0, y1);
-		posMarker.modelId = MARKER_SPHERE;
-		GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+		for (int x = x0; x < x1 + sx; x += sx) {
+			if (steep) {
+				// Plot at (y, x) if the line is steep
+				if (intery >= 0 && intery < chunkManagerRef->GetDepth() * CHUNK_DEPTH &&
+					x >= 0 && x < chunkManagerRef->GetLength() * CHUNK_LENGTH) {
+					posMarker.position = glm::vec3(intery, 0, x);
+					posMarker.modelId = MARKER_SPHERE;
+					GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+				}
+			}
+			else {
+				// Plot at (x, y) if the line is not steep
+				if (x >= 0 && x < chunkManagerRef->GetLength() * CHUNK_LENGTH &&
+					intery >= 0 && intery < chunkManagerRef->GetDepth() * CHUNK_DEPTH) {
+					posMarker.position = glm::vec3(x, 0, intery);
+					posMarker.modelId = MARKER_SPHERE;
+					GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+				}
+			}
 
-		std::cout << "begin x0: " << x0 << " begin y0: " << y0 << std::endl;
-		std::cout << "end x1: " << x1 << " end y1: " << y1 << std::endl;
+			// Apply antialiasing by plotting additional pixels next to the current
+			float coverage = fabs(intery - floor(intery));
+			if (x >= 0 && x < chunkManagerRef->GetLength() * CHUNK_LENGTH) {
+				// Plot below
+				if (floor(intery) >= 0 && floor(intery) < chunkManagerRef->GetDepth() * CHUNK_DEPTH) {
+					posMarker.position = glm::vec3(x, 0, floor(intery));
+					posMarker.modelId = MARKER_SPHERE; // Adjust based on your brightness
+					GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+				}
+				// Plot above
+				if (floor(intery) + 1 >= 0 && floor(intery) + 1 < chunkManagerRef->GetDepth() * CHUNK_DEPTH) {
+					posMarker.position = glm::vec3(x, 0, floor(intery) + 1);
+					posMarker.modelId = MARKER_SPHERE; // Adjust based on your brightness
+					GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
+				}
+			}
 
-		while (true) {
+			// Sicherstellen, dass posX und posY innerhalb der Grenzen bleiben
+			int posX = x / CHUNK_LENGTH;
+			int posY = intery / CHUNK_DEPTH;
+
+
 			
-
-			
-			std::cout << "x0: " << x0 << " y0: " << y0 << std::endl;
-
-			// Positionen für Chunks berechnen
-			int posX = x0 / CHUNK_LENGTH;
-			int posY = y0 / CHUNK_DEPTH;
-
 			if (posX < 0) posX = 0;
-			if (!(posX < chunkManagerRef->GetLength() * CHUNK_LENGTH)) posX = chunkManagerRef->GetLength() * CHUNK_LENGTH - 1;
-
+			if ((posX >= chunkManagerRef->GetLength())) posX = chunkManagerRef->GetLength() - 1;
+			
 			if (posY < 0) posY = 0;
-			if (!(posY < chunkManagerRef->GetDepth() * CHUNK_DEPTH)) posY = chunkManagerRef->GetDepth() * CHUNK_DEPTH - 1;
+			if ((posY >= chunkManagerRef->GetDepth())) posY = chunkManagerRef->GetDepth() - 1;
 
 			chunkArr.push_back(chunkManagerRef->GetChunkFromChunkArr(glm::vec3(posX, 0, posY)));
 
-			posMarker.position = glm::vec3(x0, 0, y0);
-			posMarker.modelId = MARKER_SPHERE;
-			GameObjectManager::GetInstance()->AppendGameObjectToQueue(posMarker);
-
-			if (x0 >= x1 && y0 >= y1) {
-				break;
-			}
-
-			e2 = 2 * err;
-
-			if (e2 > dy) {
-				err += dy;
-				x0 += sx * CHUNK_LENGTH;
-				//x0 += sx ;
-			}
-
-			if (e2 < dx) {
-				err += dx;
-				y0 += sy * CHUNK_DEPTH;
-			}
-
-			// Sicherstellen, dass y0 und y1 innerhalb der Grenzen bleiben
-
+			intery += gradient * CHUNK_DEPTH;  // Increment y-coordinate for the next step
 		}
+
 
 
 
